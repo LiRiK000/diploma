@@ -13,3 +13,161 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  surname   String
+  refreshToken String?
+  role      Role     @default(USER)
+  isInBlacklist Boolean @default(false)
+  favoriteGenres String[] @default([])
+  favoriteAuthors Author[]
+  favoriteBooks Book[]
+  cart Cart?
+  reviews Review[]
+  orders Order[]
+  notifications Notification[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@map("users")
+}
+
+model Cart {
+  id String @id @default(uuid())
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @unique
+  items CartItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@map("carts")
+}
+
+model Review {
+  id String @id @default(uuid())
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+  book Book @relation(fields: [bookId], references: [id])
+  bookId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, bookId])
+  @@map("reviews")
+}
+
+model Notification {
+  id String @id @default(uuid())
+  user User @relation(fields: [userId], references: [id])
+  userId String
+  message String
+  isViewed Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@map("notifications")
+}
+
+model Book {
+  id String @id @default(uuid())
+  title String
+  author Author @relation(fields: [authorId], references: [id])
+  authorId String
+  genre Genre @relation(fields: [genreId], references: [id])
+  genreId String
+  reviews Review[]
+  availableQuantity Int @default(0)
+  cartItems CartItem[]
+  orderItems OrderItem[]
+  favoriteFor User[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@map("books")
+}
+
+model Author {
+  id String @id @default(uuid())
+  firstName String
+  lastName String
+  dateOfBirth DateTime
+  dateOfDeath DateTime?
+  books Book[]
+  favoriteFor User[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@map("authors")
+}
+
+model Genre {
+  id String @id @default(uuid())
+  label String
+  value String
+  books Book[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@map("genres")
+}
+
+model Order {
+  id String @id @default(uuid())
+  user User @relation(fields: [userId], references: [id])
+  userId String
+  items OrderItem[]
+  status OrderStatus @default(PENDING)
+  orderDate DateTime @default(now())
+  dueDate DateTime // Когда нужно вернуть
+  returnDate DateTime? // Когда фактически вернули
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@map("orders")
+}
+
+model CartItem {
+  id String @id @default(uuid())
+  cart Cart @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  cartId String
+  book Book @relation(fields: [bookId], references: [id])
+  bookId String
+  quantity Int @default(1)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([cartId, bookId])
+  @@map("cart_items")
+}
+
+model OrderItem {
+  id String @id @default(uuid())
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId String
+  book Book @relation(fields: [bookId], references: [id])
+  bookId String
+  quantity Int @default(1)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@map("order_items")
+}
+
+enum Role {
+  LIBRARIAN
+  USER
+}
+
+enum OrderStatus {
+  PENDING      // Заявка подана, ожидает подтверждения библиотекаря
+  APPROVED     // Одобрена библиотекарем
+  ON_HAND      // Книги выданы
+  OVERDUE      // Просрочено возвращение
+  RETURNED     // Книги возвращены
+  CANCELLED    // Заявка отменена
+}
