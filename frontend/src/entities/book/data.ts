@@ -1,0 +1,68 @@
+import { Book } from './model/type'
+
+export const booksMock: Book[] = [
+  {
+    id: '1',
+    title: '1984',
+    author: { id: 'a1', name: 'Джордж Оруэлл' },
+    genre: { id: 'g1', name: 'Дистопия' },
+    availableQuantity: 5,
+    coverUrl: '',
+  },
+  {
+    id: '2',
+    title: 'Мастер и Маргарита',
+    author: { id: 'a2', name: 'М. Булгаков' },
+    genre: { id: 'g2', name: 'Роман' },
+    availableQuantity: 0,
+    coverUrl: '',
+  },
+  {
+    id: '3',
+    title: 'Мастер и Маргарита',
+    author: { id: 'a2', name: 'М. Булгаков' },
+    genre: { id: 'g2', name: 'Роман' },
+    availableQuantity: 0,
+    coverUrl: '',
+  },
+  {
+    id: '4',
+    title: 'Мастер и Маргарита',
+    author: { id: 'a2', name: 'М. Булгаков' },
+    genre: { id: 'g2', name: 'Роман' },
+    availableQuantity: 0,
+    coverUrl: '',
+  },
+  {
+    id: '5',
+    title: 'Мастер и Маргарита',
+    author: { id: 'a2', name: 'М. Булгаков' },
+    genre: { id: 'g2', name: 'Роман' },
+    availableQuantity: 0,
+    coverUrl: '',
+  },
+  {
+    id: '6',
+    title: 'Мастер и Маргарита',
+    author: { id: 'a2', name: 'М. Булгаков' },
+    genre: { id: 'g2', name: 'Роман' },
+    availableQuantity: 0,
+    coverUrl: '',
+  },
+  {
+    id: '7',
+    title: 'Мастер и Маргарита',
+    author: { id: 'a2', name: 'М. Булгаков' },
+    genre: { id: 'g2', name: 'Роман' },
+    availableQuantity: 0,
+    coverUrl: '',
+  },
+  {
+    id: '7',
+    title: 'Мастер и Маргарита',
+    author: { id: 'a2', name: 'М. Булгаков' },
+    genre: { id: 'g2', name: 'Роман' },
+    availableQuantity: 0,
+    coverUrl: '',
+  },
+]
