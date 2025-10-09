@@ -1,23 +1,30 @@
-import { Card, Button, Tag } from 'antd'
-import { BookCardProps } from '../model/type'
+import { Card, Button, Typography, Tag } from 'antd'
+import { BookCardProps } from '../../model/type'
 import styles from './book.module.scss'
-import placeholder from '../../../assets/book-placeholder2.png'
-export const BookCard = ({ book, onAddToCart }: BookCardProps) => {
+
+const { Title } = Typography
+
+export const BookCard = ({ book }: BookCardProps) => {
+  const onAddToCart = (bookId: string) => {
+    console.log(bookId)
+  }
+
   return (
-    <Card className={styles.card} bordered={false}>
+    <Card className={styles.card} variant={'borderless'}>
       <div className={styles.cover}>
         <img
-          src={book.coverUrl || placeholder}
+          src={book.coverUrl || '/book.png'}
           alt={book.title}
           className={styles.coverImage}
         />
       </div>
-
       <div className={styles.info}>
-        <h3 className={styles.title}>{book.title}</h3>
+        <Title className={styles.title} level={3}>
+          {book.title}
+        </Title>
         <div className={styles.meta}>
           <span className={styles.author}>{book.author.name}</span>
-          {<span className={styles.genre}>{book.genre.name}</span>}
+          <Tag color="processing">{book.genre.name}</Tag>
         </div>
         <p className={styles.available}>Доступно: {book.availableQuantity}</p>
         <Button

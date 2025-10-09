@@ -1,6 +1,5 @@
+import { BookCard, booksMock } from '@entities/book'
 import { Row, Col } from 'antd'
-import { BookCard } from '../../entities/book/ui/index'
-import { booksMock } from '../../entities/book/data'
 
 export const HomePage = () => {
   return (

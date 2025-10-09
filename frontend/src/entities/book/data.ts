@@ -58,7 +58,7 @@ export const booksMock: Book[] = [
     coverUrl: '',
   },
   {
-    id: '7',
+    id: '8',
     title: 'Мастер и Маргарита',
     author: { id: 'a2', name: 'М. Булгаков' },
     genre: { id: 'g2', name: 'Роман' },
