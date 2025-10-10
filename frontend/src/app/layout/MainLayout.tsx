@@ -1,12 +1,16 @@
-import { Layout, Input } from 'antd'
+import styles from './MainLayout.module.scss'
+import { Layout, Input, Space, Badge, Avatar } from 'antd'
+import { UserOutlined } from '@ant-design/icons'
 import { Outlet, Link } from 'react-router-dom'
-import styles from './layout.module.scss'
-import { AvatarComp } from '@widgets/Avatarw'
-import { MainLayoutProps } from './type'
+
 const { Header, Content } = Layout
 const { Search } = Input
 
-export const MainLayout = ({ onSearch }: MainLayoutProps) => {
+export const MainLayout = () => {
+  const handleSearch = (value: string) => {
+    console.log(value)
+  }
+
   return (
     <Layout className={styles.root}>
       <Header className={styles.header}>
@@ -19,10 +23,14 @@ export const MainLayout = ({ onSearch }: MainLayoutProps) => {
         <Search
           placeholder="Поиск книги..."
           allowClear
-          onSearch={onSearch}
+          onSearch={handleSearch}
           className={styles.search}
         />
-        <AvatarComp />
+        <Space size={24}>
+          <Badge count={1}>
+            <Avatar shape="square" icon={<UserOutlined />} />
+          </Badge>
+        </Space>
       </Header>
 
       <Content className={styles.content}>
@@ -33,7 +41,11 @@ export const MainLayout = ({ onSearch }: MainLayoutProps) => {
         <Link to="/">Главная</Link>
         <Link to="/catalog">Каталог</Link>
         <Link to="/cart">Корзина</Link>
-        <AvatarComp />
+        <Space size={24}>
+          <Badge count={1}>
+            <Avatar shape="square" icon={<UserOutlined />} />
+          </Badge>
+        </Space>
       </nav>
     </Layout>
   )

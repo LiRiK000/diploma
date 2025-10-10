@@ -16,8 +16,3 @@ export interface Book {
   availableQuantity: number
   coverUrl: string
 }
-
-export interface BookCardProps {
-  book: Book
-  onAddToCart?: (bookId: string) => void
-}
