@@ -4,6 +4,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { setupSwagger } from './lib/swagger';
 import { authRouter } from './routes/auth.routes';
+import { errorHandler } from './middleware/error.middleware';
 
 dotenv.config();
 
@@ -24,6 +25,8 @@ app.use('/uploads', express.static('uploads'));
 setupSwagger(app);
 
 app.use('/api/auth', authRouter);
+
+app.use(errorHandler);
 
 app.listen(port, () => {
   console.log(`Listening at http://localhost:${port}/api`);

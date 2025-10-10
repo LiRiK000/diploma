@@ -92,7 +92,11 @@ export const register = async (
 
     await createSendTokens(user, 201, res);
   } catch (error) {
-    next(error);
+    if (error instanceof AppError) {
+      next(error);
+    } else {
+      next(new AppError('Ошибка при регистрации', 500));
+    }
   }
 };
 
@@ -120,7 +124,11 @@ export const login = async (
 
     await createSendTokens(user, 200, res);
   } catch (error) {
-    next(error);
+    if (error instanceof AppError) {
+      next(error);
+    } else {
+      next(new AppError('Ошибка при входе', 500));
+    }
   }
 };
 
@@ -147,7 +155,11 @@ export const logout = async (
       message: 'Выход выполнен успешно',
     });
   } catch (error) {
-    next(error);
+    if (error instanceof AppError) {
+      next(error);
+    } else {
+      next(new AppError('Ошибка при выходе', 500));
+    }
   }
 };
 
@@ -221,6 +233,10 @@ export const getMe = async (
       },
     });
   } catch (error) {
-    next(error);
+    if (error instanceof AppError) {
+      next(error);
+    } else {
+      next(new AppError('Ошибка при получении данных пользователя', 500));
+    }
   }
 };
