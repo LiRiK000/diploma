@@ -107,7 +107,7 @@ model Author {
 model Genre {
   id String @id @default(uuid())
   label String
-  value String
+  value String @unique
   books Book[]
 
   createdAt DateTime @default(now())
