@@ -25,11 +25,11 @@ model User {
   favoriteGenres Genre[]
   favoriteAuthors Author[]
   favoriteBooks Book[]
+  readBooks Book[] @relation("ReadBooks")
   cart Cart?
   reviews Review[]
   orders Order[]
   notifications Notification[]
-
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   @@map("users")
@@ -84,7 +84,7 @@ model Book {
   cartItems CartItem[]
   orderItems OrderItem[]
   favoriteFor User[]
-
+  readBy User[] @relation("ReadBooks") 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   @@map("books")
@@ -107,7 +107,7 @@ model Author {
 model Genre {
   id String @id @default(uuid())
   label String
-  value String
+  value String @unique
   books Book[]
   users User[]
 

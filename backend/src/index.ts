@@ -1,18 +1,19 @@
-import dotenv from 'dotenv';
-import express from 'express';
-import cors from 'cors';
-import cookieParser from 'cookie-parser';
-import { setupSwagger } from './lib/swagger';
-import { authRouter } from './routes/auth.routes';
-import { errorHandler } from './middleware/error.middleware';
-
+import dotenv from "dotenv";
+import express from "express";
+import cors from "cors";
+import cookieParser from "cookie-parser";
+import { setupSwagger } from "./lib/swagger";
+import { authRouter } from "./routes/auth.routes";
+import { genresRouter } from "./routes/genres.routes";
+import { errorHandler } from "./middleware/error.middleware";
+import { authorsRouter } from "./routes/author.routes";
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 5000;
 
 const corsOptions = {
-  origin: '*',
+  origin: "*",
   optionsSuccessStatus: 200,
   credentials: true,
 };
@@ -20,17 +21,20 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
-app.use('/uploads', express.static('uploads'));
+app.use("/uploads", express.static("uploads"));
 
 setupSwagger(app);
 
-app.use('/api/auth', authRouter);
-
+app.use("/api/auth", authRouter);
 app.use(errorHandler);
+
+app.use("/api/genres", genresRouter);
+
+app.use("/api/authors", authorsRouter);
 
 app.listen(port, () => {
   console.log(`Listening at http://localhost:${port}/api`);
   console.log(
-    `Swagger documentation available at http://localhost:${port}/api-docs`,
+    `Swagger documentation available at http://localhost:${port}/api-docs`
   );
 });
