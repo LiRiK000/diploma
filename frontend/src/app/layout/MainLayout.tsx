@@ -2,6 +2,8 @@ import styles from './MainLayout.module.scss'
 import { Layout, Input, Space, Badge, Avatar } from 'antd'
 import { UserOutlined } from '@ant-design/icons'
 import { Outlet, Link } from 'react-router-dom'
+import { showSearch } from './utils'
+import { Activity } from 'react'
 
 const { Header, Content } = Layout
 const { Search } = Input
@@ -10,6 +12,8 @@ export const MainLayout = () => {
   const handleSearch = (value: string) => {
     console.log(value)
   }
+
+  const isShowSearch = showSearch(location.pathname)
 
   return (
     <Layout className={styles.root}>
@@ -20,12 +24,14 @@ export const MainLayout = () => {
             Каталог
           </Link>
         </div>
-        <Search
-          placeholder="Поиск книги..."
-          allowClear
-          onSearch={handleSearch}
-          className={styles.search}
-        />
+        <Activity mode={isShowSearch ? 'visible' : 'hidden'}>
+          <Search
+            placeholder="Поиск книги..."
+            allowClear
+            onSearch={handleSearch}
+            className={styles.search}
+          />
+        </Activity>
         <Space size={24}>
           <Badge count={1}>
             <Avatar shape="square" icon={<UserOutlined />} />

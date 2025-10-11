@@ -1,5 +1,5 @@
 import { api } from '@shared/api'
-import { RegisterRequestData, LoginFormValues } from './types'
+import { RegisterRequestData, LoginFormValues, MeResponse } from './types'
 
 export class AuthService {
   async register(data: RegisterRequestData) {
@@ -16,6 +16,10 @@ export class AuthService {
   }
   async refreshTokens() {
     const response = await api.post('/api/auth/refresh-tokens')
+    return response.data
+  }
+  async getMe() {
+    const response = await api.get<MeResponse>('/api/auth/me')
     return response.data
   }
 }

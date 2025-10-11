@@ -46,6 +46,26 @@ export const RegisterPage = () => {
             <Input placeholder="Введите email" />
           </Form.Item>
           <Form.Item
+            name="name"
+            label="Имя"
+            rules={[
+              { required: true, message: 'Пожалуйста, введите имя' },
+              { min: 1, message: 'Имя обязательно' },
+            ]}
+          >
+            <Input placeholder="Введите имя" />
+          </Form.Item>
+          <Form.Item
+            name="surname"
+            label="Фамилия"
+            rules={[
+              { required: true, message: 'Пожалуйста, введите фамилию' },
+              { min: 1, message: 'Фамилия обязательна' },
+            ]}
+          >
+            <Input placeholder="Введите фамилию" />
+          </Form.Item>
+          <Form.Item
             name="password"
             label="Пароль"
             rules={[
@@ -72,26 +92,6 @@ export const RegisterPage = () => {
             ]}
           >
             <Input.Password placeholder="Подтвердите пароль" />
-          </Form.Item>
-          <Form.Item
-            name="name"
-            label="Имя"
-            rules={[
-              { required: true, message: 'Пожалуйста, введите имя' },
-              { min: 1, message: 'Имя обязательно' },
-            ]}
-          >
-            <Input placeholder="Введите имя" />
-          </Form.Item>
-          <Form.Item
-            name="surname"
-            label="Фамилия"
-            rules={[
-              { required: true, message: 'Пожалуйста, введите фамилию' },
-              { min: 1, message: 'Фамилия обязательна' },
-            ]}
-          >
-            <Input placeholder="Введите фамилию" />
           </Form.Item>
           <Form.Item>
             <Button
