@@ -22,36 +22,3 @@ export const getAllGenres = async (
     next(error);
   }
 };
-
-export const createGenre = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const { value, label } = req.body;
-
-    if (!value || !label) {
-      throw new AppError("Необходимо указать value и label", 400);
-    }
-
-    const existingGenre = await prisma.genre.findUnique({
-      where: { value },
-    });
-
-    if (existingGenre) {
-      throw new AppError("Жанр с таким value уже существует", 400);
-    }
-
-    const genre = await prisma.genre.create({
-      data: { value, label },
-    });
-
-    res.status(201).json({
-      status: "success",
-      data: genre,
-    });
-  } catch (error) {
-    next(error);
-  }
-};

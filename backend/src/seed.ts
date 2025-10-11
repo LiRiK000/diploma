@@ -1,4 +1,4 @@
-import { prisma } from "../src/lib/prisma";
+import { prisma } from "./lib/prisma";
 
 const genres = [
   { value: "novel", label: "Роман" },
@@ -47,7 +47,6 @@ async function main() {
 main()
   .catch((e) => {
     console.error(e);
-    process.exit(1);
   })
   .finally(async () => {
     await prisma.$disconnect();

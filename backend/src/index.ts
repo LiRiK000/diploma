@@ -6,6 +6,7 @@ import { setupSwagger } from "./lib/swagger";
 import { authRouter } from "./routes/auth.routes";
 import { genresRouter } from "./routes/genres.routes";
 import { errorHandler } from "./middleware/error.middleware";
+import { authorsRouter } from "./routes/author.routes";
 dotenv.config();
 
 const app = express();
@@ -28,6 +29,8 @@ app.use("/api/auth", authRouter);
 app.use(errorHandler);
 
 app.use("/api/genres", genresRouter);
+
+app.use("/api/authors", authorsRouter);
 
 app.listen(port, () => {
   console.log(`Listening at http://localhost:${port}/api`);

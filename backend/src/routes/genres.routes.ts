@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { protect, restrictTo } from "../middleware/auth.middleware";
-import { getAllGenres, createGenre } from "../controller/genres.controller";
+import { getAllGenres } from "../controller/genres.controller";
 import type { Router as ExpressRouter } from "express";
 
 export const genresRouter: ExpressRouter = Router();
@@ -79,4 +79,3 @@ genresRouter.get("/", getAllGenres);
  *       400:
  *         description: Жанр с таким value уже существует
  */
-genresRouter.post("/", protect, restrictTo(["LIBRARIAN"]), createGenre);
