@@ -1,6 +1,6 @@
+import styles from './BookCard.module.scss'
 import { Card, Button, Typography, Tag } from 'antd'
-import { BookCardProps } from '../../model/type'
-import styles from './book.module.scss'
+import { BookCardProps } from './types'
 
 const { Title } = Typography
 

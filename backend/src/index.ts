@@ -5,7 +5,7 @@ import cookieParser from "cookie-parser";
 import { setupSwagger } from "./lib/swagger";
 import { authRouter } from "./routes/auth.routes";
 import { genresRouter } from "./routes/genres.routes";
-
+import { errorHandler } from "./middleware/error.middleware";
 dotenv.config();
 
 const app = express();
@@ -25,6 +25,8 @@ app.use("/uploads", express.static("uploads"));
 setupSwagger(app);
 
 app.use("/api/auth", authRouter);
+app.use(errorHandler);
+
 app.use("/api/genres", genresRouter);
 
 app.listen(port, () => {
