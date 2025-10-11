@@ -4,6 +4,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon src/index.ts",
+    "seed": "ts-node src/seed.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
@@ -31,8 +32,5 @@
     "prisma": "^6.16.3",
     "ts-node": "^10.9.2",
     "typescript": "~5.9.3"
-  },
-  "prisma": {
-    "seed": "ts-node prisma/seed.ts"
   }
 }
