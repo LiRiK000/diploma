@@ -1,10 +1,13 @@
-import { QueryProvider } from './providers/QueryProvider/QueryProvider'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import { HomePage } from '@pages/home'
 import { MainLayout } from './layout/MainLayout'
-import { routes } from './constants'
+import { PageProvider } from './providers/PageProvider/PageProvider'
+import { QueryProvider } from './providers/QueryProvider/QueryProvider'
+import { AuthProvider } from './providers/AuthProvider/AuthProvider'
+import { HomePage } from '@pages/home'
 import { RegisterPage } from '@pages/register'
 import { LoginPage } from '@pages/login'
+import { ProfilePage } from '@pages/profile'
+import { routes } from '@shared/constants'
 
 export const Router = () => {
   return (
@@ -12,10 +15,39 @@ export const Router = () => {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<MainLayout />}>
-            <Route index element={<HomePage />} />
-            <Route path={routes.register} element={<RegisterPage />} />
-            <Route path={routes.login} element={<LoginPage />} />
+            <Route
+              index
+              element={
+                <PageProvider>
+                  <HomePage />
+                </PageProvider>
+              }
+            />
+            <Route
+              path={routes.register}
+              element={
+                <PageProvider>
+                  <RegisterPage />
+                </PageProvider>
+              }
+            />
+            <Route
+              path={routes.login}
+              element={
+                <PageProvider>
+                  <LoginPage />
+                </PageProvider>
+              }
+            />
           </Route>
+          <Route
+            path={routes.profile}
+            element={
+              <AuthProvider>
+                <ProfilePage />
+              </AuthProvider>
+            }
+          />
         </Routes>
       </BrowserRouter>
     </QueryProvider>

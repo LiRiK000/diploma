@@ -3,5 +3,4 @@ import { Book } from '../../model/type'
 
 export interface BookCardProps {
   book: Book
-  onAddToCart?: (bookId: string) => void
 }
