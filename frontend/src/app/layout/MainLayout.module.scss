@@ -1,20 +1,14 @@
-.root {
-  min-height: 100vh;
-  background-color: #f5f5f5;
-  display: flex;
-  flex-direction: column;
-}
+@use '@shared/styles/variables' as *;
 
 .header {
-  background: #001529;
+  background: $background-primary;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 24px;
-  height: 64px;
   position: sticky;
   top: 0;
-  z-index: 1000;
+  z-index: 2;
   flex-shrink: 0;
 
   > *:first-child {
@@ -25,7 +19,7 @@
 }
 
 .logo {
-  color: #fff;
+  color: $background-white;
   font-weight: 600;
   font-size: 20px;
 }
@@ -44,10 +38,10 @@
 }
 
 .content {
-  background: #fff;
+  background: $background-white;
   padding: 24px;
   margin: 16px;
-  border-radius: 8px;
+  border-radius: $border-size-primary;
   flex: 1;
   overflow-y: auto;
   min-height: 0;
@@ -62,12 +56,6 @@
     > :last-child {
       display: none;
     }
-
-    .search {
-      position: static;
-      transform: none;
-      width: 90%;
-    }
   }
 
   .content {
@@ -75,7 +63,6 @@
     padding: 16px;
     margin-bottom: 0;
     overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
     flex: 1;
     min-height: 0;
   }

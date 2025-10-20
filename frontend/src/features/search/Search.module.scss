@@ -1,6 +1,5 @@
-.search {
-  .ant-input {
-    border-radius: 4px;
-  }
-}
+@use '@shared/styles/variables' as *;
 
+.search {
+  border-radius: $border-size-primary;
+}

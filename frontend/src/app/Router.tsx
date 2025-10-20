@@ -8,6 +8,8 @@ import { RegisterPage } from '@pages/register'
 import { LoginPage } from '@pages/login'
 import { ProfilePage } from '@pages/profile'
 import { routes } from '@shared/constants'
+import { Suspense } from 'react'
+import { Loader } from '@shared/components/Loader'
 
 export const Router = () => {
   return (
@@ -44,7 +46,9 @@ export const Router = () => {
             path={routes.profile}
             element={
               <AuthProvider>
-                <ProfilePage />
+                <Suspense fallback={<Loader />}>
+                  <ProfilePage />
+                </Suspense>
               </AuthProvider>
             }
           />

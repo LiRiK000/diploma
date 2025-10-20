@@ -9,7 +9,7 @@ const { Header, Content } = Layout
 
 export const MainLayout = () => {
   return (
-    <Layout className={styles.root}>
+    <Layout>
       <Header className={styles.header}>
         <div>
           <Link to={routes.home} className={styles.logo}>
