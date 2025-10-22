@@ -5,6 +5,7 @@ import { MainLayout } from './layout/MainLayout'
 import { routes } from './constants'
 import { RegisterPage } from '@pages/register'
 import { LoginPage } from '@pages/login'
+import { BookPage } from '@pages/book'
 
 export const Router = () => {
   return (
@@ -15,6 +16,7 @@ export const Router = () => {
             <Route index element={<HomePage />} />
             <Route path={routes.register} element={<RegisterPage />} />
             <Route path={routes.login} element={<LoginPage />} />
+            <Route path="/books/:id" element={<BookPage />} />
           </Route>
         </Routes>
       </BrowserRouter>

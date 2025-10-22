@@ -12,11 +12,7 @@ export const BookCard = ({ book }: BookCardProps) => {
   return (
     <Card className={styles.card} variant={'borderless'}>
       <div className={styles.cover}>
-        <img
-          src={book.coverUrl || '/book.png'}
-          alt={book.title}
-          className={styles.coverImage}
-        />
+        <img src={'/book.png'} alt={book.title} className={styles.coverImage} />
       </div>
       <div className={styles.info}>
         <Title className={styles.title} level={3}>

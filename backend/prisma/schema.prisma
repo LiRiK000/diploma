@@ -30,6 +30,7 @@ model User {
   reviews Review[]
   orders Order[]
   notifications Notification[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   @@map("users")
@@ -52,10 +53,10 @@ model Review {
   userId String
   book Book @relation(fields: [bookId], references: [id])
   bookId String
+  description String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
   @@unique([userId, bookId])
   @@map("reviews")
 }
@@ -84,7 +85,8 @@ model Book {
   cartItems CartItem[]
   orderItems OrderItem[]
   favoriteFor User[]
-  readBy User[] @relation("ReadBooks") 
+  readBy User[] @relation("ReadBooks")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   @@map("books")
@@ -141,7 +143,6 @@ model CartItem {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
   @@unique([cartId, bookId])
   @@map("cart_items")
 }
