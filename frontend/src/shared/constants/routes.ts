@@ -6,5 +6,5 @@ export const routes = {
   catalog: '/catalog',
   cart: '/cart',
   orders: '/orders',
-  librarianDashboard: '/librarian-dashboard',
+  librarian: '/librarian',
 }

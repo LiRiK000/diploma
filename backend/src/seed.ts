@@ -1,4 +1,5 @@
 import { prisma } from "./lib/prisma";
+import bcrypt from "bcrypt";
 
 const genres = [
   { value: "novel", label: "Роман" },
@@ -34,6 +35,7 @@ const genres = [
 ];
 
 async function main() {
+  // Создаем жанры
   for (const genre of genres) {
     await prisma.genre.upsert({
       where: { value: genre.value },
@@ -42,6 +44,25 @@ async function main() {
     });
   }
   console.log("✅ Genres seeded successfully!");
+
+  const adminEmail = "admin@library.com";
+  const adminPassword = "admin";
+  const hashedPassword = await bcrypt.hash(adminPassword, 12);
+
+  await prisma.user.upsert({
+    where: { email: adminEmail },
+    update: {},
+    create: {
+      email: adminEmail,
+      password: hashedPassword,
+      name: "Admin",
+      surname: "Librarian",
+      role: "LIBRARIAN",
+    },
+  });
+  console.log("✅ Admin user seeded successfully!");
+  console.log(`📧 Email: ${adminEmail}`);
+  console.log(`🔑 Password: ${adminPassword}`);
 }
 
 main()

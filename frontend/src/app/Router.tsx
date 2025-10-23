@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import { MainLayout } from './layout/MainLayout'
+import { MainLayout } from './layout/MainLayout/MainLayout'
+import { LibrarianLayout } from './layout/LibrarianLayout/LibrarianLayout'
 import { PageProvider } from './providers/PageProvider/PageProvider'
 import { QueryProvider } from './providers/QueryProvider/QueryProvider'
 import { AuthProvider } from './providers/AuthProvider/AuthProvider'
@@ -10,6 +11,7 @@ import { ProfilePage } from '@pages/profile'
 import { routes } from '@shared/constants'
 import { Suspense } from 'react'
 import { Loader } from '@shared/components/Loader'
+import { NotFound } from '@pages/404'
 
 export const Router = () => {
   return (
@@ -52,6 +54,8 @@ export const Router = () => {
               </AuthProvider>
             }
           />
+          <Route path={routes.librarian} element={<LibrarianLayout />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
     </QueryProvider>

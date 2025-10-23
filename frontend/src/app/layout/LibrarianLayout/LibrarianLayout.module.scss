@@ -1,0 +1,31 @@
+@use '@shared/styles/variables' as *;
+
+.content {
+  background: $background-white;
+  padding: 24px;
+  margin: 16px;
+  border-radius: $border-size-primary;
+  flex: 1;
+  overflow-y: auto;
+  min-height: calc(100vh - 32px);
+}
+
+.header {
+  background: $background-white !important;
+  padding: 0 !important;
+  margin-bottom: 16px !important;
+}
+
+.headerContent {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+@media (max-width: 768px) {
+  .content {
+    margin: 8px;
+    padding: 16px;
+    margin-bottom: 0;
+  }
+}
