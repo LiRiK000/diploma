@@ -1,31 +1,45 @@
 @use '@shared/styles/variables' as *;
 
-.content {
-  background: $background-white;
-  padding: 24px;
-  margin: 16px;
-  border-radius: $border-size-primary;
-  flex: 1;
-  overflow-y: auto;
-  min-height: calc(100vh - 32px);
+.sider {
+  background: $background-white !important;
+  position: fixed !important;
+  height: 100vh;
+  left: 0;
+  top: 0;
+  z-index: 10;
+}
+
+.rightLayout {
+  margin-left: 200px;
+  min-height: 100vh;
+  background: $background-gray !important;
 }
 
 .header {
-  background: $background-white !important;
-  padding: 0 !important;
-  margin-bottom: 16px !important;
-}
-
-.headerContent {
+  background: $background-white;
+  padding: 0 24px;
+  height: 64px;
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 5;
 }
 
-@media (max-width: 768px) {
-  .content {
-    margin: 8px;
-    padding: 16px;
-    margin-bottom: 0;
-  }
+.headerActions {
+  display: flex;
+  gap: 16px;
+}
+
+.title {
+  margin: 0 !important;
+}
+
+.content {
+  background: $background-white;
+  padding: 16px;
+  margin: 8px;
+  border-radius: $border-size-primary;
+  min-height: calc(100vh - 96px);
 }

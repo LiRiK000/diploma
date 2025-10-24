@@ -1,42 +1,55 @@
 import styles from './LibrarianLayout.module.scss'
-import { Button, Layout, Menu, Typography } from 'antd'
+import { Button, Layout, Menu, Tooltip, Typography } from 'antd'
 import { librarianLayoutItems } from './constants'
 import { useState } from 'react'
 import { getPageTitle } from './utils'
 import { TabContent } from './components/TabContent/TabContent'
+import { BookOutlined, PlusOutlined, SettingOutlined } from '@ant-design/icons'
 
 const { Content, Sider, Header } = Layout
 
 export const LibrarianLayout = () => {
-  const [selectedKey, setSelectedKey] = useState('dashboard')
+  const [selectedKey, setSelectedKey] = useState(
+    localStorage.getItem('librarianSelectedKey') ?? 'dashboard',
+  )
+  const handleMenuClick = (key: string) => {
+    setSelectedKey(key)
+    localStorage.setItem('librarianSelectedKey', key)
+  }
 
   return (
-    <Layout>
-      <Sider
-        className={styles.sider}
-        width={200}
-        style={{ background: 'white' }}
-      >
+    <Layout className={styles.layout}>
+      <Sider className={styles.sider} width={200}>
         <Menu
           mode="inline"
           items={librarianLayoutItems}
           selectedKeys={[selectedKey]}
           onClick={({ key }) => {
-            setSelectedKey(key)
+            handleMenuClick(key)
           }}
         />
       </Sider>
-      <Content className={styles.content}>
+      <Layout className={styles.rightLayout}>
         <Header className={styles.header}>
-          <div className={styles.headerContent}>
-            <Typography.Title level={2}>
-              {getPageTitle(selectedKey)}
-            </Typography.Title>
-            <Button type="primary">123</Button>
+          <Typography.Title level={2} className={styles.title}>
+            {getPageTitle(selectedKey)}
+          </Typography.Title>
+          <div className={styles.headerActions}>
+            <Tooltip title="Добавить книги в систему" placement="bottomLeft">
+              <Button type="primary" icon={<PlusOutlined />} />
+            </Tooltip>
+            <Tooltip title="Выдать заказ" placement="bottomLeft">
+              <Button type="primary" icon={<BookOutlined />} />
+            </Tooltip>
+            <Tooltip title="Настройки" placement="bottomLeft">
+              <Button type="primary" icon={<SettingOutlined />} />
+            </Tooltip>
           </div>
         </Header>
-        <TabContent selectedKey={selectedKey} />
-      </Content>
+        <Content className={styles.content}>
+          <TabContent selectedKey={selectedKey} />
+        </Content>
+      </Layout>
     </Layout>
   )
 }
