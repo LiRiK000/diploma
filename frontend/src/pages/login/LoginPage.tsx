@@ -11,7 +11,7 @@ export const LoginPage = () => {
   const { login } = useLogin()
   const [form] = Form.useForm()
 
-  const handleSubmit = async (values: LoginFormValues) => {
+  const handleSubmit = (values: LoginFormValues) => {
     const validatedValues = loginSchema.parse(values)
     login(validatedValues)
   }

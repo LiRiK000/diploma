@@ -4,7 +4,8 @@ import { librarianLayoutItems } from './constants'
 import { useState } from 'react'
 import { getPageTitle } from './utils'
 import { TabContent } from './components/TabContent/TabContent'
-import { BookOutlined, PlusOutlined, SettingOutlined } from '@ant-design/icons'
+import { BookOutlined, PlusOutlined } from '@ant-design/icons'
+import { LibrarianSettings } from '@features/librarian-settings'
 
 const { Content, Sider, Header } = Layout
 
@@ -41,9 +42,7 @@ export const LibrarianLayout = () => {
             <Tooltip title="Выдать заказ" placement="bottomLeft">
               <Button type="primary" icon={<BookOutlined />} />
             </Tooltip>
-            <Tooltip title="Настройки" placement="bottomLeft">
-              <Button type="primary" icon={<SettingOutlined />} />
-            </Tooltip>
+            <LibrarianSettings />
           </div>
         </Header>
         <Content className={styles.content}>
