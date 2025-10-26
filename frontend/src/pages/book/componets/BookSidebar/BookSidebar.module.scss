@@ -1,43 +1,46 @@
 .sidebar {
   background: linear-gradient(135deg, #ffffff, #ffffff);
-  border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
-  padding: 1.5rem;
-  transition:
-    box-shadow 0.3s ease,
-    transform 0.3s ease;
+  border-radius: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  padding: 0.75rem;
+  transition: box-shadow 0.3s ease;
 }
 
 .heading {
   color: #2c3e50;
   font-weight: 600;
+  font-size: 0.8rem;
   margin-bottom: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
 }
 
 .name {
   display: block;
-  font-size: 1.1rem;
+  font-size: 0.9rem;
   color: #111;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.15rem;
 }
 
 .bio {
   color: #444;
-  line-height: 1.6;
-  font-size: 0.95rem;
-  margin: 0;
+  line-height: 1.4;
+  font-size: 0.75rem;
+  margin: 0 0 0.75rem 0;
 }
 
 @media (max-width: 768px) {
   .sidebar {
-    padding: 1rem;
+    padding: 0.5rem;
+    border-radius: 6px;
   }
 
   .name {
-    font-size: 1rem;
+    font-size: 0.85rem;
   }
 
   .bio {
-    font-size: 0.9rem;
+    font-size: 0.7rem;
   }
 }

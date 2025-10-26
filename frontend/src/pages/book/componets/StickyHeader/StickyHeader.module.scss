@@ -7,7 +7,7 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   transform: translateY(-100%);
   transition: transform 0.3s ease;
-  z-index: 50;
+  z-index: 1000;
 }
 
 .visible {
@@ -17,29 +17,65 @@
 .content {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  justify-content: space-between;
+  gap: 1.5rem;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0.5rem 1rem;
-  min-height: 150px;
+  padding: 0.75rem 1.5rem;
+  min-height: 80px;
+}
+
+.bookInfo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
 }
 
 .cover {
-  width: 100px;
-  margin-top: 60px;
-  height: 100px;
+  width: 50px;
+  height: 65px;
   object-fit: cover;
-  border-radius: 12px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.textInfo {
+  min-width: 0;
 }
 
 .title {
-  margin-top: 60px;
-
   font-weight: 600;
+  font-size: 1rem;
+  margin: 0 0 0.25rem 0;
+  color: #1a1a1a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .author {
   font-size: 0.875rem;
   color: #666;
   margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.buttonContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.wishlistButton.inWishlist {
+  background-color: #ff4d4f;
+  border-color: #ff4d4f;
+
+  &:hover {
+    background-color: #ff7875;
+    border-color: #ff7875;
+  }
 }

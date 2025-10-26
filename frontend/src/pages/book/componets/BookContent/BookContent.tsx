@@ -114,7 +114,7 @@ export const BookContent = ({
 
         <section>
           <Title level={3} className={styles.subSectionTitle}>
-            Subjects
+            тематика
           </Title>
           <div className={styles.subjects}>
             {subjects.map((subject, i) => (
@@ -138,7 +138,7 @@ export const BookContent = ({
               icon={showAllDetails ? <UpOutlined /> : <DownOutlined />}
               className={styles.toggleButton}
             >
-              {showAllDetails ? 'Hide Details' : 'Show All Details'}
+              {showAllDetails ? 'Спрятать' : 'Подробнее'}
             </Button>
           </div>
 

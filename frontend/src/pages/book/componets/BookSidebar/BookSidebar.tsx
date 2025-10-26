@@ -14,17 +14,21 @@ export const BookSidebar = ({ authorName, authorBio }: BookSidebarProps) => {
     <Card className={styles.sidebar} bordered={false}>
       <Title level={4} className={styles.heading}>
         <UserOutlined />
-        About the Author
+        Автор
       </Title>
 
-      <Divider style={{ margin: '1.rem 0' }} />
+      <Divider style={{ margin: '0.2rem 0' }} />
 
       <Text strong className={styles.name}>
         {authorName}
       </Text>
 
-      <Paragraph className={styles.bio}>{authorBio}</Paragraph>
-      <Button>На странцу автора </Button>
+      <Button
+        size="small"
+        style={{ fontSize: '0.75rem', padding: '0 8px', height: '24px' }}
+      >
+        На страницу автора
+      </Button>
     </Card>
   )
 }

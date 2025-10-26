@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 import path from 'path'
+import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
   resolve: {
@@ -21,5 +22,35 @@ export default defineConfig({
       },
     },
   },
-  plugins: [react()],
+  plugins: [
+    react(),
+    VitePWA({
+      registerType: 'autoUpdate',
+      includeAssets: ['favicon.svg', 'robots.txt', 'apple-touch-icon.png'],
+      manifest: {
+        // TODO: Поменять на итоговое название
+        name: 'Библиотека',
+        // TODO: Поменять на итоговое название
+        short_name: 'Библиотека',
+        // TODO: Поменять на итоговое описание
+        description: 'Сервис для поиска, заказа и получения книг из библиотеки',
+        // TODO: Поменять на итоговый цвет шапки
+        theme_color: '#ffffff',
+        icons: [
+          {
+            // TODO: Поменять на итоговый иконку
+            src: 'vite.svg',
+            sizes: 'any',
+            type: 'image/svg+xml',
+          },
+        ],
+        start_url: '/',
+        display: 'standalone',
+        // TODO: Поменять на итоговый цвет шапки
+        background_color: '#ffffff',
+        orientation: 'portrait',
+        scope: '/',
+      },
+    }),
+  ],
 })

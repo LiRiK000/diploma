@@ -1,4 +1,3 @@
-// BookPage.jsx
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { StickyHeader } from './componets/StickyHeader/StickyHeader'
@@ -8,11 +7,13 @@ import { ReviewSection } from './componets/ReviewSection/ReviewSection'
 import { BookSidebar } from './componets/BookSidebar/BookSidebar'
 import { bookData, heroSectionHeight } from './constants'
 import styles from './BookPage.module.scss'
-import { RecommendationBook } from './componets/RecommendationBook/RecommendationBook'
+import { RecommendationBook } from '@widgets/RecommendationBook/RecommendationBook'
 
 export const BookPage = () => {
   const { id } = useParams()
   const [showStickyHeader, setShowStickyHeader] = useState(false)
+  const [todos, setTodos] = useState([])
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => {

@@ -4,14 +4,14 @@ import { CardBook } from './componets/CardBook/CardBook'
 import { RecommendationBookProps } from './types'
 
 const { Title } = Typography
-// TODO -> Widgets
+
 export const RecommendationBook = ({ books }: RecommendationBookProps) => {
   return (
-    <Card className={styles.sidebar} variant="borderless">
+    <Card className={styles.sidebar} bordered={false}>
       <Title level={4} className={styles.heading}>
         Книги в том же духе
       </Title>
-      <Divider style={{ margin: '1rem 0' }} />
+      <Divider style={{ margin: '0.1rem 0' }} />
 
       <div className={styles.scrollContainer}>
         {books.map(book => (

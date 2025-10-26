@@ -7,4 +7,5 @@ export const routes = {
   cart: '/cart',
   orders: '/orders',
   librarianDashboard: '/librarian-dashboard',
+  bookPage: '/book/:id',
 }

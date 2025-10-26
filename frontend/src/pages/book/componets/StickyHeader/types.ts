@@ -3,4 +3,5 @@ export interface StickyHeaderProps {
   author: string
   coverUrl: string
   isVisible: boolean
+  handleWantToCard: () => void
 }

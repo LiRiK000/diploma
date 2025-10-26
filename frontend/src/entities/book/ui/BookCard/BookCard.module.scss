@@ -1,19 +1,17 @@
+@use '@shared/styles/variables' as *;
+
 .card {
-  border-radius: 12px;
+  border-radius: $border-size-secondary;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   height: 100%;
-
-  &:hover {
-    transform: translateY(-4px);
-  }
 }
 
 .cover {
   height: 220px;
-  background: linear-gradient(135deg, #f0f0f0, #d9d9d9);
+  background: $background-secondary;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -40,49 +38,27 @@
 }
 
 .title {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 600;
-  color: #111;
+  margin: 0 !important;
+  font-size: $font-size-large !important;
+  color: $text-primary !important;
 }
 
 .meta {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 8px;
-}
-
-.author {
-  font-size: 14px;
-  color: #555;
 }
 
 .genre {
-  background-color: #e6f7ff;
-  color: #1890ff;
-  font-size: 12px;
+  background-color: $background-secondary;
+  color: $text-primary;
+  font-size: $font-size-small;
   padding: 2px 6px;
-  border-radius: 4px;
+  border-radius: $border-size-secondary;
 }
 
 .available {
   margin: 0;
-  font-size: 14px;
-  color: #333;
-}
-
-.ant-btn-primary {
-  background-color: #1890ff;
-  border: none;
-  transition: background-color 0.3s;
-
-  &:hover {
-    background-color: #40a9ff;
-  }
-
-  &:disabled {
-    background-color: #d9d9d9;
-    color: #888;
-  }
+  font-size: $font-size-small;
+  color: $text-secondary;
 }

@@ -1,10 +1,15 @@
-import { QueryProvider } from './providers/QueryProvider/QueryProvider'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import { HomePage } from '@pages/home'
 import { MainLayout } from './layout/MainLayout'
-import { routes } from './constants'
+import { PageProvider } from './providers/PageProvider/PageProvider'
+import { QueryProvider } from './providers/QueryProvider/QueryProvider'
+import { AuthProvider } from './providers/AuthProvider/AuthProvider'
+import { HomePage } from '@pages/home'
 import { RegisterPage } from '@pages/register'
 import { LoginPage } from '@pages/login'
+import { ProfilePage } from '@pages/profile'
+import { routes } from '@shared/constants'
+import { Suspense } from 'react'
+import { Loader } from '@shared/components/Loader'
 import { BookPage } from '@pages/book'
 
 export const Router = () => {
@@ -13,11 +18,49 @@ export const Router = () => {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<MainLayout />}>
-            <Route index element={<HomePage />} />
-            <Route path={routes.register} element={<RegisterPage />} />
-            <Route path={routes.login} element={<LoginPage />} />
-            <Route path="/books/:id" element={<BookPage />} />
+            <Route
+              index
+              element={
+                <PageProvider>
+                  <HomePage />
+                </PageProvider>
+              }
+            />
+            <Route
+              path={routes.register}
+              element={
+                <PageProvider>
+                  <RegisterPage />
+                </PageProvider>
+              }
+            />
+            <Route
+              path={routes.login}
+              element={
+                <PageProvider>
+                  <LoginPage />
+                </PageProvider>
+              }
+            />
+            <Route
+              path={routes.bookPage}
+              element={
+                <PageProvider>
+                  <BookPage />
+                </PageProvider>
+              }
+            />
           </Route>
+          <Route
+            path={routes.profile}
+            element={
+              <AuthProvider>
+                <Suspense fallback={<Loader />}>
+                  <ProfilePage />
+                </Suspense>
+              </AuthProvider>
+            }
+          />
         </Routes>
       </BrowserRouter>
     </QueryProvider>
