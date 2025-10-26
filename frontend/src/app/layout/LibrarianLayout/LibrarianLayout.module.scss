@@ -1,0 +1,45 @@
+@use '@shared/styles/variables' as *;
+
+.sider {
+  background: $background-white !important;
+  position: fixed !important;
+  height: 100vh;
+  left: 0;
+  top: 0;
+  z-index: 10;
+}
+
+.rightLayout {
+  margin-left: 200px;
+  min-height: 100vh;
+  background: $background-gray !important;
+}
+
+.header {
+  background: $background-white;
+  padding: 0 24px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+.headerActions {
+  display: flex;
+  gap: 16px;
+}
+
+.title {
+  margin: 0 !important;
+}
+
+.content {
+  background: $background-white;
+  padding: 16px;
+  margin: 8px;
+  border-radius: $border-size-primary;
+  min-height: calc(100vh - 96px);
+}

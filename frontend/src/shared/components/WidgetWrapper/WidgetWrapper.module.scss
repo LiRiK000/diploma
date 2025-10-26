@@ -1,0 +1,53 @@
+@use '@shared/styles/variables' as *;
+
+.container {
+    height: 100%;
+    width: 100%;
+    position: relative;
+    box-shadow: 10px 10px 100px 10px rgba(0, 0, 0, 0.1);
+    background-color: $background-secondary;
+    border-radius: $border-size-primary;
+    border: 3px solid #333;
+    box-sizing: border-box;
+    padding: 0 $padding-xl;
+    display: flex;
+    flex-direction: column;
+}
+
+.title {
+    flex-grow: 0;
+    min-width: 0;
+    display: flex;
+    align-items: baseline;
+
+    &__text {
+        font-weight: 600;
+        font-size: $font-size-heading;
+        color: $text-white;
+    }
+}
+
+.dropdownButton {
+    white-space: nowrap;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.content {
+    height: 100%;
+    width: 100%;
+    min-height: 0;
+    color: $text-white;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 4px;
+    overflow: hidden auto;
+}

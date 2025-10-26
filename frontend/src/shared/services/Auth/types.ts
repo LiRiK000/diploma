@@ -1,8 +1,3 @@
-export const USER_ROLE = {
-  LIBRARIAN: 'LIBRARIAN',
-  USER: 'USER',
-} as const
-
 export interface RegisterFormValues {
   email: string
   password: string
@@ -31,7 +26,7 @@ export interface MeResponse {
       email: string
       name: string
       surname: string
-      role: (typeof USER_ROLE)[keyof typeof USER_ROLE]
+      role: 'LIBRARIAN' | 'USER'
     }
   }
 }

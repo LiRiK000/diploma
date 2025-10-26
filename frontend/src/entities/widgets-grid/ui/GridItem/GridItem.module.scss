@@ -1,0 +1,22 @@
+.widget {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: transparent;
+    transition: all 0.2s ease-in-out;
+    position: relative;
+
+    &_dragging {
+        cursor: grabbing;
+    }
+
+    &_resizing {
+        cursor: col-resize;
+    }
+
+    &__content {
+        flex: 1;
+        height: 100%;
+        width: 100%;
+    }
+}

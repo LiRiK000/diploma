@@ -8,4 +8,5 @@ export const routes = {
   orders: '/orders',
   librarianDashboard: '/librarian-dashboard',
   bookPage: '/book/:id',
+  librarian: '/librarian',
 }
