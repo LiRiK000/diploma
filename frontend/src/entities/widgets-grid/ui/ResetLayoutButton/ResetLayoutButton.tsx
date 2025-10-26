@@ -4,17 +4,11 @@ import { Button } from 'antd'
 import { useLayoutEffect } from 'react'
 import { ResetLayoutButtonProps } from './types'
 import { useLayoutStore } from '../../model/store'
-import { GRID_ID } from '../../constants'
 
 export const ResetLayoutButton = ({ fontSize }: ResetLayoutButtonProps) => {
-  const [removeLayouts, hasLayoutsChanged, loadHasLayoutsChanged] =
-    useLayoutStore(
-      useShallow(store => [
-        store.removeLayouts,
-        store.hasLayoutsChanged[GRID_ID],
-        store.loadHasLayoutsChanged,
-      ]),
-    )
+  const [removeLayouts, loadHasLayoutsChanged] = useLayoutStore(
+    useShallow(store => [store.removeLayouts, store.loadHasLayoutsChanged]),
+  )
   const handleResetLayout = (
     e: React.MouseEvent | React.KeyboardEvent | React.TouchEvent,
   ) => {
@@ -31,15 +25,15 @@ export const ResetLayoutButton = ({ fontSize }: ResetLayoutButtonProps) => {
   return (
     <Button
       size="large"
-      type="link"
+      type="primary"
+      danger
+      style={{ transition: 'none', width: '32px', height: '32px' }}
       title="Вернуть исходное расположение"
-      disabled={!hasLayoutsChanged}
       icon={
         <UndoOutlined
           style={{
             fontSize: fontSize ?? 18,
-            color: hasLayoutsChanged ? '#fff' : '#777',
-            transition: 'color 0.3s ease',
+            color: '#fff',
           }}
         />
       }

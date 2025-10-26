@@ -1,13 +1,10 @@
-import {
-  FullScreenButton,
-  Grid,
-  ResetLayoutButton,
-} from '@entities/widgets-grid'
+import { FullScreenButton, Grid } from '@entities/widgets-grid'
 import { WidgetWrapper } from '@shared/components/WidgetWrapper'
 import { Space } from 'antd'
 import { useLibrarianSettingsStore } from '@features/librarian-settings'
 import { getWidgetsLayouts } from './utils'
 import { useMemo } from 'react'
+import { LibraryWorkloadWidget } from '@widgets/LibraryWorkloadWidget'
 
 export const LibrarianDashboardTab = () => {
   const isEditing = useLibrarianSettingsStore(store => store.isEditing)
@@ -19,7 +16,7 @@ export const LibrarianDashboardTab = () => {
       hideOverflowX
       useCSSTransforms
       layouts={layouts}
-      compactType={'horizontal'}
+      compactType={'vertical'}
       isDraggable={isEditing}
       isResizable={isEditing}
       items={[
@@ -31,7 +28,6 @@ export const LibrarianDashboardTab = () => {
               isLoading={true}
               headerContent={
                 <Space>
-                  <ResetLayoutButton />
                   <FullScreenButton widgetId="1" />
                 </Space>
               }
@@ -49,7 +45,6 @@ export const LibrarianDashboardTab = () => {
               emptyMessage="Нет данных"
               headerContent={
                 <Space>
-                  <ResetLayoutButton />
                   <FullScreenButton widgetId="2" />
                 </Space>
               }
@@ -57,6 +52,10 @@ export const LibrarianDashboardTab = () => {
               <div>2</div>
             </WidgetWrapper>
           ),
+        },
+        {
+          id: '3',
+          content: <LibraryWorkloadWidget />,
         },
       ]}
     />
