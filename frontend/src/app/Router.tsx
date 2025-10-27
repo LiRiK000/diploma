@@ -9,14 +9,24 @@ import { RegisterPage } from '@pages/register'
 import { LoginPage } from '@pages/login'
 import { ProfilePage } from '@pages/profile'
 import { routes } from '@shared/constants'
-import { Suspense } from 'react'
-import { Loader } from '@shared/components/Loader'
+import { useEffect } from 'react'
 import { NotFound } from '@pages/404'
+import { useCookieConsentStore } from '@features/cookie/model/store'
+import { useShallow } from 'zustand/react/shallow'
+import { PrivacyPage } from '@pages/privacy'
 
 export const Router = () => {
+  const init = useCookieConsentStore(useShallow(state => state.init))
+
+  useEffect(() => {
+    init()
+    // Выполняем только при монтировании
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   return (
-    <QueryProvider>
-      <BrowserRouter>
+    <BrowserRouter>
+      <QueryProvider>
         <Routes>
           <Route path="/" element={<MainLayout />}>
             <Route
@@ -48,16 +58,26 @@ export const Router = () => {
             path={routes.profile}
             element={
               <AuthProvider>
-                <Suspense fallback={<Loader />}>
+                <PageProvider>
                   <ProfilePage />
-                </Suspense>
+                </PageProvider>
               </AuthProvider>
             }
           />
-          <Route path={routes.librarian} element={<LibrarianLayout />} />
-          <Route path="*" element={<NotFound />} />
+          <Route
+            path={routes.librarian}
+            element={
+              <AuthProvider>
+                <PageProvider>
+                  <LibrarianLayout />
+                </PageProvider>
+              </AuthProvider>
+            }
+          />
+          <Route path={routes.privacy} element={<PrivacyPage />} />
+          <Route path={routes.notFound} element={<NotFound />} />
         </Routes>
-      </BrowserRouter>
-    </QueryProvider>
+      </QueryProvider>
+    </BrowserRouter>
   )
 }

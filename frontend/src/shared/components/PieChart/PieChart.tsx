@@ -17,7 +17,7 @@ export const PieChart = ({
   return (
     <ResponsiveContainer width="100%" height="100%">
       <RechartsPieChart data={data}>
-        {showTooltip && <Tooltip />}
+        {showTooltip && <Tooltip filterNull />}
         <Pie
           data={data}
           cx="50%"

@@ -7,4 +7,6 @@ export const routes = {
   cart: '/cart',
   orders: '/orders',
   librarian: '/librarian',
+  privacy: '/privacy',
+  notFound: '*',
 }
