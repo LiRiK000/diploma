@@ -5,9 +5,9 @@ import { HeroSection } from './componets/HeroSection/HeroSection'
 import { BookContent } from './componets/BookContent/BookContent'
 import { ReviewSection } from './componets/ReviewSection/ReviewSection'
 import { BookSidebar } from './componets/BookSidebar/BookSidebar'
-import { bookData, heroSectionHeight } from './constants'
+import { bookData, HERO_SECTION_HEIGHT } from './constants'
 import styles from './BookPage.module.scss'
-import { RecommendationBook } from '@widgets/RecommendationBook/RecommendationBook'
+import { RecommendationBook } from '@widgets/RecommendationBook'
 
 export const BookPage = () => {
   const { id } = useParams()
@@ -17,7 +17,7 @@ export const BookPage = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      setShowStickyHeader(window.scrollY > heroSectionHeight)
+      setShowStickyHeader(window.scrollY > HERO_SECTION_HEIGHT)
     }
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)

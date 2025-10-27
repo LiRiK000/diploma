@@ -1,4 +1,4 @@
-export const heroSectionHeight = 400
+export const HERO_SECTION_HEIGHT = 400
 
 export const bookData = {
   title: 'Гарри Поттер и философский камень',

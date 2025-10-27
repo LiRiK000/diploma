@@ -1,13 +1,9 @@
 import { Card, Typography, Divider, Button } from 'antd'
 import styles from './BookSidebar.module.scss'
 import { UserOutlined } from '@ant-design/icons'
+import { BookSidebarProps } from './types'
 
 const { Title, Text, Paragraph } = Typography
-
-interface BookSidebarProps {
-  authorName: string
-  authorBio: string
-}
 
 export const BookSidebar = ({ authorName, authorBio }: BookSidebarProps) => {
   return (
@@ -23,10 +19,7 @@ export const BookSidebar = ({ authorName, authorBio }: BookSidebarProps) => {
         {authorName}
       </Text>
 
-      <Button
-        size="small"
-        style={{ fontSize: '0.75rem', padding: '0 8px', height: '24px' }}
-      >
+      <Button size="small" className={styles.authorButton}>
         На страницу автора
       </Button>
     </Card>
