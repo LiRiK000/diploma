@@ -3,7 +3,6 @@ import { Card, Button, Typography, Tag } from 'antd'
 import { BookCardProps } from './types'
 
 const { Title } = Typography
-
 export const BookCard = ({ book }: BookCardProps) => {
   const onAddToCart = (bookId: string) => {
     console.log(bookId)
@@ -19,8 +18,8 @@ export const BookCard = ({ book }: BookCardProps) => {
           {book.title}
         </Title>
         <div className={styles.meta}>
-          <span className={styles.author}>{book.author.name}</span>
-          <Tag color="processing">{book.genre.name}</Tag>
+          <span className={styles.author}>{book.author}</span>
+          <Tag color="processing">{book.subjects[0]}</Tag>
         </div>
         <p className={styles.available}>Доступно: {book.availableQuantity}</p>
         <Button

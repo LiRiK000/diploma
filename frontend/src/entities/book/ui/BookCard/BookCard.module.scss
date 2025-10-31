@@ -41,6 +41,9 @@
   margin: 0 !important;
   font-size: $font-size-large !important;
   color: $text-primary !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .meta {

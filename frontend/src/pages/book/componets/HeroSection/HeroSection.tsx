@@ -1,20 +1,16 @@
-import { Rate, Button } from 'antd'
-import {
-  HeartOutlined,
-  ShareAltOutlined,
-  ShoppingCartOutlined,
-} from '@ant-design/icons'
 import styles from './HeroSection.module.scss'
-import { handleShare, handleWantToCard, handleWantToRead } from './utils'
 import { HeroSectionProps } from './types'
+import { AddToCartButton } from '@features/add-to-cart/componets/AddToCartButton'
+import { AddToWishlistButton } from '@features/add-to-wishlist/componets/AddToWishlistButton'
+import { ToShareButton } from '@features/to-share/componets/ToShareButton'
 
 export const HeroSection = ({
   title,
   author,
   coverUrl,
   publishYear,
-  rating,
   ratingsCount,
+  availableQuantity,
 }: HeroSectionProps) => {
   return (
     <section className={styles.hero}>
@@ -24,38 +20,25 @@ export const HeroSection = ({
           alt={title}
           className={styles.cover}
         />
-
         <div className={styles.info}>
           <h1 className={styles.title}>{title}</h1>
           <p className={styles.author}>
             {author} {publishYear}
           </p>
-
           <div className={styles.rating}>
             <span className={styles.ratingText}>
-              ({ratingsCount.toLocaleString()} reviews)
+              {ratingsCount.toLocaleString()} Рецензий
             </span>
           </div>
-
+          <div className={styles.rating}>
+            <span className={styles.ratingText}>
+              Доступно {availableQuantity.toLocaleString()}
+            </span>
+          </div>
           <div className={styles.actions}>
-            <Button
-              type="primary"
-              icon={<ShoppingCartOutlined />}
-              onClick={() => handleWantToCard(title)}
-            >
-              Добавить в корзину
-            </Button>
-            <Button
-              type="primary"
-              icon={<HeartOutlined />}
-              onClick={() => handleWantToRead(title)}
-            >
-              Хочу прочитать
-            </Button>
-
-            <Button icon={<ShareAltOutlined />} onClick={handleShare}>
-              Поделиться
-            </Button>
+            <AddToCartButton title={title} />
+            <AddToWishlistButton title={title} />
+            <ToShareButton title={title} />
           </div>
         </div>
       </div>

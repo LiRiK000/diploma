@@ -7,7 +7,6 @@ import { BookContentProps } from './types'
 
 const { useBreakpoint } = Grid
 const { Title, Paragraph, Text } = Typography
-
 export const BookContent = ({
   description,
   subjects,
@@ -15,11 +14,9 @@ export const BookContent = ({
 }: BookContentProps) => {
   const screens = useBreakpoint()
   const [showAllDetails, setShowAllDetails] = useState(false)
-
   const toggleDetails = () => {
     setShowAllDetails(prev => !prev)
   }
-
   const fullDetailsContent = (
     <div className={styles.details}>
       <Space
@@ -68,7 +65,6 @@ export const BookContent = ({
       </Space>
     </div>
   )
-
   const previewDetailsContent = (
     <div className={styles.previewDetails}>
       <Space size="large" wrap>
@@ -94,8 +90,10 @@ export const BookContent = ({
   return (
     <Card
       className={styles.content}
-      bodyStyle={{
-        padding: screens.xs ? '16px' : '24px',
+      styles={{
+        body: {
+          padding: screens.xs ? '16px' : '24px',
+        },
       }}
     >
       <Space
@@ -109,9 +107,7 @@ export const BookContent = ({
           </Title>
           <Paragraph className={styles.description}>{description}</Paragraph>
         </section>
-
         <Divider style={{ margin: '0.5rem 0' }} />
-
         <section>
           <Title level={3} className={styles.subSectionTitle}>
             тематика
@@ -124,9 +120,7 @@ export const BookContent = ({
             ))}
           </div>
         </section>
-
         <Divider style={{ margin: '0.5rem 0' }} />
-
         <section>
           <div className={styles.detailsHeader}>
             <Title level={3} className={styles.subSectionTitle}>
@@ -141,11 +135,9 @@ export const BookContent = ({
               {showAllDetails ? 'Спрятать' : 'Подробнее'}
             </Button>
           </div>
-
           <Activity mode={showAllDetails ? 'visible' : 'hidden'}>
             {fullDetailsContent}
           </Activity>
-
           <Activity mode={showAllDetails ? 'hidden' : 'visible'}>
             {previewDetailsContent}
           </Activity>

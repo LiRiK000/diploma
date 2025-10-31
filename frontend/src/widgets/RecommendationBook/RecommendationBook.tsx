@@ -4,10 +4,9 @@ import { CardBook } from './componets/CardBook/CardBook'
 import { RecommendationBookProps } from './types'
 
 const { Title } = Typography
-
 export const RecommendationBook = ({ books }: RecommendationBookProps) => {
   return (
-    <Card className={styles.sidebar} bordered={false}>
+    <Card className={styles.sidebar} variant={'borderless'}>
       <Title level={4} className={styles.heading}>
         Книги в том же духе
       </Title>

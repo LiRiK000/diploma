@@ -12,8 +12,7 @@ import { RecommendationBook } from '@widgets/RecommendationBook'
 export const BookPage = () => {
   const { id } = useParams()
   const [showStickyHeader, setShowStickyHeader] = useState(false)
-  const [todos, setTodos] = useState([])
-  const [loading, setLoading] = useState(false)
+  const book = bookData
 
   useEffect(() => {
     const handleScroll = () => {
@@ -23,8 +22,6 @@ export const BookPage = () => {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  const book = bookData
-
   return (
     <div className={styles.page}>
       <StickyHeader
@@ -33,17 +30,16 @@ export const BookPage = () => {
         coverUrl={book.coverUrl}
         isVisible={showStickyHeader}
       />
-
       <div className={styles.main}>
+        <div className={styles.HeroSection}></div>
         <HeroSection
           title={book.title}
           author={book.author}
           coverUrl={book.coverUrl}
           publishYear={book.publishYear}
-          rating={book.rating}
           ratingsCount={book.ratingsCount}
+          availableQuantity={book.availableQuantity}
         />
-
         <div className={styles.container}>
           <div className={styles.grid}>
             <div className={styles.mainContent}>
@@ -53,7 +49,6 @@ export const BookPage = () => {
                 details={book.details}
               />
             </div>
-
             <div className={styles.sidebar}>
               <BookSidebar
                 authorName={book.author}
@@ -63,7 +58,6 @@ export const BookPage = () => {
             </div>
           </div>
         </div>
-
         <div className={styles.reviewSection}>
           <ReviewSection reviews={book.reviews} tags={book.tags} />
         </div>

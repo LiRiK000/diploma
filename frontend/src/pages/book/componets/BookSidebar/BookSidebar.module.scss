@@ -1,7 +1,6 @@
 @use '@shared/styles/variables' as *;
 
 .sidebar {
-  background: linear-gradient(135deg, $background-white, $background-white);
   border-radius: $border-radius-lg;
   box-shadow: $shadow-light;
   padding: $spacing-md;
@@ -11,7 +10,7 @@
 .heading {
   color: $text-heading;
   font-weight: 600;
-  font-size: 0.8rem;
+  font-size: 13px;
   margin-bottom: $spacing-xs;
   display: flex;
   align-items: center;
@@ -20,7 +19,7 @@
 
 .name {
   display: block;
-  font-size: 0.9rem;
+  font-size: 16px;
   color: $text-primary;
   margin-bottom: 0.15rem;
 }
@@ -28,13 +27,13 @@
 .bio {
   color: $text-secondary;
   line-height: 1.4;
-  font-size: 0.75rem;
+  font-size: 14px;
   margin: 0 0 $spacing-md 0;
 }
 
 .authorButton {
-  font-size: 0.75rem;
-  padding: 0 8px;
+  margin-top: 15px;
+  font-size: 14px;
   height: 24px;
 }
 
@@ -45,10 +44,10 @@
   }
 
   .name {
-    font-size: 0.85rem;
+    font-size: 13px;
   }
 
   .bio {
-    font-size: 0.7rem;
+    font-size: 11px;
   }
 }

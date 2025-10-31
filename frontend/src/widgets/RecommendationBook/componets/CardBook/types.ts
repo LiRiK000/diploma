@@ -1,5 +1,8 @@
-export interface CardBookProps {
-  title: string
-  author: string
-  quantity: string
+export type CardBookProps = {
+  book: {
+    id: string
+    title: string
+    author: string
+    availableQuantity?: number
+  }
 }

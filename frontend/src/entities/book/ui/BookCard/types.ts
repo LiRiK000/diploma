@@ -1,6 +1,10 @@
-//TODO Перенести определение таких типов в shared/services
-import { Book } from '../../model/type'
+import { BookDto } from '@shared/services/Book/types'
+
+export type BookCardView = Pick<
+  BookDto,
+  'id' | 'title' | 'author' | 'coverUrl' | 'availableQuantity' | 'subjects'
+>
 
 export interface BookCardProps {
-  book: Book
+  book: BookCardView
 }

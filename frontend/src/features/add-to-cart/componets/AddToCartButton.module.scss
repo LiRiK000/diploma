@@ -1,0 +1,13 @@
+@use '@shared/styles/variables' as *;
+
+.cartButton {
+  &.inCart {
+    background-color: $text-success;
+    border-color: $text-success;
+
+    &:hover {
+      background-color: lighten($text-success, 10%);
+      border-color: lighten($text-success, 10%);
+    }
+  }
+}

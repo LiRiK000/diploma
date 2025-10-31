@@ -39,10 +39,19 @@ $border-radius-sm: 6px;
 
 $shadow-light: 0 2px 8px rgba(0, 0, 0, 0.05);
 
-$spacing-xs: 0.25rem;
-$spacing-sm: 0.5rem;
-$spacing-md: 0.75rem;
-$spacing-lg: 1rem;
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 12px;
+$spacing-lg: 16px;
 
 $text-heading: #7dcb07;
-$gradient-white: #ffffff;
+
+$gradient-hero: linear-gradient(135deg, #c0d3f8, $background-white);
+
+$shadow-medium: 0 12px 32px rgba(0, 0, 0, 0.08);
+$shadow-strong: 0 16px 32px rgba(0, 0, 0, 0.25);
+$shadow-cover: 0 10px 24px rgba(0, 0, 0, 0.2);
+
+$font-size-hero-title: 44px;
+$font-size-hero-author: 18px;
+$font-size-hero-rating: 14px;

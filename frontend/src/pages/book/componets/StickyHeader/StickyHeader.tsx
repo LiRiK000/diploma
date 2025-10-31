@@ -1,32 +1,16 @@
 import styles from './StickyHeader.module.scss'
 import { StickyHeaderProps } from './types'
-import { Button, Space, Tooltip } from 'antd'
-import {
-  HeartOutlined,
-  ShoppingCartOutlined,
-  HeartFilled,
-} from '@ant-design/icons'
-import { handleWantToRead } from '../HeroSection/utils'
-import { useState } from 'react'
+import { Space } from 'antd'
+
+import { AddToWishlistButton } from '@features/add-to-wishlist/componets/AddToWishlistButton'
+import { AddToCartButton } from '@features/add-to-cart/componets/AddToCartButton'
 
 export const StickyHeader = ({
   title,
   author,
   coverUrl,
   isVisible,
-  handleWantToCard,
 }: StickyHeaderProps) => {
-  const [isInWishlist, setIsInWishlist] = useState(false)
-
-  const handleAddToCart = () => {
-    handleWantToCard(title)
-  }
-
-  const handleWishlistClick = () => {
-    setIsInWishlist(!isInWishlist)
-    handleWantToRead(title)
-  }
-
   return (
     <header
       className={`${styles.header} ${isVisible ? styles.visible : ''}`}
@@ -48,34 +32,9 @@ export const StickyHeader = ({
         </div>
 
         <Space className={styles.buttonContainer}>
-          <Tooltip title="Добавить в корзину">
-            <Button
-              type="primary"
-              icon={<ShoppingCartOutlined />}
-              onClick={handleAddToCart}
-              size="large"
-              className={styles.cartButton}
-            >
-              В корзину
-            </Button>
-          </Tooltip>
+          <AddToCartButton title={title} />
 
-          <Tooltip
-            title={
-              isInWishlist ? 'Удалить из желаемого' : 'Добавить в желаемое'
-            }
-          >
-            <Button
-              type={isInWishlist ? 'primary' : 'default'}
-              icon={isInWishlist ? <HeartFilled /> : <HeartOutlined />}
-              onClick={handleWishlistClick}
-              size="large"
-              className={`${styles.wishlistButton} ${isInWishlist ? styles.inWishlist : ''}`}
-              danger={isInWishlist}
-            >
-              {isInWishlist ? 'В желаемом' : 'Хочу прочитать'}
-            </Button>
-          </Tooltip>
+          <AddToWishlistButton title={title} />
         </Space>
       </div>
     </header>
