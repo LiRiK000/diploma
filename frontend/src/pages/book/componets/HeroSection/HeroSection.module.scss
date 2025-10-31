@@ -7,7 +7,6 @@
   justify-content: center;
   background: $gradient-hero;
   border-radius: $border-radius-lg;
-  padding: 3rem 1.5rem;
   margin-bottom: 48px;
   box-shadow: $shadow-medium;
   overflow: hidden;
@@ -15,8 +14,8 @@
 
 .container {
   display: flex;
-  align-items: center;
-  gap: 2rem;
+  align-items: flex-start;
+  gap: 32px;
   max-width: $breakpoint-lg;
   width: 100%;
   margin: 0 auto;
@@ -42,34 +41,40 @@
 .info {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 20px;
   color: $text-primary;
   flex: 1;
   min-width: 300px;
+  padding-top: 40px;
 }
 
 .title {
-  font-size: 2.5rem;
-  font-weight: 700;
+  font-size: $font-size-hero-title;
+  font-weight: $font-weight;
   color: $text-primary;
   line-height: 1.2;
+  margin: 0;
 }
 
 .author {
-  font-size: 1.125rem;
+  font-size: $font-size-hero-author;
   color: $text-secondary;
+  margin: 0;
 }
 
 .rating {
+  display: flex;
   align-items: center;
   gap: $spacing-sm;
   color: $text-secondary;
+  font-size: $font-size-hero-rating;
+  margin: 0;
 }
 
 .actions {
   display: flex;
   gap: $spacing-md;
-  margin-top: 1rem;
+  margin-top: 16px;
   flex-wrap: wrap;
 
   button {
@@ -86,14 +91,15 @@
 
 @media (max-width: $breakpoint-md) {
   .hero {
-    padding: 2rem 1rem;
+    padding: 32px 16px;
     min-height: auto;
   }
 
   .container {
     flex-direction: column;
     text-align: center;
-    gap: 1.5rem;
+    gap: 24px;
+    align-items: center;
   }
 
   .cover {
@@ -101,8 +107,9 @@
     height: 260px;
   }
 
-  .title {
-    font-size: 2rem;
+  .info {
+    padding-top: 0;
+    align-items: center;
   }
 
   .author {
@@ -122,7 +129,7 @@
 
 @media (max-width: 480px) {
   .hero {
-    padding: 1.5rem 1rem;
+    padding: 24px 16px;
     border-radius: $border-radius-md;
   }
 
@@ -132,7 +139,7 @@
   }
 
   .title {
-    font-size: 1.75rem;
+    font-size: 28px;
   }
 
   .actions {

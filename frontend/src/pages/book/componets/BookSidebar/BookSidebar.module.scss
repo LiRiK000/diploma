@@ -9,8 +9,8 @@
 
 .heading {
   color: $text-heading;
-  font-weight: 600;
-  font-size: 13px;
+  font-weight: $font-weight;
+  font-size: $font-size-small;
   margin-bottom: $spacing-xs;
   display: flex;
   align-items: center;
@@ -19,21 +19,20 @@
 
 .name {
   display: block;
-  font-size: 16px;
+  font-size: $font-size-medium;
   color: $text-primary;
-  margin-bottom: 0.15rem;
 }
 
 .bio {
   color: $text-secondary;
   line-height: 1.4;
-  font-size: 14px;
+  font-size: $font-size-small;
   margin: 0 0 $spacing-md 0;
 }
 
 .authorButton {
   margin-top: 15px;
-  font-size: 14px;
+  font-size: $font-size-small;
   height: 24px;
 }
 
@@ -44,10 +43,10 @@
   }
 
   .name {
-    font-size: 13px;
+    font-size: $font-size-small;
   }
 
   .bio {
-    font-size: 11px;
+    font-size: $font-size-small;
   }
 }

@@ -1,7 +1,6 @@
 import styles from './StickyHeader.module.scss'
 import { StickyHeaderProps } from './types'
 import { Space } from 'antd'
-
 import { AddToWishlistButton } from '@features/add-to-wishlist/componets/AddToWishlistButton'
 import { AddToCartButton } from '@features/add-to-cart/componets/AddToCartButton'
 

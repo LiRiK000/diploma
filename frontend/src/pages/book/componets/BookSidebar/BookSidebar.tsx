@@ -4,7 +4,6 @@ import { UserOutlined } from '@ant-design/icons'
 import { BookSidebarProps } from './types'
 
 const { Title, Text } = Typography
-
 export const BookSidebar = ({ authorName }: BookSidebarProps) => {
   return (
     <Card className={styles.sidebar} variant={'borderless'}>

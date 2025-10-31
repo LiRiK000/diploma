@@ -32,21 +32,21 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  margin-top: 25px;
 }
 
 .subjectTag {
   margin-bottom: 8px;
   padding: 4px 12px;
   font-size: $font-size-small;
-  border-radius: 16px;
+  border-radius: $border-radius-md;
 }
 
 .details {
   width: 100%;
   padding: $padding-xl;
   background: $background-gray;
-  border-radius: 8px;
-  border: 1px solid #f0f0f0;
+  border-radius: $border-radius-sm;
 
   @media (max-width: $breakpoint-md) {
     .ant-space-item {
@@ -58,7 +58,7 @@
 .previewDetails {
   padding: 12px;
   background: $background-gray;
-  border-radius: 6px;
+  border-radius: $border-radius-sm;
 
   .ant-space {
     width: 100%;
@@ -83,7 +83,7 @@
 
 .toggleButton {
   color: #08a6f0ff;
-  font-weight: 600;
+  font-weight: $font-weight;
   display: flex;
   align-items: center;
   gap: 4px;

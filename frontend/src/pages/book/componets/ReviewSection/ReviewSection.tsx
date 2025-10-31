@@ -8,7 +8,6 @@ import { ReviewSectionProps } from './types'
 const { Title } = Typography
 export const ReviewSection = ({ reviews, tags }: ReviewSectionProps) => {
   const [reviewList, setReviewList] = useState(reviews)
-
   return (
     <section className={styles.section}>
       <Title level={2}>Рецензии</Title>

@@ -9,7 +9,7 @@
   box-shadow: $shadow-light;
   transform: translateY(-100%);
   transition: transform 0.3s ease;
-  z-index: 1000;
+  z-index: 3;
 }
 
 .visible {
@@ -50,7 +50,7 @@
 }
 
 .title {
-  font-weight: 600;
+  font-weight: $font-weight;
   font-size: $font-size-medium;
   margin: 0 0 $spacing-xs 0;
   color: $text-primary;
@@ -115,9 +115,5 @@
 
   .title {
     font-size: $font-size-small;
-  }
-
-  .author {
-    font-size: 12px;
   }
 }
