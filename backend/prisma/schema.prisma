@@ -86,6 +86,15 @@ model Book {
   orderItems OrderItem[]
   favoriteFor User[]
   readBy User[] @relation("ReadBooks")
+  description String?                   
+  subjects String[]                     
+  publisher String?                      
+  publishedDate DateTime?                
+  pageCount Int?                         
+  language String?                       
+  coverImage String?     
+  recommendedBooks Book[] @relation("BookRecommendations")
+  recommendedBy Book[] @relation("BookRecommendations")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -103,6 +112,7 @@ model Author {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  @@unique([firstName, lastName, dateOfBirth])
   @@map("authors")
 }
 
