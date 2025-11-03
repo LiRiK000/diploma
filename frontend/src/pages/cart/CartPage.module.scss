@@ -1,0 +1,62 @@
+@use '@shared/styles/variables' as *;
+
+.cartSection {
+  background: $background-white;
+  border-radius: $border-size-primary;
+  padding: 24px;
+}
+
+.sectionTitle {
+  margin-bottom: 8px !important;
+  color: $text-primary;
+}
+
+.itemsCount {
+  color: $text-secondary;
+  font-size: $font-size-medium;
+  display: block;
+  margin-bottom: 24px;
+}
+
+.orderCard {
+  border-radius: $border-size-primary;
+}
+
+.orderTitle {
+  margin: 0 !important;
+  color: $text-primary;
+}
+
+.orderSummary {
+  margin-bottom: 24px;
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.totalPrice {
+  font-size: $font-size-heading;
+  color: $text-primary;
+}
+
+.orderButton {
+  height: 48px;
+  font-size: $font-size-medium;
+}
+
+@media (max-width: 1450px) {
+  .cartCol {
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+  }
+
+  .orderCol {
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+    margin-top: 24px;
+  }
+}
+

@@ -6,6 +6,7 @@ export const routes = {
   catalog: '/catalog',
   cart: '/cart',
   orders: '/orders',
+  notifications: '/notifications',
   librarian: '/librarian',
   privacy: '/privacy',
   notFound: '*',

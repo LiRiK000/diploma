@@ -14,6 +14,7 @@ import { NotFound } from '@pages/404'
 import { useCookieConsentStore } from '@features/cookie/model/store'
 import { useShallow } from 'zustand/react/shallow'
 import { PrivacyPage } from '@pages/privacy'
+import { CartPage } from '@pages/cart'
 
 export const Router = () => {
   const init = useCookieConsentStore(useShallow(state => state.init))
@@ -53,6 +54,16 @@ export const Router = () => {
                 </PageProvider>
               }
             />
+            <Route
+              path={routes.cart}
+              element={
+                <AuthProvider>
+                  <PageProvider>
+                    <CartPage />
+                  </PageProvider>
+                </AuthProvider>
+              }
+            />
           </Route>
           <Route
             path={routes.profile}
@@ -64,6 +75,7 @@ export const Router = () => {
               </AuthProvider>
             }
           />
+
           <Route
             path={routes.librarian}
             element={
