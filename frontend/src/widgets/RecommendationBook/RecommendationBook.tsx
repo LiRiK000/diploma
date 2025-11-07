@@ -13,7 +13,7 @@ export const RecommendationBook = ({ books }: RecommendationBookProps) => {
       <Divider style={{ margin: '0.1rem 0' }} />
 
       <div className={styles.scrollContainer}>
-        {books.map(book => (
+        {books.recommendedBooks.map(book => (
           <CardBook key={book.id} book={book} />
         ))}
       </div>

@@ -5,12 +5,7 @@ export interface Review {
   date: string
 }
 
-interface Tag {
-  name: string
-  count: number
-}
-
 export interface ReviewSectionProps {
   reviews: Review[]
-  tags: Tag[]
+  tags: []
 }

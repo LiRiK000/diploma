@@ -37,6 +37,7 @@ export type BookCard = {
 export interface BookDto {
   id: string
   title: string
+  genre: string
   author: string
   coverUrl: string
   publishYear: string
@@ -46,5 +47,5 @@ export interface BookDto {
   details?: BookDetails
   reviews?: Review[]
   tags?: Tag[]
-  recommendedBooks?: BookCard[]
+  recommendedBooks: BookCard[]
 }

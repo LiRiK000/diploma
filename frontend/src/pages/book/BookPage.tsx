@@ -1,26 +1,18 @@
-import { useState, useEffect } from 'react'
-import { useParams } from 'react-router-dom'
+import { Spin } from 'antd'
+import styles from './BookPage.module.scss'
 import { StickyHeader } from './componets/StickyHeader/StickyHeader'
 import { HeroSection } from './componets/HeroSection/HeroSection'
 import { BookContent } from './componets/BookContent/BookContent'
 import { ReviewSection } from './componets/ReviewSection/ReviewSection'
 import { BookSidebar } from './componets/BookSidebar/BookSidebar'
-import { bookData, HERO_SECTION_HEIGHT } from './constants'
-import styles from './BookPage.module.scss'
 import { RecommendationBook } from '@widgets/RecommendationBook'
+import { useBook } from './model/useBook'
 
 export const BookPage = () => {
-  const { id } = useParams()
-  const [showStickyHeader, setShowStickyHeader] = useState(false)
-  const book = bookData
+  const { book, isLoading, isError, showStickyHeader } = useBook()
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setShowStickyHeader(window.scrollY > HERO_SECTION_HEIGHT)
-    }
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
+  if (isLoading) return <Spin />
+  if (isError) return <div>Ошибка загрузки</div>
 
   return (
     <div className={styles.page}>
@@ -31,30 +23,18 @@ export const BookPage = () => {
         isVisible={showStickyHeader}
       />
       <div className={styles.main}>
-        <div className={styles.HeroSection}></div>
-        <HeroSection
-          title={book.title}
-          author={book.author}
-          coverUrl={book.coverUrl}
-          publishYear={book.publishYear}
-          ratingsCount={book.ratingsCount}
-          availableQuantity={book.availableQuantity}
-        />
+        <HeroSection {...book} />
         <div className={styles.container}>
           <div className={styles.grid}>
             <div className={styles.mainContent}>
-              <BookContent
-                description={book.description}
-                subjects={book.subjects}
-                details={book.details}
-              />
+              <BookContent {...book} />
             </div>
             <div className={styles.sidebar}>
               <BookSidebar
                 authorName={book.author}
                 authorBio={book.authorBio}
               />
-              <RecommendationBook books={book.recommendedBooks} />
+              <RecommendationBook books={book} />
             </div>
           </div>
         </div>

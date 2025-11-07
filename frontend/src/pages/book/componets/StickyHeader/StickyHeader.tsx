@@ -19,7 +19,7 @@ export const StickyHeader = ({
       <div className={styles.content}>
         <div className={styles.bookInfo}>
           <img
-            src={coverUrl}
+            src={'/book.png'}
             alt={`Обложка книги "${title}"`}
             className={styles.cover}
             loading="lazy"

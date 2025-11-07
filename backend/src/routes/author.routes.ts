@@ -1,13 +1,13 @@
-import { Router } from "express";
-import { protect, restrictTo } from "../middleware/auth.middleware";
+import { Router } from 'express'
+import { protect, restrictTo } from '../middleware/auth.middleware'
 import {
   getAllAuthors,
   createAuthor,
   getAuthorById,
-} from "../controller/author.controller";
-import type { Router as ExpressRouter } from "express";
+} from '../controller/author.controller'
+import type { Router as ExpressRouter } from 'express'
 
-export const authorsRouter: ExpressRouter = Router();
+export const authorsRouter: ExpressRouter = Router()
 
 /**
  * @swagger
@@ -39,7 +39,7 @@ export const authorsRouter: ExpressRouter = Router();
  *                   items:
  *                     $ref: '#/components/schemas/Author'
  */
-authorsRouter.get("/", getAllAuthors);
+authorsRouter.get('/', getAllAuthors)
 
 /**
  * @swagger
@@ -69,7 +69,7 @@ authorsRouter.get("/", getAllAuthors);
  *       404:
  *         description: Автор не найден
  */
-authorsRouter.get("/:id", getAuthorById);
+authorsRouter.get('/:id', getAuthorById)
 
 /**
  * @swagger
@@ -115,4 +115,4 @@ authorsRouter.get("/:id", getAuthorById);
  *       400:
  *         description: Ошибка при создании автора
  */
-authorsRouter.post("/", protect, restrictTo(["LIBRARIAN"]), createAuthor);
+authorsRouter.post('/', protect, restrictTo(['LIBRARIAN']), createAuthor)

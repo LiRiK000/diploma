@@ -27,10 +27,6 @@ export const BookContent = ({
       >
         <Space direction="vertical" size="middle">
           <div>
-            <Text strong>ISBN:</Text>{' '}
-            <Text type="secondary">{details.isbn.join(', ')}</Text>
-          </div>
-          <div>
             <Text strong>Издательство:</Text>{' '}
             <Text type="secondary">{details.publisher}</Text>
           </div>
@@ -53,10 +49,7 @@ export const BookContent = ({
             <Text strong>Формат:</Text>{' '}
             <Text type="secondary">{details.format}</Text>
           </div>
-          <div>
-            <Text strong>Вес:</Text>{' '}
-            <Text type="secondary">{details.weight}</Text>
-          </div>
+
           <div>
             <Text strong>Размеры:</Text>{' '}
             <Text type="secondary">{details.dimensions}</Text>

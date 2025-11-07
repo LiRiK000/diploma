@@ -7,13 +7,14 @@ import { authRouter } from './routes/auth.routes'
 import { genresRouter } from './routes/genres.routes'
 import { errorHandler } from './middleware/error.middleware'
 import { authorsRouter } from './routes/author.routes'
+import { booksRouter } from './routes/book.routes'
 dotenv.config()
 
 const app = express()
 const port = process.env.PORT || 5000
 
 const corsOptions = {
-  origin: '*',
+  origin: 'http://localhost:5173',
   optionsSuccessStatus: 200,
   credentials: true,
 }
@@ -30,6 +31,7 @@ app.use(errorHandler)
 app.use('/api/auth', authRouter)
 app.use('/api/genres', genresRouter)
 app.use('/api/authors', authorsRouter)
+app.use('/api/books', booksRouter)
 
 app.listen(port, () => {
   console.log(`Listening at http://localhost:${port}/api`)

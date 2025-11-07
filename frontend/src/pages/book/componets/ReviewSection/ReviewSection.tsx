@@ -8,6 +8,7 @@ import { ReviewSectionProps } from './types'
 const { Title } = Typography
 export const ReviewSection = ({ reviews, tags }: ReviewSectionProps) => {
   const [reviewList, setReviewList] = useState(reviews)
+
   return (
     <section className={styles.section}>
       <Title level={2}>Рецензии</Title>
@@ -27,7 +28,7 @@ export const ReviewSection = ({ reviews, tags }: ReviewSectionProps) => {
             <div className={styles.tags}>
               {tags.map((tag, i) => (
                 <span key={i} className={styles.tag}>
-                  {tag.name} ({tag.count})
+                  {tag}
                 </span>
               ))}
             </div>
