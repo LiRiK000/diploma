@@ -3,6 +3,7 @@ import { StickyHeaderProps } from './types'
 import { Space } from 'antd'
 import { AddToWishlistButton } from '@features/add-to-wishlist/componets/AddToWishlistButton'
 import { AddToCartButton } from '@features/add-to-cart/componets/AddToCartButton'
+import { ToShareButton } from '@features/to-share/componets/ToShareButton'
 
 export const StickyHeader = ({
   title,
@@ -34,6 +35,7 @@ export const StickyHeader = ({
           <AddToCartButton title={title} />
 
           <AddToWishlistButton title={title} />
+          <ToShareButton title={title} />
         </Space>
       </div>
     </header>

@@ -1,7 +1,12 @@
-import { Button, Typography } from 'antd'
-import styles from './CardBook.module.scss'
+import { Typography, Button } from 'antd'
 import { CardBookProps } from './types'
-import { BookOutlined, StockOutlined, UserOutlined } from '@ant-design/icons'
+import {
+  BookOutlined,
+  UserOutlined,
+  StockOutlined,
+  RightCircleOutlined,
+} from '@ant-design/icons'
+import styles from './CardBook.module.scss'
 
 const { Title, Text } = Typography
 export const CardBook = ({ book }: CardBookProps) => {
@@ -10,17 +15,21 @@ export const CardBook = ({ book }: CardBookProps) => {
       <Title level={5} className={styles.title}>
         <BookOutlined /> {book.title}
       </Title>
-      <Text className={styles.author}>
-        <UserOutlined /> {book.author}
-      </Text>
-      <div className={styles.WrapperButton}>
-        {book.availableQuantity && (
-          <Text className={styles.quantity}>
-            <StockOutlined /> {book.availableQuantity} шт.
-          </Text>
-        )}
-        <Button>Подробнее</Button>
+      <div className={styles.authorRow}>
+        <Text className={styles.author}>
+          <UserOutlined /> {book.author}
+        </Text>
+        <Button
+          type="text"
+          icon={<RightCircleOutlined />}
+          className={styles.iconButton}
+        />
       </div>
+      {book.availableQuantity && (
+        <Text className={styles.quantity}>
+          <StockOutlined /> {book.availableQuantity} шт.
+        </Text>
+      )}
     </div>
   )
 }

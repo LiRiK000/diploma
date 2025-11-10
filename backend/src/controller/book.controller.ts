@@ -112,10 +112,10 @@ export const getBookById = async (
       id: book.id,
       title: book.title,
       author: `${book.author.firstName} ${book.author.lastName}`,
-      coverUrl: book.coverImage || '',
+      coverUrl: book.coverImage,
       availableQuantity: book.availableQuantity,
       description: book.description,
-      subjects: book.subjects || ['детектив'],
+      subjects: book.subjects,
       publishYear: book.publishedDate
         ? new Date(book.publishedDate).getFullYear()
         : null,
@@ -132,7 +132,7 @@ export const getBookById = async (
         id: r.id,
         title: r.title,
         author: `${r.author.firstName} ${r.author.lastName}`,
-        coverUrl: r.coverImage || '',
+        coverUrl: r.coverImage,
       })),
       reviews: book.reviews.map(r => ({
         id: r.id,

@@ -1,5 +1,5 @@
 import { Search } from '@features/search'
-import { BookFeed } from '@widgets/BookFeed/BookFeed'
+import { BookFeed } from '@widgets/BookFeed'
 
 export const HomePage = () => {
   return (

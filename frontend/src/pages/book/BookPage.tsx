@@ -1,4 +1,3 @@
-import { Spin } from 'antd'
 import styles from './BookPage.module.scss'
 import { StickyHeader } from './componets/StickyHeader/StickyHeader'
 import { HeroSection } from './componets/HeroSection/HeroSection'
@@ -7,11 +6,11 @@ import { ReviewSection } from './componets/ReviewSection/ReviewSection'
 import { BookSidebar } from './componets/BookSidebar/BookSidebar'
 import { RecommendationBook } from '@widgets/RecommendationBook'
 import { useBook } from './model/useBook'
+import { HeroSectionSkeleton } from './componets/BookPageSkeleton/BookPageSkeleton'
 
 export const BookPage = () => {
   const { book, isLoading, isError, showStickyHeader } = useBook()
-
-  if (isLoading) return <Spin />
+  if (isLoading) return <HeroSectionSkeleton />
   if (isError) return <div>Ошибка загрузки</div>
 
   return (
