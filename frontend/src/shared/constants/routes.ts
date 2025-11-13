@@ -6,7 +6,10 @@ export const routes = {
   catalog: '/catalog',
   cart: '/cart',
   orders: '/orders',
-  librarianDashboard: '/librarian-dashboard',
-  bookPage: '/book/:id',
   librarian: '/librarian',
+  privacy: '/privacy',
+  notFound: '*',
+  bookPage: '/book/:id',
+  notifications: '/notifications',
+  librarianDashboard: '/librarian-dashboard',
 }

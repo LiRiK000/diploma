@@ -5,3 +5,9 @@
 [class^='ant-form-item'] {
   margin-bottom: 8px !important;
 }
+
+[class^='recharts'] {
+  outline: none !important;
+  box-shadow: none !important;
+  user-select: none;
+}

@@ -3,10 +3,12 @@ import { Avatar, Badge, Dropdown, Space } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import { getDropdownItems } from './utils'
 import { routes } from '@shared/constants'
+import { USER_ROLES } from '../../constants'
 
 export const UserAvatar = ({ mobile }: { mobile?: boolean }) => {
   const navigate = useNavigate()
-  const dropdownItems = getDropdownItems(navigate)
+  // TODO: get user role from store
+  const dropdownItems = getDropdownItems(navigate, USER_ROLES.LIBRARIAN)
 
   if (mobile) {
     return (
