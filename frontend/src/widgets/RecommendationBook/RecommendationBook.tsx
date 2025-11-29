@@ -1,6 +1,6 @@
 import { Card, Typography, Divider } from 'antd'
 import styles from './RecommendationBook.module.scss'
-import { CardBook } from './componets/CardBook/CardBook'
+import { CardBook } from './components/CardBook/CardBook'
 import { RecommendationBookProps } from './types'
 
 const { Title } = Typography

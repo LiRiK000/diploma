@@ -1,3 +1,4 @@
 export interface AddToCartButtonProps {
-  title: string
+  bookId: string
+  fullWidth?: boolean
 }

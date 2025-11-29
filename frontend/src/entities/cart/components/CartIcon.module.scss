@@ -1,0 +1,28 @@
+.badge {
+  :global(.ant-badge-count) {
+    font-size: 10px;
+    min-width: 16px;
+    height: 16px;
+    line-height: 16px;
+    box-shadow: none;
+    background: #ff4d4f;
+  }
+}
+
+.cartAvatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 18px;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+  }
+
+  :global(.ant-avatar-icon) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}

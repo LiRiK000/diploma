@@ -1,4 +1,5 @@
 export interface HeroSectionProps {
+  id: string
   title: string
   author: string
   coverUrl?: string

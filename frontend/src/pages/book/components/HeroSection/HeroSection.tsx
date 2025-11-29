@@ -1,13 +1,15 @@
 import styles from './HeroSection.module.scss'
 import { HeroSectionProps } from './types'
-import { AddToCartButton } from '@features/add-to-cart/componets/AddToCartButton'
-import { AddToWishlistButton } from '@features/add-to-wishlist/componets/AddToWishlistButton'
-import { ToShareButton } from '@features/to-share/componets/ToShareButton'
+import { AddToCartButton } from '@features/add-to-cart/components'
+import { AddToWishlistButton } from '@features/add-to-wishlist/components'
+import { ToShareButton } from '@features/to-share/components'
 
 export const HeroSection = ({
+  id,
   title,
   author,
-  coverUrl,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  coverUrl = '/book.png',
   publishYear,
   ratingsCount,
   availableQuantity,
@@ -32,7 +34,7 @@ export const HeroSection = ({
             </span>
           </div>
           <div className={styles.actions}>
-            <AddToCartButton title={title} />
+            <AddToCartButton bookId={id} fullWidth={false} />
             <AddToWishlistButton title={title} />
             <ToShareButton title={title} />
           </div>

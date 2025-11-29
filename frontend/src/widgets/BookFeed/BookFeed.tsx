@@ -1,6 +1,6 @@
 import { Row, Col } from 'antd'
 import { BookCard } from '@entities/book'
-import { BookSkeleton } from './componets/BookSkeleton'
+import { BookSkeleton } from './components/BookSkeleton'
 import { useBooks } from './hooks/useBooks'
 
 export const BookFeed = () => {

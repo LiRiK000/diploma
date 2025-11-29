@@ -4,11 +4,8 @@ import { Link } from 'react-router-dom'
 import styles from './MobileNavigation.module.scss'
 import { isMobile } from './utils'
 import { Activity } from 'react'
-import {
-  HomeOutlined,
-  ShoppingOutlined,
-  UnorderedListOutlined,
-} from '@ant-design/icons'
+import { HomeOutlined, UnorderedListOutlined } from '@ant-design/icons'
+import { CartIcon } from '@entities/cart/components'
 
 export const MobileNavigation = () => {
   const isShowMobileNavigation = isMobile()
@@ -22,9 +19,7 @@ export const MobileNavigation = () => {
         <Link to={routes.catalog}>
           <UnorderedListOutlined style={{ fontSize: '16px' }} />
         </Link>
-        <Link to={routes.cart}>
-          <ShoppingOutlined style={{ fontSize: '16px' }} />
-        </Link>
+        <CartIcon />
         <UserAvatar mobile />
       </nav>
     </Activity>

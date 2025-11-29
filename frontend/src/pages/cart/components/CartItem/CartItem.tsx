@@ -1,16 +1,18 @@
-import { Button, Card, InputNumber, Typography } from 'antd'
+import { Button, Card, Typography } from 'antd'
 import { DeleteOutlined, HeartOutlined } from '@ant-design/icons'
 import styles from './CartItem.module.scss'
-import { CART_ITEMS } from '../../constants'
+import { useRemoveFromCart } from '@features/remove-from-cart/model'
+import { CartItemProps } from '@shared/services/Cart/types'
 
 const { Title, Text } = Typography
 
-export const CartItem = ({ item }: { item: (typeof CART_ITEMS)[number] }) => {
+export const CartItem = ({ item }: CartItemProps) => {
+  const { mutate, isPending } = useRemoveFromCart()
   return (
     <Card key={item.id} className={styles.cartItem}>
       <div className={styles.itemContent}>
         <div className={styles.itemImage}>
-          <img src={item.coverUrl} alt={item.title} />
+          <img src={'/book.png'} alt={item.title} loading="lazy" />
         </div>
         <div className={styles.itemInfo}>
           <div className={styles.itemMainRow}>
@@ -20,37 +22,10 @@ export const CartItem = ({ item }: { item: (typeof CART_ITEMS)[number] }) => {
               </Title>
               <Text className={styles.itemAuthor}>{item.author}</Text>
             </div>
-            <div className={styles.itemActions}>
-              <Button
-                type="text"
-                className={styles.quantityButton}
-                onClick={() => {
-                  // TODO: decrease quantity
-                }}
-              >
-                -
-              </Button>
-              <InputNumber
-                min={1}
-                max={item.availableQuantity}
-                value={item.quantity}
-                className={styles.quantityInput}
-                controls={false}
-              />
-              <Button
-                type="text"
-                className={styles.quantityButton}
-                onClick={() => {
-                  // TODO: increase quantity
-                }}
-                disabled={item.quantity >= item.availableQuantity}
-              >
-                +
-              </Button>
-            </div>
+
             <div className={styles.availableQuantity}>
               <Text className={styles.availableText}>
-                Доступно: {item.availableQuantity} шт.
+                Доступно: {item.available} шт.
               </Text>
             </div>
           </div>
@@ -62,14 +37,10 @@ export const CartItem = ({ item }: { item: (typeof CART_ITEMS)[number] }) => {
               className={styles.deleteButton}
             />
             <Button
+              disabled={isPending}
               type="text"
               danger
-              icon={<HeartOutlined />}
-              className={styles.deleteButton}
-            />
-            <Button
-              type="text"
-              danger
+              onClick={() => mutate(item.id)}
               icon={<DeleteOutlined />}
               className={styles.deleteButton}
             />

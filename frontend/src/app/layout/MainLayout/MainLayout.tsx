@@ -2,6 +2,7 @@ import styles from './MainLayout.module.scss'
 import { Layout } from 'antd'
 import { Outlet, Link } from 'react-router-dom'
 import { UserAvatar } from '@entities/user'
+import { CartIcon } from '@entities/cart/components'
 import { routes } from '@shared/constants'
 import { MobileNavigation } from '@widgets/MobileNavigation'
 
@@ -19,7 +20,11 @@ export const MainLayout = () => {
             Каталог
           </Link>
         </div>
-        <UserAvatar />
+
+        <div className={styles.headerRight}>
+          <CartIcon />
+          <UserAvatar />
+        </div>
       </Header>
 
       <Content className={styles.content}>

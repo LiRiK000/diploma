@@ -1,43 +1,36 @@
 import styles from './BookCard.module.scss'
-import { Card, Button, Typography, Tag } from 'antd'
+import { Card, Typography, Tag } from 'antd'
 import { BookCardProps } from './types'
 import { Link } from 'react-router-dom'
+import { AddToCartButton } from '@features/add-to-cart/components'
 
 const { Title } = Typography
-export const BookCard = ({ book }: BookCardProps) => {
-  const onAddToCart = (bookId: string) => {
-    console.log(bookId)
-  }
 
+export const BookCard = ({ book }: BookCardProps) => {
   return (
-    <Link to={`/book/${book.id}`}>
-      <Card className={styles.card} variant={'borderless'}>
+    <Card className={styles.card} variant="borderless">
+      <Link to={`/book/${book.id}`} className={styles.linkContent}>
         <div className={styles.cover}>
-          <img
-            src={'/book.png'}
-            alt={book.title}
-            className={styles.coverImage}
-          />
+          <img src="/book.png" alt={book.title} className={styles.coverImage} />
         </div>
+
         <div className={styles.info}>
           <Title className={styles.title} level={3}>
             {book.title}
           </Title>
+
           <div className={styles.meta}>
             <span className={styles.author}>{book.author}</span>
-            <Tag color="processing">{book.genre}</Tag>
+            <Tag className={styles.genreTag} color="processing">
+              {book.genre}
+            </Tag>
           </div>
+
           <p className={styles.available}>Доступно: {book.availableQuantity}</p>
-          <Button
-            type="primary"
-            block
-            disabled={book.availableQuantity === 0}
-            onClick={() => onAddToCart?.(book.id)}
-          >
-            Добавить в корзину
-          </Button>
         </div>
-      </Card>
-    </Link>
+      </Link>
+
+      <AddToCartButton bookId={book.id} fullWidth={true} />
+    </Card>
   )
 }

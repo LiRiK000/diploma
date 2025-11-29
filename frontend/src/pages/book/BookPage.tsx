@@ -1,12 +1,12 @@
 import styles from './BookPage.module.scss'
-import { StickyHeader } from './componets/StickyHeader/StickyHeader'
-import { HeroSection } from './componets/HeroSection/HeroSection'
-import { BookContent } from './componets/BookContent/BookContent'
-import { ReviewSection } from './componets/ReviewSection/ReviewSection'
-import { BookSidebar } from './componets/BookSidebar/BookSidebar'
+import { StickyHeader } from './components/StickyHeader'
+import { HeroSection } from './components/HeroSection'
+import { BookContent } from './components/BookContent'
+import { ReviewSection } from './components/ReviewSection'
+import { BookSidebar } from './components/BookSidebar'
+import { HeroSectionSkeleton } from './components/BookPageSkeleton'
 import { RecommendationBook } from '@widgets/RecommendationBook'
 import { useBook } from './model/useBook'
-import { HeroSectionSkeleton } from './componets/BookPageSkeleton/BookPageSkeleton'
 
 export const BookPage = () => {
   const { book, isLoading, isError, showStickyHeader } = useBook()
@@ -16,9 +16,10 @@ export const BookPage = () => {
   return (
     <div className={styles.page}>
       <StickyHeader
+        id={book.id}
         title={book.title}
         author={book.author}
-        coverUrl={book.coverUrl}
+        coverUrl="/book.png"
         isVisible={showStickyHeader}
       />
       <div className={styles.main}>
