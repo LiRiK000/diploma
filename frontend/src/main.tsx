@@ -1,4 +1,6 @@
+import '@ant-design/v5-patch-for-react-19'
 import '@shared/styles/global.scss'
+import '@shared/styles/normalize.scss'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { Router } from './app/Router.tsx'

@@ -1,0 +1,119 @@
+@use '@shared/styles/variables' as *;
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: $background-white;
+  box-shadow: $shadow-light;
+  transform: translateY(-100%);
+  transition: transform 0.3s ease;
+  z-index: 3;
+}
+
+.visible {
+  transform: translateY(0);
+}
+
+.content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-lg;
+  max-width: $breakpoint-lg;
+  margin: 0 auto;
+  padding: $spacing-md $spacing-lg;
+  min-height: 80px;
+  box-sizing: border-box;
+}
+
+.bookInfo {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  flex: 1;
+  min-width: 0;
+}
+
+.cover {
+  width: 50px;
+  height: 65px;
+  object-fit: cover;
+  border-radius: $border-radius-sm;
+  flex-shrink: 0;
+}
+
+.textInfo {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.title {
+  font-weight: $font-weight;
+  font-size: $font-size-medium;
+  margin: 0 0 $spacing-xs 0;
+  color: $text-primary;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.author {
+  font-size: $font-size-small;
+  color: $text-secondary;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.buttonContainer {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  flex-shrink: 0;
+  flex-wrap: nowrap;
+}
+
+.wishlistButton {
+  &.inWishlist {
+    background-color: $text-error;
+    border-color: $text-error;
+
+    &:hover {
+      background-color: lighten($text-error, 10%);
+      border-color: lighten($text-error, 10%);
+    }
+  }
+}
+
+@media (max-width: $breakpoint-md) {
+  .content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $spacing-sm;
+    padding: $spacing-sm $spacing-md;
+    min-height: auto;
+  }
+
+  .bookInfo {
+    width: 100%;
+  }
+
+  .buttonContainer {
+    width: 100%;
+    justify-content: space-between;
+    gap: $spacing-sm;
+    flex-wrap: wrap;
+  }
+
+  .cover {
+    width: 40px;
+    height: 52px;
+  }
+
+  .title {
+    font-size: $font-size-small;
+  }
+}

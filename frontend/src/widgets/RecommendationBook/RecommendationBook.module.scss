@@ -1,0 +1,29 @@
+@use '@shared/styles/variables' as *;
+
+.sidebar {
+  border-radius: $border-radius-lg;
+  max-height: 420px;
+}
+
+.heading {
+  font-weight: $font-weight-small;
+}
+.scrollContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  overflow-y: auto;
+  max-height: 300px;
+  padding-right: 0.5rem;
+}
+@media (max-width: 768px) {
+  .sidebar {
+    padding: 0.75rem;
+    max-height: 350px;
+  }
+
+  .scrollContainer {
+    max-height: 250px;
+    gap: 0.5rem;
+  }
+}

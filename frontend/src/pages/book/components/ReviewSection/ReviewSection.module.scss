@@ -1,0 +1,99 @@
+@use '@shared/styles/variables' as *;
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+  background: #fff;
+  border-radius: $border-radius-lg;
+  padding: 52.8px;
+  box-shadow: $shadow-light;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.writeButton {
+  align-self: flex-start;
+}
+
+.reviews {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.reviewCard {
+  border-radius: $border-radius-sm;
+  background-color: #fafafa;
+  padding: 16px;
+}
+
+.reviewHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.date {
+  font-size: $font-size-small;
+  color: $text-disabled;
+}
+
+.content {
+  color: $text-secondary;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.tagsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tag {
+  background-color: #e6f0ff;
+  color: #255bc6;
+  padding: 6px 12px;
+  border-radius: $border-radius-md;
+  font-size: 14px;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background-color: #cce0ff;
+  }
+}
+
+@media (max-width: $breakpoint-md) {
+  .section {
+    padding: 16px;
+    gap: 20px;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .writeButton {
+    width: 100%;
+  }
+
+  .reviewCard {
+    padding: 12px;
+  }
+}

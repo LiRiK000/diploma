@@ -1,0 +1,92 @@
+@use '@shared/styles/variables' as *;
+
+.sectionTitle {
+  margin-top: 0;
+  margin-bottom: 8px !important;
+  color: $text-primary;
+}
+
+.cartSection {
+  background: $background-white;
+  border-radius: $border-size-primary;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.itemsCount {
+  display: flex;
+  color: $text-secondary;
+  font-size: $font-size-small;
+  margin-bottom: 11px;
+}
+
+.itemsList {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+:global(.ant-row) {
+  align-items: flex-start !important;
+}
+
+.cartCol {
+  width: 100%;
+}
+
+.orderCol {
+  position: relative;
+}
+
+.orderSection {
+  width: 100%;
+}
+
+.orderCard {
+  border-radius: $border-size-primary;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  padding: 8px 0;
+}
+
+.orderTitle {
+  margin: 0 !important;
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.totalPrice {
+  font-size: $font-size-heading;
+  color: $text-primary;
+}
+
+.orderButton {
+  height: 48px;
+  font-size: $font-size-medium;
+  border-radius: $border-radius-md;
+}
+
+@media (min-width: 1200px) {
+  .orderSection {
+    width: 470px;
+    position: fixed;
+    left: auto;
+    right: auto;
+  }
+}
+
+@media (max-width: 1199px) {
+  .cartCol,
+  .orderCol {
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+  }
+
+  .orderSection {
+    position: static;
+    margin-top: 24px;
+  }
+}

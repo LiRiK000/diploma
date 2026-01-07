@@ -22,9 +22,10 @@ model User {
   refreshToken String?
   role      Role     @default(USER)
   isInBlacklist Boolean @default(false)
-  favoriteGenres String[] @default([])
+  favoriteGenres Genre[]
   favoriteAuthors Author[]
   favoriteBooks Book[]
+  readBooks Book[] @relation("ReadBooks")
   cart Cart?
   reviews Review[]
   orders Order[]
@@ -52,10 +53,10 @@ model Review {
   userId String
   book Book @relation(fields: [bookId], references: [id])
   bookId String
+  description String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
   @@unique([userId, bookId])
   @@map("reviews")
 }
@@ -84,6 +85,16 @@ model Book {
   cartItems CartItem[]
   orderItems OrderItem[]
   favoriteFor User[]
+  readBy User[] @relation("ReadBooks")
+  description String?                   
+  subjects String[]                     
+  publisher String?                      
+  publishedDate DateTime?                
+  pageCount Int?                         
+  language String?                       
+  coverImage String?     
+  recommendedBooks Book[] @relation("BookRecommendations")
+  recommendedBy Book[] @relation("BookRecommendations")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -101,14 +112,16 @@ model Author {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  @@unique([firstName, lastName, dateOfBirth])
   @@map("authors")
 }
 
 model Genre {
   id String @id @default(uuid())
   label String
-  value String
+  value String @unique
   books Book[]
+  users User[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -140,7 +153,6 @@ model CartItem {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
   @@unique([cartId, bookId])
   @@map("cart_items")
 }

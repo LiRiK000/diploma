@@ -1,0 +1,78 @@
+@use '@shared/styles/variables' as *;
+
+.header {
+  background: $background-primary;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  flex-shrink: 0;
+
+  > *:first-child {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+  }
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.logo {
+  color: $background-white;
+  font-weight: 600;
+  font-size: 20px;
+}
+
+.link {
+  color: #fff;
+  font-size: 16px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.3s ease;
+  cursor: pointer;
+
+  &:hover {
+    color: #1890ff;
+  }
+}
+
+.content {
+  background: $background-white;
+  padding: 24px;
+  margin: 16px;
+  border-radius: $border-size-primary;
+  flex: 1;
+  overflow-y: auto;
+  min-height: calc(100vh - 100px);
+}
+
+@media (max-width: 768px) {
+  .header {
+    justify-content: center;
+
+    > *:first-child,
+    > :last-child {
+      display: none;
+    }
+  }
+
+  .headerRight {
+    display: none;
+  }
+
+  .content {
+    margin: 8px;
+    padding: 16px;
+    margin-bottom: 0;
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
+  }
+}

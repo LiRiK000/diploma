@@ -1,0 +1,15 @@
+export const routes = {
+  home: '/',
+  register: '/register',
+  login: '/login',
+  profile: '/me',
+  catalog: '/catalog',
+  cart: '/cart',
+  orders: '/orders',
+  librarian: '/librarian',
+  privacy: '/privacy',
+  notFound: '*',
+  bookPage: '/book/:id',
+  notifications: '/notifications',
+  librarianDashboard: '/librarian-dashboard',
+}

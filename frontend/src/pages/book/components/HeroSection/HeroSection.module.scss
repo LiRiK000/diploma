@@ -1,0 +1,154 @@
+@use '@shared/styles/variables' as *;
+
+.hero {
+  min-height: 480px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $gradient-hero;
+  border-radius: $border-radius-lg;
+  margin-bottom: 48px;
+  box-shadow: $shadow-medium;
+  overflow: hidden;
+}
+
+.container {
+  display: flex;
+  align-items: flex-start;
+  gap: 32px;
+  max-width: $breakpoint-lg;
+  width: 100%;
+  margin: 0 auto;
+  flex-wrap: wrap;
+}
+
+.cover {
+  width: 220px;
+  height: 320px;
+  object-fit: cover;
+  border-radius: $border-radius-md;
+  box-shadow: $shadow-cover;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: $shadow-strong;
+  }
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  color: $text-primary;
+  flex: 1;
+  min-width: 300px;
+  padding-top: 40px;
+}
+
+.title {
+  font-size: $font-size-hero-title;
+  font-weight: $font-weight;
+  color: $text-primary;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.author {
+  font-size: $font-size-hero-author;
+  color: $text-secondary;
+  margin: 0;
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  color: $text-secondary;
+  font-size: $font-size-hero-rating;
+  margin: 0;
+}
+
+.actions {
+  display: flex;
+  gap: $spacing-md;
+  margin-top: 16px;
+  flex-wrap: wrap;
+
+  button {
+    border-radius: $border-radius-sm;
+    min-width: 140px;
+    transition: all 0.2s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+  }
+}
+
+@media (max-width: $breakpoint-md) {
+  .hero {
+    padding: 32px 16px;
+    min-height: auto;
+  }
+
+  .container {
+    flex-direction: column;
+    text-align: center;
+    gap: 24px;
+    align-items: center;
+  }
+
+  .cover {
+    width: 180px;
+    height: 260px;
+  }
+
+  .info {
+    padding-top: 0;
+    align-items: center;
+  }
+
+  .author {
+    font-size: $font-size-medium;
+  }
+
+  .actions {
+    justify-content: center;
+    gap: $spacing-sm;
+
+    button {
+      min-width: 120px;
+      font-size: $font-size-small;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .hero {
+    padding: 24px 16px;
+    border-radius: $border-radius-md;
+  }
+
+  .cover {
+    width: 140px;
+    height: 200px;
+  }
+
+  .title {
+    font-size: 28px;
+  }
+
+  .actions {
+    flex-direction: column;
+    width: 100%;
+
+    button {
+      width: 100%;
+      height: 46px;
+    }
+  }
+}

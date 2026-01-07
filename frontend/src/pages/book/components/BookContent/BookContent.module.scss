@@ -1,0 +1,113 @@
+@use '@shared/styles/variables' as *;
+
+.content {
+  display: flex;
+  flex-direction: column;
+  background: $background-white;
+  border-radius: $border-size-primary;
+  max-width: $breakpoint-lg;
+  margin: 0 auto;
+  width: 100%;
+
+  @media (min-width: $breakpoint-lg) {
+    padding: 32px;
+  }
+}
+
+.cardBody {
+  @media (max-width: $breakpoint-md) {
+    padding: $padding-xl;
+  }
+}
+
+.description {
+  color: $text-secondary;
+  line-height: 1.6;
+  font-size: $font-size-medium;
+  text-align: justify;
+  margin: 0;
+}
+
+.subjects {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 25px;
+}
+
+.subjectTag {
+  margin-bottom: 8px;
+  padding: 4px 12px;
+  font-size: $font-size-small;
+  border-radius: $border-radius-md;
+}
+
+.details {
+  width: 100%;
+  padding: $padding-xl;
+  background: $background-gray;
+  border-radius: $border-radius-sm;
+
+  @media (max-width: $breakpoint-md) {
+    .ant-space-item {
+      width: 100%;
+    }
+  }
+}
+
+.previewDetails {
+  padding: 12px;
+  background: $background-gray;
+  border-radius: $border-radius-sm;
+
+  .ant-space {
+    width: 100%;
+  }
+}
+
+.sectionTitle {
+  margin-bottom: $padding-xl;
+  color: #08a6f0ff;
+}
+
+.subSectionTitle {
+  margin-bottom: $padding-xl;
+}
+
+.detailsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $padding-xl;
+}
+
+.toggleButton {
+  color: #08a6f0ff;
+  font-weight: $font-weight;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.spaceContainer {
+  width: 100%;
+}
+
+.details,
+.previewDetails {
+  transition: all 0.3s ease;
+}
+
+@media (max-width: $breakpoint-md) {
+  .content {
+    margin: 0 0px;
+  }
+
+  .description {
+    font-size: $font-size-small;
+  }
+
+  .details {
+    padding: 12px;
+  }
+}

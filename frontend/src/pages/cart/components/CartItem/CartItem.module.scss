@@ -1,0 +1,155 @@
+@use '@shared/styles/variables' as *;
+
+.cartItem {
+  margin-bottom: 16px;
+  border-radius: $border-size-secondary;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.itemContent {
+  display: flex;
+  gap: 24px;
+}
+
+.itemImage {
+  width: 200px;
+  height: 200px;
+  flex-shrink: 0;
+  border-radius: $border-size-secondary;
+  overflow: hidden;
+  background: $background-gray;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.itemInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.itemMainRow {
+  display: flex;
+  height: 100%;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+}
+
+.itemTitleBlock {
+  width: 250px;
+}
+
+.itemTitle {
+  margin: 0 !important;
+  font-size: 28px !important;
+  color: $text-primary !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.itemAuthor {
+  color: $text-secondary;
+  font-size: 18px;
+  display: block;
+  margin-top: 6px;
+}
+
+.itemActions {
+  display: flex;
+  align-items: center;
+}
+
+.quantityButton {
+  font-size: 20px;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+}
+
+.quantityInput {
+  width: 80px;
+  font-size: 18px;
+  text-align: center;
+
+  :global(.ant-input-number-input) {
+    text-align: center;
+    font-size: 18px;
+    height: 36px;
+  }
+}
+
+.availableQuantity {
+  white-space: nowrap;
+}
+
+.availableText {
+  font-size: 18px;
+  color: $text-primary;
+}
+
+.itemActionsBottom {
+  margin-top: auto;
+  padding-top: 12px;
+  display: flex;
+  gap: 12px;
+}
+
+.deleteButton {
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+
+  :global(.anticon) {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 768px) {
+  .itemContent {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .itemImage {
+    width: 100%;
+    height: 350px;
+  }
+
+  .itemMainRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .itemTitleBlock {
+    min-width: unset;
+    width: 100%;
+  }
+
+  .itemTitle {
+    font-size: 24px;
+  }
+
+  .itemAuthor {
+    font-size: 16px;
+  }
+}

@@ -1,3 +1,13 @@
+import { Search } from '@features/search'
+import { BookFeed } from '@widgets/BookFeed'
+
 export const HomePage = () => {
-  return <div>HomePage</div>
+  return (
+    <>
+      <div style={{ width: '100%' }}>
+        <Search />
+      </div>
+      <BookFeed />
+    </>
+  )
 }
