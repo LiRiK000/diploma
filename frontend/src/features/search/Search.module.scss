@@ -1,5 +1,26 @@
 @use '@shared/styles/variables' as *;
 
-.search {
-  border-radius: $border-size-primary;
+.searchContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 15px;
+  position: relative;
+}
+
+.searchInput {
+  border-radius: $border-radius-lg;
+  width: 800px;
+  max-width: 100%;
+}
+
+@media (max-width: 768px) {
+  .searchContainer {
+    padding: 10px;
+  }
+
+  .searchInput {
+    width: 100%;
+  }
 }

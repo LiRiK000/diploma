@@ -1,6 +1,6 @@
 import { authService } from '@shared/services/Auth'
 import { RegisterRequestData } from '@shared/services/Auth/types'
-import { openNotification } from '@shared/utils'
+import { openNotification } from '@shared/utils/openNotification'
 import { useMutation } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 

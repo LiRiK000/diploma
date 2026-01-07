@@ -9,6 +9,7 @@ import { errorHandler } from './middleware/error.middleware'
 import { authorsRouter } from './routes/author.routes'
 import { booksRouter } from './routes/book.routes'
 import { cartRouter } from './routes/cart.routes'
+import { booksSearchRouter } from './routes/book-search.routes'
 dotenv.config()
 
 const app = express()
@@ -34,6 +35,7 @@ app.use('/api/genres', genresRouter)
 app.use('/api/authors', authorsRouter)
 app.use('/api/books', booksRouter)
 app.use('/api/cart', cartRouter)
+app.use('/api/search', booksSearchRouter)
 app.listen(port, () => {
   console.log(`Listening at http://localhost:${port}/api`)
   console.log(
