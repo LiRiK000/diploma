@@ -10,6 +10,8 @@ export const routes = {
   privacy: '/privacy',
   notFound: '*',
   bookPage: '/book/:id',
+  authorPage: '/author/:id',
   notifications: '/notifications',
   librarianDashboard: '/librarian-dashboard',
+  search: '/search',
 }

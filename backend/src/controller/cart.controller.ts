@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
-import { prisma } from '../lib/prisma'
+import { prisma } from '../prisma.config'
+
 import { AppError } from '../middleware/error.middleware'
 
 const MAX_CART_ITEMS = 3

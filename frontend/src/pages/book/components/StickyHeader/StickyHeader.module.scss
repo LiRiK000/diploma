@@ -82,8 +82,8 @@
     border-color: $text-error;
 
     &:hover {
-      background-color: lighten($text-error, 10%);
-      border-color: lighten($text-error, 10%);
+      background-color: ($text-error, 10%);
+      border-color: ($text-error, 10%);
     }
   }
 }

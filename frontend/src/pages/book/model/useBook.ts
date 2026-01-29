@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { BookService } from '@shared/services/BookService'
+import { bookService } from '@shared/services/BookService'
 import { HERO_SECTION_HEIGHT } from '@pages/book/constants'
 
 export const useBook = () => {
@@ -13,7 +13,7 @@ export const useBook = () => {
     isError,
   } = useQuery({
     queryKey: ['book', id],
-    queryFn: () => BookService.getById(id!),
+    queryFn: () => bookService.getById(id!),
   })
 
   useEffect(() => {

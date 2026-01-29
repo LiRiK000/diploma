@@ -24,6 +24,7 @@ model User {
   isInBlacklist Boolean @default(false)
   favoriteGenres Genre[]
   favoriteAuthors Author[]
+  followedAuthors  Author[]       @relation("UserSubscriptions")
   favoriteBooks Book[]
   readBooks Book[] @relation("ReadBooks")
   cart Cart?
@@ -109,6 +110,7 @@ model Author {
   dateOfDeath DateTime?
   books Book[]
   favoriteFor User[]
+  followers   User[]    @relation("UserSubscriptions") 
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

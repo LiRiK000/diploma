@@ -1,6 +1,12 @@
 import { Router } from 'express'
 import { protect, restrictTo } from '../middleware/auth.middleware'
-import { getBookById, getPaginatedBooks } from '../controller/book.controller'
+import {
+  getBookById,
+  getPaginatedBooks,
+  createBook,
+  updateBook,
+  deleteBook,
+} from '../controller/book.controller'
 import type { Router as ExpressRouter } from 'express'
 
 export const booksRouter: ExpressRouter = Router()
@@ -66,3 +72,6 @@ booksRouter.get('/', getPaginatedBooks)
  *         description: Книга не найдена
  */
 booksRouter.get('/:id', getBookById)
+booksRouter.post('/', protect, createBook)
+booksRouter.put('/:id', protect,  updateBook)
+booksRouter.delete('/:id', protect,  deleteBook)

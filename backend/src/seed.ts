@@ -1,4 +1,4 @@
-import { prisma } from './lib/prisma'
+import { prisma } from './prisma.config'
 import bcrypt from 'bcrypt'
 import { genres, authorsData, booksData, recommendations } from './constants'
 import { Book } from './generated/prisma'

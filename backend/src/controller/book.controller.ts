@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
-import { prisma } from '../lib/prisma'
+import { prisma } from '../prisma.config'
+
 import { AppError } from '../middleware/error.middleware'
 
 export const getPaginatedBooks = async (
@@ -19,6 +20,7 @@ export const getPaginatedBooks = async (
       orderBy: { id: 'asc' },
       select: {
         id: true,
+        authorId: true,
         title: true,
         availableQuantity: true,
         subjects: true,
@@ -37,6 +39,7 @@ export const getPaginatedBooks = async (
     const items = hasNextPage ? books.slice(0, -1) : books
     const formatted = items.map(b => ({
       id: b.id,
+      authorId: b.authorId,
       title: b.title,
       author: `${b.author.firstName} ${b.author.lastName}`,
       coverUrl: b.coverImage || '',
@@ -110,6 +113,7 @@ export const getBookById = async (
 
     const formatted = {
       id: book.id,
+      authorId: book.author.id,
       title: book.title,
       author: `${book.author.firstName} ${book.author.lastName}`,
       coverUrl: book.coverImage,
@@ -145,6 +149,143 @@ export const getBookById = async (
     return res.status(200).json({
       status: 'success',
       data: formatted,
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const createBook = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const {
+      title,
+      authorId,
+      genreId,
+      availableQuantity,
+      description,
+      subjects,
+      publisher,
+      publishedDate,
+      pageCount,
+      language,
+      coverImage,
+    } = req.body
+
+    if (!title || !authorId || !genreId) {
+      throw new AppError(
+        'Необходимо указать title, authorId и genreId для создания книги',
+        400,
+      )
+    }
+
+    const book = await prisma.book.create({
+      data: {
+        title,
+        authorId,
+        genreId,
+        availableQuantity: availableQuantity ?? 0,
+        description: description ?? null,
+        subjects: Array.isArray(subjects) ? subjects : [],
+        publisher: publisher ?? null,
+        publishedDate: publishedDate ? new Date(publishedDate) : null,
+        pageCount: pageCount ?? null,
+        language: language ?? null,
+        coverImage: coverImage ?? null,
+      },
+    })
+
+    res.status(201).json({
+      status: 'success',
+      data: book,
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const updateBook = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { id } = req.params
+    const {
+      title,
+      authorId,
+      genreId,
+      availableQuantity,
+      description,
+      subjects,
+      publisher,
+      publishedDate,
+      pageCount,
+      language,
+      coverImage,
+    } = req.body
+
+    const existingBook = await prisma.book.findUnique({ where: { id } })
+
+    if (!existingBook) {
+      throw new AppError('Книга не найдена', 404)
+    }
+
+    const updatedBook = await prisma.book.update({
+      where: { id },
+      data: {
+        title: title ?? existingBook.title,
+        authorId: authorId ?? existingBook.authorId,
+        genreId: genreId ?? existingBook.genreId,
+        availableQuantity:
+          availableQuantity !== undefined
+            ? availableQuantity
+            : existingBook.availableQuantity,
+        description: description ?? existingBook.description,
+        subjects: Array.isArray(subjects)
+          ? subjects
+          : (existingBook.subjects ?? []),
+        publisher: publisher ?? existingBook.publisher,
+        publishedDate: publishedDate
+          ? new Date(publishedDate)
+          : existingBook.publishedDate,
+        pageCount: pageCount ?? existingBook.pageCount,
+        language: language ?? existingBook.language,
+        coverImage: coverImage ?? existingBook.coverImage,
+      },
+    })
+
+    res.status(200).json({
+      status: 'success',
+      data: updatedBook,
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const deleteBook = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { id } = req.params
+
+    const existingBook = await prisma.book.findUnique({ where: { id } })
+
+    if (!existingBook) {
+      throw new AppError('Книга не найдена', 404)
+    }
+
+    await prisma.book.delete({ where: { id } })
+
+    res.status(204).json({
+      status: 'success',
+      data: null,
     })
   } catch (error) {
     next(error)

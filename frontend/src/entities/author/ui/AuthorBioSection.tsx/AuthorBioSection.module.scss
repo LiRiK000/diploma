@@ -1,0 +1,65 @@
+@use '@shared/styles/variables' as *;
+
+.bio {
+  min-height: 200px;
+  margin: 0 auto 64px;
+  padding: 32px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #1f2937; /* почти черный */
+}
+
+.text {
+  font-size: 16px;
+  line-height: 1.7;
+  color: #4b5563; /* серый текст */
+  white-space: pre-line;
+}
+
+.toggle {
+  margin-top: 16px;
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 14px;
+  color: #2563eb; /* синий акцент */
+  cursor: pointer;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: #1e40af;
+    text-decoration: underline;
+  }
+}
+
+@media (max-width: 768px) {
+  .bio {
+    padding: 24px;
+  }
+
+  .title {
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .bio {
+    padding: 20px;
+    margin-bottom: 48px;
+  }
+
+  .title {
+    font-size: 20px;
+  }
+
+  .text {
+    font-size: 15px;
+  }
+}

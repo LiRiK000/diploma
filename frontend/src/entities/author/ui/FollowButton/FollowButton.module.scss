@@ -1,0 +1,45 @@
+.wrapper {
+  display: flex;
+  align-items: center;
+  gap: 16px; // Немного увеличим отступ для легкости
+}
+
+.followButton {
+  min-width: 160px; // Ключевое исправление: подберите значение под самый длинный текст
+  transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  // Чтобы иконка не дергалась, можно зафиксировать и её положение (опционально)
+  .anticon {
+    transition: transform 0.2s ease;
+  }
+}
+
+.counter {
+  font-size: 14px;
+  color: var(--ant-color-text-description);
+  white-space: nowrap; // Чтобы текст не переносился
+
+  b {
+    color: var(--ant-color-text);
+    font-variant-numeric: tabular-nums;
+    margin-right: 4px;
+  }
+}
+.subscribed {
+  min-width: 190px;
+  border-width: 1px !important;
+  box-sizing: border-box;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease !important;
+
+  &:hover {
+    background-color: #fff1f0 !important;
+    color: #ff4d4f !important;
+  }
+}

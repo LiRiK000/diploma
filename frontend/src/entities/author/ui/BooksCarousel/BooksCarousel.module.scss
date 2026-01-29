@@ -1,0 +1,40 @@
+@use '@shared/styles/variables' as *;
+
+.wrapper {
+  position: relative;
+}
+
+.title {
+  text-align: start;
+  font-size: 24px;
+  font-weight: $font-weight;
+  margin-bottom: 16px;
+  color: $text-primary;
+}
+
+.carouselWrapper {
+  position: relative;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  padding: 16px;
+}
+
+.arrowLeft,
+.arrowRight {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 20px;
+}
+
+.arrowLeft {
+  left: -8px;
+}
+
+.arrowRight {
+  right: -8px;
+}

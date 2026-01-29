@@ -1,12 +1,20 @@
 import styles from './BookCard.module.scss'
 import { Card, Typography, Tag } from 'antd'
 import { BookCardProps } from './types'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { AddToCartButton } from '@features/add-to-cart/components'
 
 const { Title } = Typography
 
 export const BookCard = ({ book }: BookCardProps) => {
+  const navigate = useNavigate()
+
+  const handleAuthorClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    navigate(`/author/${book.authorId}`)
+  }
+
   return (
     <Card className={styles.card} variant="borderless">
       <Link to={`/book/${book.id}`} className={styles.linkContent}>
@@ -20,7 +28,15 @@ export const BookCard = ({ book }: BookCardProps) => {
           </Title>
 
           <div className={styles.meta}>
-            <span className={styles.author}>{book.author}</span>
+            {/* Теперь это кликабельный элемент */}
+            <span
+              className={styles.author}
+              onClick={handleAuthorClick}
+              role="button"
+              style={{ cursor: 'pointer' }} // Чтобы визуально было понятно, что это ссылка
+            >
+              {book.author}
+            </span>
             <Tag className={styles.genreTag} color="processing">
               {book.genre}
             </Tag>

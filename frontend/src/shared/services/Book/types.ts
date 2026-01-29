@@ -36,6 +36,7 @@ export type BookCard = {
 
 export interface BookDto {
   id: string
+  authorId: string
   title: string
   genre: string
   author: string

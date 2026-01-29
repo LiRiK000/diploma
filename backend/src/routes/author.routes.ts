@@ -4,6 +4,9 @@ import {
   getAllAuthors,
   createAuthor,
   getAuthorById,
+  toggleFollowAuthor,
+  updateAuthor,
+  deleteAuthor,
 } from '../controller/author.controller'
 import type { Router as ExpressRouter } from 'express'
 
@@ -116,3 +119,6 @@ authorsRouter.get('/:id', getAuthorById)
  *         description: Ошибка при создании автора
  */
 authorsRouter.post('/', protect, restrictTo(['LIBRARIAN']), createAuthor)
+authorsRouter.put('/:id', protect, restrictTo(['LIBRARIAN']), updateAuthor)
+authorsRouter.delete('/:id', protect, restrictTo(['LIBRARIAN']), deleteAuthor)
+authorsRouter.post('/:id/toggle-follow', protect, toggleFollowAuthor)

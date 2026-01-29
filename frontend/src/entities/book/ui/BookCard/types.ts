@@ -2,7 +2,13 @@ import { BookDto } from '@shared/services/Book/types'
 
 export type BookCardView = Pick<
   BookDto,
-  'id' | 'title' | 'author' | 'coverUrl' | 'availableQuantity' | 'genre'
+  | 'id'
+  | 'title'
+  | 'author'
+  | 'coverUrl'
+  | 'availableQuantity'
+  | 'genre'
+  | 'authorId'
 >
 export interface BookCardProps {
   book: BookCardView

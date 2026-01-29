@@ -1,12 +1,12 @@
 import { useEffect, useRef } from 'react'
 import { useInfiniteQuery } from '@tanstack/react-query'
-import { BookService } from '@shared/services/BookService/BookService'
+import { bookService } from '@shared/services/BookService'
 
 export const useBooks = () => {
   const loadMoreRef = useRef(null)
   const query = useInfiniteQuery({
     queryKey: ['books'],
-    queryFn: ({ pageParam }) => BookService.getPaginated(pageParam),
+    queryFn: ({ pageParam }) => bookService.getPaginated(pageParam),
     getNextPageParam: lastPage => lastPage.nextCursor || undefined,
     initialPageParam: null as string | null,
   })

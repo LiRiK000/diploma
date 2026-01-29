@@ -10,6 +10,8 @@ import { useBook } from './model/useBook'
 
 export const BookPage = () => {
   const { book, isLoading, isError, showStickyHeader } = useBook()
+  console.log(book)
+
   if (isLoading) return <HeroSectionSkeleton />
   if (isError) return <div>Ошибка загрузки</div>
 
@@ -33,6 +35,7 @@ export const BookPage = () => {
               <BookSidebar
                 authorName={book.author}
                 authorBio={book.authorBio}
+                authorId={book.authorId}
               />
               <RecommendationBook books={book} />
             </div>

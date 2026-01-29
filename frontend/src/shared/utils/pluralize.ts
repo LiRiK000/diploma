@@ -12,3 +12,6 @@ export const pluralize = (
 
 export const pluralizeItems = (count: number): string =>
   pluralize(count, ['товар', 'товара', 'товаров'])
+
+export const pluralizeFollowers = (count: number): string =>
+  pluralize(count, ['подписчик', 'подписчика', 'подписчиков'])

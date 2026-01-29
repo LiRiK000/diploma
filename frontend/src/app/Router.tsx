@@ -9,14 +9,15 @@ import { RegisterPage } from '@pages/register'
 import { LoginPage } from '@pages/login'
 import { ProfilePage } from '@pages/profile'
 import { routes } from '@shared/constants'
-import { Suspense, useEffect } from 'react'
-import { Loader } from '@shared/components/Loader'
+import { useEffect } from 'react'
 import { NotFound } from '@pages/404'
 import { useCookieConsentStore } from '@features/cookie/model/store'
 import { useShallow } from 'zustand/react/shallow'
 import { PrivacyPage } from '@pages/privacy'
 import { CartPage } from '@pages/cart'
 import { BookPage } from '@pages/book'
+import { AuthorPage } from '@pages/author/AuthorPage'
+import { SearchPage } from '@pages/SearchPage/SearchPage'
 
 export const Router = () => {
   const init = useCookieConsentStore(useShallow(state => state.init))
@@ -61,6 +62,22 @@ export const Router = () => {
               element={
                 <PageProvider>
                   <BookPage />
+                </PageProvider>
+              }
+            />
+            <Route
+              path={routes.search}
+              element={
+                <PageProvider>
+                  <SearchPage />
+                </PageProvider>
+              }
+            />
+            <Route
+              path={routes.authorPage}
+              element={
+                <PageProvider>
+                  <AuthorPage />
                 </PageProvider>
               }
             />

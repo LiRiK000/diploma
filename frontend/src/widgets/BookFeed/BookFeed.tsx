@@ -6,6 +6,7 @@ import { useBooks } from './hooks/useBooks'
 export const BookFeed = () => {
   const { books, loadMoreRef, isError, isLoading, isFetchingNextPage } =
     useBooks()
+
   if (isError) return <div>Ошибка загрузки книг</div>
   return (
     <>
