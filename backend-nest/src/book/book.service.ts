@@ -177,14 +177,11 @@ export class BookService {
     await this.prisma.book.delete({ where: { id } });
   }
   async uploadBookCover(bookId: string, file: Express.Multer.File) {
-    // 1. Проверяем, существует ли книга
     const book = await this.prisma.book.findUnique({ where: { id: bookId } });
     if (!book) {
       throw new NotFoundException('Книга не найдена');
     }
 
-    // 2. Загружаем через наш универсальный сервис
-    // Сохраняем в папку "books", файл называем по ID книги
     const path = await this.fileService.uploadImage(file, 'books', bookId);
 
     // 3. Обновляем путь в базе данных
