@@ -1,0 +1,101 @@
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
+import { CreateAuthorDto } from './dto/author.dto';
+
+@Injectable()
+export class AuthorsService {
+  constructor(private prisma: PrismaService) {}
+
+  async findAll() {
+    const authors = await this.prisma.author.findMany({
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        dateOfBirth: true,
+        dateOfDeath: true,
+        _count: { select: { books: true } },
+      },
+      orderBy: { lastName: 'asc' },
+    });
+    return { status: 'success', results: authors.length, data: authors };
+  }
+
+  async findOne(id: string, currentUserId?: string) {
+    const author = await this.prisma.author.findUnique({
+      where: { id },
+      include: {
+        _count: { select: { followers: true } },
+      },
+    });
+
+    if (!author) throw new NotFoundException('Автор не найден');
+
+    // Проверка подписки
+    const isFollowing = currentUserId
+      ? await this.prisma.user.findFirst({
+          where: { id: currentUserId, followedAuthors: { some: { id } } },
+        })
+      : false;
+
+    // Топ книг автора
+    const topBooksData = await this.prisma.book.findMany({
+      where: { authorId: id },
+      take: 6,
+      orderBy: { createdAt: 'desc' },
+      include: { author: true, genre: true },
+    });
+
+    const topBooks = topBooksData.map((book) => ({
+      ...book,
+      author: `${book.author.firstName} ${book.author.lastName}`,
+      genre: book.genre.label,
+    }));
+
+    return {
+      status: 'success',
+      data: {
+        ...author,
+        fullName: `${author.firstName} ${author.lastName}`,
+        topBooks,
+        followersCount: author._count.followers,
+        isFollowing: !!isFollowing,
+      },
+    };
+  }
+
+  async create(dto: CreateAuthorDto) {
+    const author = await this.prisma.author.create({
+      data: {
+        ...dto,
+        dateOfBirth: new Date(dto.dateOfBirth),
+        dateOfDeath: dto.dateOfDeath ? new Date(dto.dateOfDeath) : null,
+      },
+    });
+    return { status: 'success', data: author };
+  }
+
+  async toggleFollow(authorId: string, userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { followedAuthors: { where: { id: authorId } } },
+    });
+
+    const isAlreadyFollowing = user?.followedAuthors.length > 0;
+
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        followedAuthors: isAlreadyFollowing
+          ? { disconnect: { id: authorId } }
+          : { connect: { id: authorId } },
+      },
+    });
+
+    return {
+      status: 'success',
+      isFollowing: !isAlreadyFollowing,
+      message: isAlreadyFollowing ? 'Вы отписались' : 'Вы подписались',
+    };
+  }
+}

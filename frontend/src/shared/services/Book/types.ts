@@ -41,6 +41,7 @@ export interface BookDto {
   genre: string
   author: string
   coverUrl: string
+  genreId: string
   publishYear: string
   description?: string
   availableQuantity: number

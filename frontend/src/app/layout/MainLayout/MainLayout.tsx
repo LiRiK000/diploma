@@ -19,6 +19,9 @@ export const MainLayout = () => {
           <Link to={routes.catalog} className={styles.link}>
             Каталог
           </Link>
+          <Link to={routes.orders} className={styles.link}>
+            Мои заявки
+          </Link>
         </div>
 
         <div className={styles.headerRight}>

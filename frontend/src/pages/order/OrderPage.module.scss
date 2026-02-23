@@ -1,0 +1,50 @@
+.container {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.orderCard {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.stepsWrapper {
+  margin: 40px 0;
+  padding: 20px;
+  background: #fafafa;
+  border-radius: 8px;
+}
+
+.codeBlock {
+  text-align: center;
+  padding: 30px;
+  background: #e6f7ff;
+  border: 2px dashed #1890ff;
+  border-radius: 12px;
+  margin: 20px 0;
+
+  .label {
+    display: block;
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 10px;
+  }
+
+  .value {
+    display: block;
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: 4px;
+    color: #003a8c;
+    font-family: 'Courier New', Courier, monospace;
+  }
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}

@@ -90,3 +90,21 @@
     margin-top: 24px;
   }
 }
+
+// Добавь к существующим стилям
+.emptyContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 0;
+  text-align: center;
+}
+
+.emptyButton {
+  margin-top: 16px;
+}
+
+.errorResult {
+  margin-top: 50px;
+}

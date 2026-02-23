@@ -14,4 +14,5 @@ export const routes = {
   notifications: '/notifications',
   librarianDashboard: '/librarian-dashboard',
   search: '/search',
+  order: '/order/:id',
 }

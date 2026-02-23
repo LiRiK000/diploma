@@ -7,7 +7,7 @@ import { TabContent } from './components/TabContent/TabContent'
 import {
   BookOutlined,
   CheckCircleOutlined,
-  PlusOutlined,
+  InboxOutlined,
 } from '@ant-design/icons'
 import {
   LibrarianSettings,
@@ -19,6 +19,8 @@ import {
   ResetLayoutButton,
   useLayoutStore,
 } from '@entities/widgets-grid'
+import { VerifyCodeModal } from '@features/manage-orders/ui/VerifyCodeModal'
+import { ReturnBookModal } from '@features/manage-orders/ui/ReturnBookModal'
 
 const { Content, Sider, Header } = Layout
 
@@ -26,12 +28,17 @@ export const LibrarianLayout = () => {
   const [selectedKey, setSelectedKey] = useState(
     localStorage.getItem('librarianSelectedKey') ?? 'dashboard',
   )
+
+  const [isVerifyModalOpen, setIsVerifyModalOpen] = useState(false)
+  const [isReturnModalOpen, setIsReturnModalOpen] = useState(false)
+
   const { isEditing, toggleEditing } = useLibrarianSettingsStore(
     useShallow(store => ({
       isEditing: store.isEditing,
       toggleEditing: store.toggleEditing,
     })),
   )
+
   const [hasLayoutsChanged] = useLayoutStore(
     useShallow(store => [store.hasLayoutsChanged]),
   )
@@ -52,16 +59,16 @@ export const LibrarianLayout = () => {
           mode="inline"
           items={librarianLayoutItems}
           selectedKeys={[selectedKey]}
-          onClick={({ key }) => {
-            handleMenuClick(key)
-          }}
+          onClick={({ key }) => handleMenuClick(key)}
         />
       </Sider>
+
       <Layout className={styles.rightLayout}>
         <Header className={styles.header}>
           <Typography.Title level={2} className={styles.title}>
             {getPageTitle(selectedKey)}
           </Typography.Title>
+
           <div className={styles.headerActions}>
             {isEditing ? (
               <>
@@ -76,24 +83,44 @@ export const LibrarianLayout = () => {
               </>
             ) : (
               <>
-                <Tooltip
-                  title="Добавить книги в систему"
-                  placement="bottomLeft"
-                >
-                  <Button type="primary" icon={<PlusOutlined />} />
+                <Tooltip title="Выдать заказ по коду" placement="bottomLeft">
+                  <Button
+                    type="primary"
+                    icon={<BookOutlined />}
+                    onClick={() => setIsVerifyModalOpen(true)}
+                  />
                 </Tooltip>
-                <Tooltip title="Выдать заказ" placement="bottomLeft">
-                  <Button type="primary" icon={<BookOutlined />} />
+
+                <Tooltip title="Принять возврат книг" placement="bottomLeft">
+                  <Button
+                    icon={<InboxOutlined />}
+                    style={{
+                      backgroundColor: '#52c41a',
+                      borderColor: '#52c41a',
+                      color: '#fff',
+                    }}
+                    onClick={() => setIsReturnModalOpen(true)}
+                  />
                 </Tooltip>
+
                 <LibrarianSettings />
               </>
             )}
           </div>
         </Header>
+
         <Content className={styles.content}>
           <TabContent selectedKey={selectedKey} />
         </Content>
       </Layout>
+      <VerifyCodeModal
+        open={isVerifyModalOpen}
+        onClose={() => setIsVerifyModalOpen(false)}
+      />
+      <ReturnBookModal
+        open={isReturnModalOpen}
+        onClose={() => setIsReturnModalOpen(false)}
+      />
     </Layout>
   )
 }

@@ -12,7 +12,7 @@ uploads
 dist
 dist-ssr
 *.local
-.cursor
+.cursor/
 
 # Editor directories and files
 .vscode/*

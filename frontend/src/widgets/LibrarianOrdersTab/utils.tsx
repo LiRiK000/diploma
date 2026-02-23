@@ -1,77 +1,119 @@
-import { Button, TableProps, Tooltip } from 'antd'
+import { Button, TableProps, Tooltip, Tag, Space } from 'antd'
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons'
+import dayjs from 'dayjs'
 
-// TODO Вынести в service когда будет API
-interface Order {
+// 1. Приводим интерфейс в соответствие с ответом бэкенда
+export interface OrderItem {
   id: string
-  name: string
-  books: string[]
-  date: string
+  quantity: number
+  book: {
+    title: string
+  }
 }
 
-export const mockData: Order[] = [
-  {
-    id: '1',
-    name: 'John Doe',
-    books: ['Book 1', 'Book 2'],
-    date: '2021-01-01',
-  },
-  {
-    id: '2',
-    name: 'Jane Doe',
-    books: ['Book 3', 'Book 4'],
-    date: '2021-01-02',
-  },
-]
+export interface Order {
+  id: string
+  status: string
+  orderDate: string
+  user: {
+    name: string
+    surname: string
+  }
+  items: OrderItem[]
+}
 
 export const getTableColumns = (
   onApprove: (id: string) => void,
   onReject: (id: string) => void,
 ): TableProps<Order>['columns'] => {
   return [
-    { title: 'ID', dataIndex: 'id' },
-    { title: 'ФИО', dataIndex: 'name', width: 300 },
     {
-      title: 'Книги в заказе',
-      dataIndex: 'books',
-      width: 600,
-      render: (books: string[]) => (
-        <div>
-          {books.map((book, index) => (
-            <span key={index}>{book}</span>
-          ))}
-        </div>
+      title: 'ID',
+      dataIndex: 'id',
+      render: (id: string) => (
+        <span style={{ fontSize: '12px', color: '#999' }}>
+          {id.slice(0, 8)}
+        </span>
       ),
     },
-    { title: 'Дата', dataIndex: 'date', width: 400 },
+    {
+      title: 'ФИО',
+      key: 'user',
+      width: 250,
+      // Достаем имя и фамилию из вложенного объекта user
+      render: (_, record) =>
+        `${record.user?.name || ''} ${record.user?.surname || ''}`,
+    },
+    {
+      title: 'Книги в заказе',
+      dataIndex: 'items', // Используем ключ items вместо books
+      width: 400,
+      render: (items: OrderItem[]) => (
+        <Space direction="vertical" style={{ width: '100%' }}>
+          {items?.map(item => (
+            <Tag
+              key={item.id}
+              color="blue"
+              style={{ whiteSpace: 'normal', height: 'auto' }}
+            >
+              {item.book?.title} <b>x{item.quantity}</b>
+            </Tag>
+          ))}
+        </Space>
+      ),
+    },
+    {
+      title: 'Дата',
+      dataIndex: 'orderDate',
+      width: 150,
+      render: (date: string) => dayjs(date).format('DD.MM.YYYY HH:mm'),
+    },
+    {
+      title: 'Статус',
+      dataIndex: 'status',
+      width: 120,
+      render: (status: string) => {
+        const colors: Record<string, string> = {
+          PENDING: 'orange',
+          APPROVED: 'cyan',
+          ON_HAND: 'green',
+          CANCELLED: 'red',
+        }
+        return <Tag color={colors[status] || 'default'}>{status}</Tag>
+      },
+    },
     {
       title: 'Действия',
-      dataIndex: 'actions',
-      width: 100,
-      render: (_, record: { id: string }) => (
+      key: 'actions',
+      width: 120,
+      render: (_, record) => (
         <div style={{ display: 'flex', gap: 10 }}>
-          <Tooltip title="Одобрить">
-            <Button
-              type="primary"
-              onClick={() => onApprove(record.id)}
-              icon={<CheckOutlined />}
-            />
-          </Tooltip>
-          <Tooltip title="Отклонить">
-            <Button
-              type="primary"
-              danger
-              onClick={() => onReject(record.id)}
-              icon={<CloseOutlined />}
-            />
-          </Tooltip>
+          {record.status === 'PENDING' && (
+            <>
+              <Tooltip title="Одобрить">
+                <Button
+                  type="primary"
+                  onClick={() => onApprove(record.id)}
+                  icon={<CheckOutlined />}
+                />
+              </Tooltip>
+              <Tooltip title="Отклонить">
+                <Button
+                  danger
+                  onClick={() => onReject(record.id)}
+                  icon={<CloseOutlined />}
+                />
+              </Tooltip>
+            </>
+          )}
         </div>
       ),
     },
   ]
 }
+
 export const getPagination = (
   data: Order[],
 ): TableProps<Order>['pagination'] => {
-  return data.length > 10 ? { pageSize: 10, position: ['bottomLeft'] } : false
+  return data?.length > 10 ? { pageSize: 10, position: ['bottomLeft'] } : false
 }

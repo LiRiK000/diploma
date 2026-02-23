@@ -19,7 +19,11 @@ export const BookCard = ({ book }: BookCardProps) => {
     <Card className={styles.card} variant="borderless">
       <Link to={`/book/${book.id}`} className={styles.linkContent}>
         <div className={styles.cover}>
-          <img src="/book.png" alt={book.title} className={styles.coverImage} />
+          <img
+            src={book.coverUrl || '/book.png'}
+            alt={book.title}
+            className={styles.coverImage}
+          />
         </div>
 
         <div className={styles.info}>
@@ -28,12 +32,11 @@ export const BookCard = ({ book }: BookCardProps) => {
           </Title>
 
           <div className={styles.meta}>
-            {/* Теперь это кликабельный элемент */}
             <span
               className={styles.author}
               onClick={handleAuthorClick}
               role="button"
-              style={{ cursor: 'pointer' }} // Чтобы визуально было понятно, что это ссылка
+              style={{ cursor: 'pointer' }}
             >
               {book.author}
             </span>

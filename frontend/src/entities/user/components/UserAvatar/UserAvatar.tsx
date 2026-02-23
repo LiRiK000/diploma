@@ -7,7 +7,6 @@ import { USER_ROLES } from '../../constants'
 
 export const UserAvatar = ({ mobile }: { mobile?: boolean }) => {
   const navigate = useNavigate()
-  // TODO: get user role from store
   const dropdownItems = getDropdownItems(navigate, USER_ROLES.LIBRARIAN)
 
   if (mobile) {
