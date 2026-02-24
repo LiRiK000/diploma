@@ -1,0 +1,41 @@
+version: "3.8"
+
+services:
+  # 1. База данных
+  db:
+    image: postgres:15-alpine
+    container_name: library_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: your_strong_password
+      POSTGRES_DB: myDiplom
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  # 2. Бэкенд (NestJS)
+  backend:
+    build:
+      context: ./backend-nest
+      dockerfile: Dockerfile
+    container_name: library_backend
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - "3000:3000"
+    environment:
+      # ВАЖНО: здесь вместо localhost пишем db (имя сервиса выше)
+      DATABASE_URL: "postgresql://postgres:your_strong_password@db:5432/myDiplom?schema=public"
+      JWT_SECRET: "super-secret-key-123"
+      S3_ENDPOINT: 192.168.1.138 # Пока оставляем IP ноута для S3
+      S3_PORT: 9090
+      S3_ACCESS_KEY: admin
+      S3_SECRET_KEY: password123
+      S3_BUCKET: covers
+      S3_PUBLIC_URL: http://192.168.1.138:9090/covers
+
+volumes:
+  db_data:
