@@ -3,17 +3,20 @@ import { useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { bookService } from '@shared/services/BookService'
 import { HERO_SECTION_HEIGHT } from '@pages/book/constants'
+import { Book } from '@entities/book/model/type'
 
 export const useBook = () => {
-  const { id } = useParams()
+  const { id } = useParams<{ id: string }>()
   const [showStickyHeader, setShowStickyHeader] = useState(false)
+
   const {
     data: book,
     isLoading,
     isError,
-  } = useQuery({
+  } = useQuery<Book>({
     queryKey: ['book', id],
     queryFn: () => bookService.getById(id!),
+    enabled: !!id,
   })
 
   useEffect(() => {
@@ -24,5 +27,10 @@ export const useBook = () => {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  return { book, isLoading, isError, showStickyHeader }
+  return {
+    book,
+    isLoading,
+    isError,
+    showStickyHeader,
+  }
 }

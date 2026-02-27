@@ -1,5 +1,5 @@
-import { BookDto } from '@shared/services/Book/types'
+import { Book } from '@entities/book/model/type'
 
 export interface RecommendationBookProps {
-  books: BookDto
+  books: Book
 }

@@ -23,9 +23,7 @@ export const AuthorHeroSection = ({ author }: AuthorHeroSectionProps) => {
 
           <p className={styles.dates}>Дата рождения: {dateOfBirth}</p>
 
-          <div className={styles.stats}>
-            {/* сюда можно добавить книги / подписчиков */}
-          </div>
+          <div className={styles.stats}></div>
 
           <div className={styles.actions}>
             <FollowButton

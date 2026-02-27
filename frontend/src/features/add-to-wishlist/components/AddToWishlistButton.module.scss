@@ -1,13 +1,19 @@
 @use '@shared/styles/variables' as *;
 
 .wishlistButton {
-  &.inWishlist {
-    background-color: $text-error;
-    border-color: $text-error;
+  transition: all 0.2s ease;
 
-    &:hover {
-      background-color: ($text-error);
-      border-color: ($text-error);
-    }
+  &:hover {
+    transform: scale(1.08);
   }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+.inWishlist {
+  background-color: $text-error !important;
+  border-color: $text-error !important;
+  color: white !important;
 }

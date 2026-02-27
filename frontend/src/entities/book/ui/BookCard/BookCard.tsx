@@ -1,8 +1,9 @@
 import styles from './BookCard.module.scss'
-import { Card, Typography, Tag } from 'antd'
+import { Typography, Button, Space } from 'antd'
 import { BookCardProps } from './types'
 import { Link, useNavigate } from 'react-router-dom'
 import { AddToCartButton } from '@features/add-to-cart/components'
+import { AddToWishlistButton } from '@features/add-to-wishlist/components'
 
 const { Title } = Typography
 
@@ -15,41 +16,60 @@ export const BookCard = ({ book }: BookCardProps) => {
     navigate(`/author/${book.authorId}`)
   }
 
+  let quantityClass = styles.quantity
+
+  if (book.availableQuantity === 0) {
+    quantityClass += ` ${styles.empty}`
+  } else if (book.availableQuantity < 2) {
+    quantityClass += ` ${styles.low}`
+  }
+
   return (
-    <Card className={styles.card} variant="borderless">
-      <Link to={`/book/${book.id}`} className={styles.linkContent}>
+    <Link to={`/book/${book.id}`}>
+      <div className={styles.card}>
         <div className={styles.cover}>
-          <img
-            src={book.coverUrl || '/book.png'}
-            alt={book.title}
-            className={styles.coverImage}
-          />
+          <div className={styles.genreBadge}>{book.genre}</div>
+
+          <div className={styles.bookWrapper}>
+            <img
+              src={book.coverUrl || '/book.png'}
+              alt={book.title}
+              className={styles.coverImage}
+            />
+
+            <div className={styles.pages} />
+            <div className={styles.bookmark} />
+          </div>
         </div>
 
         <div className={styles.info}>
-          <Title className={styles.title} level={3}>
+          <Title level={4} className={styles.title}>
             {book.title}
           </Title>
 
-          <div className={styles.meta}>
-            <span
-              className={styles.author}
-              onClick={handleAuthorClick}
-              role="button"
-              style={{ cursor: 'pointer' }}
-            >
-              {book.author}
-            </span>
-            <Tag className={styles.genreTag} color="processing">
-              {book.genre}
-            </Tag>
+          <div className={styles.author} onClick={handleAuthorClick}>
+            {book.author}
+          </div>
+        </div>
+
+        <div className={styles.footer}>
+          <div className={quantityClass}>
+            {book.availableQuantity > 0
+              ? `В наличии: ${book.availableQuantity}`
+              : 'Нет в наличии'}
           </div>
 
-          <p className={styles.available}>Доступно: {book.availableQuantity}</p>
-        </div>
-      </Link>
+          <Space>
+            <AddToWishlistButton
+              title={book.title}
+              variant="icon"
+              id={book.id}
+            />
 
-      <AddToCartButton bookId={book.id} fullWidth={true} />
-    </Card>
+            <AddToCartButton bookId={book.id} variant="icon" />
+          </Space>
+        </div>
+      </div>
+    </Link>
   )
 }

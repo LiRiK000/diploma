@@ -7,6 +7,7 @@ import {
 import { OrderStatus } from '@prisma/client';
 import * as crypto from 'crypto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { getFullUrl } from 'src/utils/getFullCoverUrl';
 
 @Injectable()
 export class OrdersService {
@@ -152,19 +153,26 @@ export class OrdersService {
   }
 
   async findAll(userId: string) {
-    return this.prisma.order.findMany({
+    const orders = await this.prisma.order.findMany({
       where: { userId },
       include: {
         items: {
-          include: {
-            book: true,
-          },
+          include: { book: true },
         },
       },
-      orderBy: {
-        createdAt: 'desc',
-      },
+      orderBy: { createdAt: 'desc' },
     });
+
+    return orders.map((order) => ({
+      ...order,
+      items: order.items.map((item) => ({
+        ...item,
+        book: {
+          ...item.book,
+          coverImage: getFullUrl(item.book.coverImage),
+        },
+      })),
+    }));
   }
 
   async findAllForLibrarian() {

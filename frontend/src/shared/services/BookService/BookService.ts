@@ -1,6 +1,7 @@
 import { api } from '@shared/api'
 import { PaginatedBooksResponse } from './types'
 import type { BookDto } from '@shared/services/Book/types'
+import { Book } from '@entities/book/model/type'
 
 export interface UpsertBookPayload {
   title: string
@@ -31,7 +32,7 @@ export class BookService {
     return response.data.data
   }
 
-  async getById(id: string): Promise<BookDto> {
+  async getById(id: string): Promise<Book> {
     await new Promise(resolve => setTimeout(resolve, 500))
 
     const response = await api.get(`/books/${id}`)
@@ -71,5 +72,12 @@ export class BookService {
         'Content-Type': 'multipart/form-data',
       },
     })
+  }
+  async toggleFavorite(bookId: string) {
+    await api.post(`/books/${bookId}/favorite`)
+  }
+  async getFavorites() {
+    const response = await api.get('/books/favorites')
+    return response.data.data
   }
 }

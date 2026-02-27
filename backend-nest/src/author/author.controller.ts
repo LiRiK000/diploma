@@ -16,7 +16,8 @@ export class AuthorsController {
   }
 
   @Get(':id')
-  getOne(@Param('id') id: string, @CurrentUser('id') userId?: string) {
+  @UseGuards(JwtAuthGuard)
+  getOne(@Param('id') id: string, @CurrentUser('id') userId: string) {
     return this.authorsService.findOne(id, userId);
   }
 

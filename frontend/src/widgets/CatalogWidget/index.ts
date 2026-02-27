@@ -1,0 +1,1 @@
+export { CatalogWidget } from './CatalogWidget'

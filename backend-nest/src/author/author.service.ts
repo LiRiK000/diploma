@@ -31,14 +31,15 @@ export class AuthorsService {
 
     if (!author) throw new NotFoundException('Автор не найден');
 
-    // Проверка подписки
     const isFollowing = currentUserId
       ? await this.prisma.user.findFirst({
-          where: { id: currentUserId, followedAuthors: { some: { id } } },
+          where: {
+            id: currentUserId,
+            followedAuthors: { some: { id: id } },
+          },
         })
-      : false;
+      : null;
 
-    // Топ книг автора
     const topBooksData = await this.prisma.book.findMany({
       where: { authorId: id },
       take: 6,
@@ -59,7 +60,7 @@ export class AuthorsService {
         fullName: `${author.firstName} ${author.lastName}`,
         topBooks,
         followersCount: author._count.followers,
-        isFollowing: !!isFollowing,
+        isFollowing: Boolean(isFollowing),
       },
     };
   }

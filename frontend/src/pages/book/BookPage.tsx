@@ -11,9 +11,9 @@ import { useBook } from './model/useBook'
 export const BookPage = () => {
   const { book, isLoading, isError, showStickyHeader } = useBook()
   console.log(book)
-
   if (isLoading) return <HeroSectionSkeleton />
   if (isError) return <div>Ошибка загрузки</div>
+  if (!book) return null
 
   return (
     <div className={styles.page}>
@@ -21,7 +21,7 @@ export const BookPage = () => {
         id={book.id}
         title={book.title}
         author={book.author}
-        coverUrl="/book.png"
+        coverUrl={book.coverUrl}
         isVisible={showStickyHeader}
       />
       <div className={styles.main}>

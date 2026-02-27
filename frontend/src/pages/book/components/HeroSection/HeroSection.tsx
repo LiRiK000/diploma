@@ -9,7 +9,7 @@ export const HeroSection = ({
   title,
   author,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  coverUrl = '/book.png',
+  coverUrl,
   publishYear,
   ratingsCount,
   availableQuantity,
@@ -17,7 +17,8 @@ export const HeroSection = ({
   return (
     <section className={styles.hero}>
       <div className={styles.container}>
-        <img src={'/book.png'} alt={title} className={styles.cover} />
+        <img src={coverUrl} alt={title} className={styles.cover} />
+
         <div className={styles.info}>
           <h1 className={styles.title}>{title}</h1>
           <p className={styles.author}>
@@ -35,7 +36,12 @@ export const HeroSection = ({
           </div>
           <div className={styles.actions}>
             <AddToCartButton bookId={id} fullWidth={false} />
-            <AddToWishlistButton title={title} />
+            <AddToWishlistButton
+              id={id}
+              fullWidth={true}
+              variant="default"
+              title={title}
+            />
             <ToShareButton title={title} />
           </div>
         </div>

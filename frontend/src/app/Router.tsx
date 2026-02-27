@@ -20,6 +20,7 @@ import { AuthorPage } from '@pages/author/AuthorPage'
 import { SearchPage } from '@pages/SearchPage/SearchPage'
 import { OrderPage } from '@pages/order/OrderPage'
 import { OrderList } from '@pages/OrderList/OrderList'
+import { CatalogPage } from '@pages/catalog'
 
 export const Router = () => {
   const init = useCookieConsentStore(useShallow(state => state.init))
@@ -97,6 +98,16 @@ export const Router = () => {
                 <AuthProvider>
                   <PageProvider>
                     <CartPage />
+                  </PageProvider>
+                </AuthProvider>
+              }
+            />
+            <Route
+              path={routes.catalog}
+              element={
+                <AuthProvider>
+                  <PageProvider>
+                    <CatalogPage />
                   </PageProvider>
                 </AuthProvider>
               }

@@ -7,38 +7,61 @@ import { useCart } from '@features/get-cart'
 export const AddToCartButton = ({
   bookId,
   fullWidth = false,
+  variant = 'default',
 }: AddToCartButtonProps) => {
   const { mutate, isPending } = useAddToCart()
   const { data: cart, isLoading } = useCart()
 
   if (isLoading || !cart) {
     return (
-      <Button block size="large" disabled>
+      <Button
+        shape={variant === 'icon' ? 'circle' : undefined}
+        block={variant === 'default' ? fullWidth : false}
+        disabled
+      >
         ...
       </Button>
     )
   }
 
-  const isInCart = cart?.items.some(item => item.bookId === bookId)
-  const canAddMore = cart?.canAddMore ?? true
+  const isInCart = cart.items.some(item => item.bookId === bookId)
+  const canAddMore = cart.canAddMore ?? true
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    mutate(bookId)
+  }
+
+  // ---------------- ICON VARIANT ----------------
+
+  if (variant === 'icon') {
+    return (
+      <Button
+        type={isInCart ? 'default' : 'primary'}
+        shape="circle"
+        icon={isInCart ? <CheckOutlined /> : <ShoppingCartOutlined />}
+        loading={isPending}
+        disabled={isInCart || !canAddMore}
+        onClick={handleClick}
+      />
+    )
+  }
+
+  // ---------------- DEFAULT VARIANT ----------------
 
   if (isInCart) {
     return (
-      <Button
-        block={fullWidth}
-        size="large"
-        icon={<CheckOutlined />}
-        disabled
-        style={{ backgroundColor: '#f5f5f5', borderColor: '#d9d9d9' }}
-      >
+      <Button block={fullWidth} size="large" icon={<CheckOutlined />} disabled>
         В корзине
       </Button>
     )
   }
+
   if (!canAddMore) {
     return (
-      <Button block size="large" disabled>
-        Лимит корзины 3 книги
+      <Button block={fullWidth} size="large" disabled>
+        Лимит 3 книги
       </Button>
     )
   }
@@ -50,11 +73,7 @@ export const AddToCartButton = ({
       size="large"
       loading={isPending}
       icon={<ShoppingCartOutlined />}
-      onClick={e => {
-        e.preventDefault()
-        e.stopPropagation()
-        mutate(bookId)
-      }}
+      onClick={handleClick}
     >
       {isPending ? 'Добавляем...' : 'В корзину'}
     </Button>

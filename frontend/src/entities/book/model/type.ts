@@ -20,13 +20,13 @@ export type Review = {
   content: string
   date: string
 }
-
 export interface Book {
   id: string
   title: string
   author: string
+  authorId: string
   coverUrl: string
-  publishYear: string
+  publishYear: number
   ratingsCount: number
   description: string
   availableQuantity: number
@@ -36,4 +36,15 @@ export interface Book {
   reviews: Review[]
   tags: Tag[]
   recommendedBooks: BookCard[]
+}
+
+export type CatalogSort = 'newest' | 'oldest' | 'alphabetical'
+
+export interface GetCatalogParams {
+  page?: number
+  limit?: number
+  genreId?: string
+  authorId?: string
+  search?: string
+  sort?: CatalogSort
 }

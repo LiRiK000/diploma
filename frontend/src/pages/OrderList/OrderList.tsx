@@ -1,86 +1,126 @@
-import { List, Card, Tag, Typography, Button, Space } from 'antd'
+import { List, Card, Tag, Typography, Button, Space, Empty } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import dayjs from 'dayjs'
-import { useQuery } from '@tanstack/react-query'
-import { orderService } from '@shared/services/Order'
-import { OrderResponse } from '@shared/services/Order/types'
 import { Loader } from '@shared/components/Loader'
+import { useOrders } from './hooks/useOrders'
+import {
+  STATUS_MAP,
+  MAX_VISIBLE_COVERS,
+  DATE_FORMAT,
+} from './OrderList.constants'
 import styles from './OrderList.module.scss'
 
 const { Title, Text } = Typography
 
-// Маппинг цветов для статусов
-const statusColors: Record<string, string> = {
-  PENDING: 'orange',
-  APPROVED: 'blue',
-  READY_TO_PICKUP: 'cyan',
-  ON_HAND: 'green',
-  CANCELLED: 'red',
-}
-
 export const OrderList = () => {
   const navigate = useNavigate()
-
-  const { data: orders, isLoading } = useQuery<OrderResponse[]>({
-    queryKey: ['my-orders'],
-    queryFn: () => orderService.getMyOrders(),
-  })
-
+  const { orders, isLoading, isEmpty } = useOrders()
+  console.log('orders', orders)
   if (isLoading) return <Loader />
+
+  if (isEmpty) {
+    return (
+      <div className={styles.empty}>
+        <Empty
+          image={Empty.PRESENTED_IMAGE_SIMPLE}
+          description={
+            <Text type="secondary">
+              Здесь пока пусто. Время найти что-то интересное!
+            </Text>
+          }
+        >
+          <Button
+            type="primary"
+            shape="round"
+            size="large"
+            onClick={() => navigate('/catalog')}
+          >
+            Перейти в каталог
+          </Button>
+        </Empty>
+      </div>
+    )
+  }
 
   return (
     <div className={styles.container}>
-      <Title level={2} className={styles.title}>
-        Мои заказы
-      </Title>
+      <header className={styles.header}>
+        <Title level={2}>Мои заказы</Title>
+        <Text type="secondary">
+          История ваших чтений и активные бронирования
+        </Text>
+      </header>
 
       <List
         dataSource={orders}
-        renderItem={order => (
-          <Card
-            className={styles.orderCard}
-            onClick={() => navigate(`/order/${order.id}`)}
-            hoverable
-          >
-            <div className={styles.cardHeader}>
-              <Space direction="vertical">
-                <Text strong>Заказ #{order.id.slice(0, 8)}</Text>
-                <Text type="secondary">
-                  от {dayjs(order.orderDate).format('DD.MM.YYYY')}
-                </Text>
-              </Space>
+        split={false}
+        renderItem={order => {
+          const status = STATUS_MAP[order.status] || {
+            color: 'default',
+            label: order.status,
+          }
+          const extraItems = order.items.length - MAX_VISIBLE_COVERS
 
-              <Tag
-                color={statusColors[order.status]}
-                style={{ borderRadius: '12px' }}
-              >
-                {order.status}
-              </Tag>
-            </div>
-
-            <div className={styles.bookPreview}>
-              {order.items.map(item => (
-                <div key={item.id} title={item.book.title}>
-                  <img src={item.book.coverUrl} alt={item.book.title} />
-                </div>
-              ))}
-              {order.items.length > 5 && (
-                <div style={{ alignSelf: 'center' }}>
-                  <Text type="secondary">+{order.items.length - 5}</Text>
-                </div>
-              )}
-            </div>
-
-            <div style={{ marginTop: 16, textAlign: 'right' }}>
-              <Button
-                type="link"
+          return (
+            <List.Item className={styles.listItem}>
+              <Card
+                className={styles.orderCard}
+                bordered={false}
                 onClick={() => navigate(`/order/${order.id}`)}
               >
-                Подробнее →
-              </Button>
-            </div>
-          </Card>
-        )}
+                <div className={styles.cardContent}>
+                  <div className={styles.mainInfo}>
+                    <Space direction="vertical" size={4}>
+                      <div className={styles.orderIdBlock}>
+                        <Text className={styles.hash}>#</Text>
+                        <Text strong className={styles.idText}>
+                          {order.id.slice(-6).toUpperCase()}
+                        </Text>
+                      </div>
+                      <Text className={styles.dateText}>
+                        {dayjs(order.orderDate).format(DATE_FORMAT)}
+                      </Text>
+                    </Space>
+
+                    <Tag color={status.color} className={styles.statusTag}>
+                      {status.label.toUpperCase()}
+                    </Tag>
+                  </div>
+
+                  <div className={styles.visualSide}>
+                    <div className={styles.bookStack}>
+                      {order.items
+                        .slice(0, MAX_VISIBLE_COVERS)
+                        .map((item, idx) => (
+                          <div
+                            key={item.id}
+                            className={styles.stackedCover}
+                            style={{
+                              zIndex: 10 - idx,
+                              transform: `translateX(-${idx * 20}px)`,
+                            }}
+                          >
+                            <img
+                              src={item.book.coverImage}
+                              alt={item.book.title}
+                            />
+                          </div>
+                        ))}
+                      {extraItems > 0 && (
+                        <div className={styles.glassCounter}>
+                          <Text>+{extraItems}</Text>
+                        </div>
+                      )}
+                    </div>
+                    <div className={styles.arrowIcon}>
+                      <Button type="text" icon={<span>→</span>} />
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            </List.Item>
+          )
+        }}
       />
     </div>
   )

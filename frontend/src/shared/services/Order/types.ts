@@ -26,6 +26,7 @@ export interface OrderResponse {
   pickupCode: string | null
   orderDate: string
   dueDate: string
+  coverUrl?: string
   items: OrderItem[]
 }
 

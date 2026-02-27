@@ -3,7 +3,7 @@ export interface HeroSectionProps {
   title: string
   author: string
   coverUrl?: string
-  publishYear: string
+  publishYear: number
   ratingsCount: number
   availableQuantity: number
 }

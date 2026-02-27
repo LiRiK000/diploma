@@ -184,10 +184,72 @@ export class BookService {
 
     const path = await this.fileService.uploadImage(file, 'books', bookId);
 
-    // 3. Обновляем путь в базе данных
     return this.prisma.book.update({
       where: { id: bookId },
       data: { coverImage: path },
     });
+  }
+  async addFavorite(userId: string, bookId: string) {
+    const book = await this.prisma.book.findUnique({ where: { id: bookId } });
+    if (!book) throw new NotFoundException('Книга не найдена');
+
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        favoriteBooks: {
+          connect: { id: bookId },
+        },
+      },
+    });
+  }
+
+  async removeFavorite(userId: string, bookId: string) {
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        favoriteBooks: {
+          disconnect: { id: bookId },
+        },
+      },
+    });
+  }
+  async toggleFavorite(userId: string, bookId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      include: { favoriteBooks: { select: { id: true } } },
+    });
+
+    if (!user) throw new NotFoundException('Пользователь не найден');
+
+    const isFavorite = user.favoriteBooks.some((book) => book.id === bookId);
+
+    if (isFavorite) {
+      return this.removeFavorite(userId, bookId);
+    } else {
+      return this.addFavorite(userId, bookId);
+    }
+  }
+
+  async getFavorites(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        favoriteBooks: {
+          include: {
+            author: true,
+            genre: true,
+          },
+        },
+      },
+    });
+
+    if (!user) throw new NotFoundException('Пользователь не найден');
+
+    return user.favoriteBooks.map((book) => ({
+      ...book,
+      author: `${book.author.firstName} ${book.author.lastName}`,
+      genre: book.genre.label,
+      coverUrl: this.getFullCoverUrl(book.coverImage),
+    }));
   }
 }
