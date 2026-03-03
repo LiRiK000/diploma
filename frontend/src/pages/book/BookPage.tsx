@@ -14,7 +14,7 @@ export const BookPage = () => {
   if (isLoading) return <HeroSectionSkeleton />
   if (isError) return <div>Ошибка загрузки</div>
   if (!book) return null
-
+  console.log(book.tags, 'tags')
   return (
     <div className={styles.page}>
       <StickyHeader
@@ -42,7 +42,7 @@ export const BookPage = () => {
           </div>
         </div>
         <div className={styles.reviewSection}>
-          <ReviewSection reviews={book.reviews} tags={book.tags} />
+          <ReviewSection bookId={book.id} tags={book.tags} />
         </div>
       </div>
     </div>

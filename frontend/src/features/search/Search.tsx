@@ -2,6 +2,7 @@ import { SearchOutlined, UserOutlined } from '@ant-design/icons'
 import { Input, List, Typography, Spin, Empty, Button } from 'antd'
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { createPortal } from 'react-dom'
 import styles from './Search.module.scss'
 import { useDebounce } from './hooks/useDebounce'
 import { useBookSuggestions } from './hooks/useBookSuggestions'
@@ -27,6 +28,17 @@ export const Search = () => {
     return () => window.removeEventListener('keydown', handleEsc)
   }, [])
 
+  useEffect(() => {
+    if (isFocused && window.innerWidth <= 768) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [isFocused])
+
   const handleSearch = (query: string) => {
     const trimmed = query.trim()
     if (!trimmed) return
@@ -44,33 +56,34 @@ export const Search = () => {
 
   const showDropdown = isFocused && value.trim().length >= 2
 
+  const overlay = isFocused ? (
+    <div
+      className={`${styles.overlay} ${styles.overlayVisible}`}
+      onClick={() => setIsFocused(false)}
+    />
+  ) : null
+
   return (
     <>
-      <div
-        className={`${styles.overlay} ${isFocused ? styles.overlayVisible : ''}`}
-        onClick={() => setIsFocused(false)}
-      />
+      {isFocused &&
+        createPortal(
+          <div
+            className={`${styles.overlay} ${styles.overlayVisible}`}
+            onClick={() => setIsFocused(false)}
+          />,
+          document.body,
+        )}
 
       <div
         className={`${styles.searchWrapper} ${isFocused ? styles.active : ''}`}
       >
         <div className={styles.searchContainer}>
           <AntdSearch
-            placeholder="Найти книгу или автора..."
-            enterButton={
-              <Button
-                type="primary"
-                icon={<SearchOutlined />}
-                onClick={() => handleSearch(value)}
-              />
-            }
+            placeholder="Поиск"
             size="large"
             value={value}
             onChange={e => setValue(e.target.value)}
-            onFocus={() => {
-              if (blurTimeoutRef.current) clearTimeout(blurTimeoutRef.current)
-              setIsFocused(true)
-            }}
+            onFocus={() => setIsFocused(true)}
             onBlur={() => {
               blurTimeoutRef.current = setTimeout(
                 () => setIsFocused(false),
@@ -87,9 +100,6 @@ export const Search = () => {
               {isLoading ? (
                 <div className={styles.infoState}>
                   <Spin size="small" />
-                  <Text type="secondary" style={{ marginLeft: 8 }}>
-                    Ищем...
-                  </Text>
                 </div>
               ) : suggestions.length > 0 ? (
                 <List
@@ -111,14 +121,9 @@ export const Search = () => {
                           )}
                         </div>
                         <div className={styles.suggestionText}>
-                          <Text strong={item.type === 'author'}>
-                            {item.title}
-                          </Text>
+                          <Text strong={false}>{item.title}</Text>
                           {item.author && (
-                            <Text
-                              type="secondary"
-                              className={styles.authorName}
-                            >
+                            <Text className={styles.authorName}>
                               {item.author}
                             </Text>
                           )}
@@ -131,7 +136,7 @@ export const Search = () => {
                 <div className={styles.infoState}>
                   <Empty
                     image={Empty.PRESENTED_IMAGE_SIMPLE}
-                    description="Ничего не найдено"
+                    description="Нет результатов"
                   />
                 </div>
               )}

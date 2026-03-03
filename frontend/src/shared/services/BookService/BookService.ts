@@ -80,4 +80,21 @@ export class BookService {
     const response = await api.get('/books/favorites')
     return response.data.data
   }
+  async addReview(bookId: string, text: string) {
+    const response = await api.post('/reviews', {
+      bookId,
+      description: text,
+    })
+    return response.data.data
+  }
+  async getReviews(bookId: string) {
+    const response = await api.get(`/reviews/book/${bookId}`)
+    return response.data.data
+  }
+  async updateReview(reviewId: string, text: string) {
+    const response = await api.patch(`/reviews/${reviewId}`, {
+      description: text,
+    })
+    return response.data.data
+  }
 }

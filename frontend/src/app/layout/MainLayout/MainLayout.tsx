@@ -1,5 +1,5 @@
 import { Layout } from 'antd'
-import { Outlet, Link } from 'react-router-dom'
+import { Outlet, Link, NavLink } from 'react-router-dom'
 import { UserAvatar } from '@entities/user'
 import { CartIcon } from '@entities/cart/components'
 import { routes } from '@shared/constants'
@@ -18,9 +18,14 @@ export const MainLayout = () => {
             Библиотека
           </Link>
           <nav className={styles.navLinks}>
-            <Link to={routes.catalog} className={styles.link}>
+            <NavLink
+              to={routes.catalog}
+              className={({ isActive }) =>
+                isActive ? `${styles.link} ${styles.liquidActive}` : styles.link
+              }
+            >
               Каталог
-            </Link>
+            </NavLink>
             <Link to={routes.orders} className={styles.link}>
               Мои заявки
             </Link>

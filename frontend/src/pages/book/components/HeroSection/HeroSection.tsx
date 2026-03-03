@@ -8,7 +8,6 @@ export const HeroSection = ({
   id,
   title,
   author,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   coverUrl,
   publishYear,
   ratingsCount,
@@ -20,28 +19,23 @@ export const HeroSection = ({
         <img src={coverUrl} alt={title} className={styles.cover} />
 
         <div className={styles.info}>
-          <h1 className={styles.title}>{title}</h1>
-          <p className={styles.author}>
-            {author} {publishYear}
-          </p>
-          <div className={styles.rating}>
-            <span className={styles.ratingText}>
-              {ratingsCount.toLocaleString()} Рецензий
-            </span>
+          <div className={styles.header}>
+            <h1 className={styles.title}>{title}</h1>
+            <p className={styles.author}>
+              {author}, {publishYear}
+            </p>
           </div>
-          <div className={styles.rating}>
-            <span className={styles.ratingText}>
-              Доступно {availableQuantity.toLocaleString()}
+
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <span className={styles.badge}>
+              {ratingsCount.toLocaleString()} отзывов
             </span>
+            <span className={styles.badge}>В наличии: {availableQuantity}</span>
           </div>
+
           <div className={styles.actions}>
             <AddToCartButton bookId={id} fullWidth={false} />
-            <AddToWishlistButton
-              id={id}
-              fullWidth={true}
-              variant="default"
-              title={title}
-            />
+            <AddToWishlistButton id={id} variant="default" title={title} />
             <ToShareButton title={title} />
           </div>
         </div>

@@ -3,12 +3,12 @@
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.35);
-  backdrop-filter: blur(6px);
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(12px);
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.25s ease;
-  z-index: 998;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 99;
 }
 
 .overlayVisible {
@@ -20,16 +20,20 @@
   width: 100%;
   display: flex;
   justify-content: center;
-  align-items: center;
   position: relative;
   z-index: 999;
+  transition: transform 0.3s ease;
+
+  &.active {
+    transform: translateY(4px);
+  }
 }
 
 .searchContainer {
+  display: flex;
   position: relative;
   width: 100%;
-  display: flex;
-  max-width: 640px;
+  max-width: 600px;
   margin: 0 auto;
 }
 
@@ -38,104 +42,131 @@
 
   :global {
     .ant-input-group {
-      display: flex;
-      align-items: center;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: all 0.3s ease;
     }
 
     .ant-input-affix-wrapper {
-      height: 48px;
-      border-radius: 14px 0 0 14px !important;
-      background: rgba(255, 255, 255, 0.08) !important;
-      border: 1px solid rgba(255, 255, 255, 0.18) !important;
-
-      transition:
-        background 0.2s ease,
-        box-shadow 0.2s ease;
-
-      &:hover,
-      &-focused {
-        background: #fff !important;
-        border-color: transparent !important;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-
-        input {
-          color: #000 !important;
-        }
-      }
+      height: 44px;
+      border: none !important;
+      background: transparent !important;
+      padding-left: 16px;
+      box-shadow: none !important;
 
       input {
-        font-size: 15px;
+        font-size: 16px;
+        font-weight: 400;
+        letter-spacing: -0.01em;
         color: #fff;
 
         &::placeholder {
-          color: rgba(255, 255, 255, 0.5);
+          color: rgba(255, 255, 255, 0.45);
+        }
+      }
+
+      &-focused,
+      &:hover {
+        background: #fff !important;
+        input {
+          color: #000 !important;
         }
       }
     }
 
     .ant-input-group-addon {
+      background: transparent !important;
+      border: none !important;
+
       button {
-        height: 48px;
-        border-radius: 0 14px 14px 0 !important;
+        height: 44px;
+        border: none !important;
+        background: transparent !important;
+        color: rgba(255, 255, 255, 0.6) !important;
+        box-shadow: none !important;
+
+        &:hover {
+          color: #fff !important;
+        }
       }
     }
   }
 }
 
+.active
+  :global(.ant-input-affix-wrapper-focused + .ant-input-group-addon button) {
+  color: #8e8e93 !important;
+}
+
 .dropdownList {
   position: absolute;
-  top: calc(100% + 10px);
+  top: calc(100% + 8px);
   width: 100%;
-
-  background: #fff;
-  border-radius: 14px;
-
-  box-shadow:
-    0 10px 25px rgba(0, 0, 0, 0.2),
-    0 2px 6px rgba(0, 0, 0, 0.1);
-
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
   overflow: hidden;
-
-  animation: dropdownFade 0.18s ease;
-
-  will-change: transform, opacity;
+  padding: 8px 0;
+  animation: dropdownFade 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 @keyframes dropdownFade {
   from {
     opacity: 0;
-    transform: translateY(-6px);
+    transform: scale(0.98) translateY(-10px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: scale(1) translateY(0);
   }
 }
 
 .listItem {
-  padding: 12px 16px !important;
-  cursor: pointer;
-  transition: background 0.15s ease;
+  padding: 10px 16px !important;
+  border: none !important;
+  margin: 0 8px;
+  border-radius: 10px;
 
   &:hover {
-    background: #f3f4f6;
+    background: rgba(0, 0, 0, 0.05) !important;
   }
 }
 
-.suggestionItem {
+.iconWrapper {
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: 8px;
+  color: #8e8e93;
 }
 
 .suggestionText {
   display: flex;
   flex-direction: column;
+  line-height: 1.3;
+
+  span:first-child {
+    font-size: 15px;
+    color: #1d1d1f;
+  }
 }
 
-.infoState {
-  padding: 20px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.authorName {
+  font-size: 12px !important;
+  color: #86868b !important;
+}
+
+@media (max-width: 768px) {
+  .searchContainer {
+    padding: 0 16px;
+  }
+  .dropdownList {
+    width: calc(100% - 32px);
+    left: 16px;
+  }
 }

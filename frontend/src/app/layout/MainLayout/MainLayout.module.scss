@@ -1,16 +1,27 @@
 @use '@shared/styles/variables' as *;
 
 .header {
-  background: $background-primary;
+  background: rgba(20, 20, 20, 0.6);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 24px;
+
   position: sticky;
   top: 0;
   z-index: 100;
+
   gap: 24px;
   height: 64px;
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.37),
+    inset 0 1px rgba(255, 255, 255, 0.05);
 }
 
 .headerLeft {
@@ -72,11 +83,13 @@
   .navLinks {
     display: none;
   }
+  .headerCenter {
+    max-width: 350px;
+  }
 }
 
 @media (max-width: 768px) {
   .headerLeft,
-  .headerCenter,
   .headerRight {
     display: none;
   }

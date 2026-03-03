@@ -10,6 +10,7 @@ import { GenresModule } from './genres/genres.module';
 import { OrdersModule } from './orders/orders.module';
 import { FileModule } from './common/file/file.module';
 import { CatalogModule } from './catalog/catalog.module';
+import { ReviewsModule } from './reviews/reviews.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { CatalogModule } from './catalog/catalog.module';
     OrdersModule,
     FileModule,
     CatalogModule,
+    ReviewsModule,
   ],
 })
 export class AppModule {}

@@ -1,0 +1,53 @@
+.card {
+  padding: 20px;
+  background: #ffffff;
+  border: 1px solid #f0f0f0;
+  border-radius: 16px;
+  transition: all 0.3s ease;
+  margin-bottom: 16px;
+
+  &:hover {
+    border-color: #d9d9d9;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  }
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.userInfo {
+  display: flex;
+  flex-direction: column;
+
+  .userName {
+    font-size: 15px;
+    line-height: 1.4;
+  }
+
+  .date {
+    font-size: 12px;
+    color: #8c8c8c;
+  }
+}
+
+.content {
+  margin: 0;
+  color: #434343;
+  line-height: 1.6;
+  font-size: 14px;
+  white-space: pre-wrap; // Сохраняем переносы строк пользователя
+}
+
+.badge {
+  background: #e6f7ff;
+  color: #1890ff;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+}

@@ -6,6 +6,6 @@ export interface Review {
 }
 
 export interface ReviewSectionProps {
-  reviews: Review[]
-  tags: []
+  tags: string[]
+  bookId: string
 }

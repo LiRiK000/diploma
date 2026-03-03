@@ -1,4 +1,4 @@
-import { Select, Pagination, Empty, Space, Typography, Spin } from 'antd'
+import { Select, Pagination, Space, Typography } from 'antd'
 import { useCatalog } from '@entities/book/hooks/useCatalog'
 import { useAuthors } from './hooks/useAuthors'
 import { BookCard } from '@entities/book'
@@ -6,7 +6,7 @@ import { useGenres } from './hooks/useGenres'
 import styles from './CatalogWidget.module.scss'
 import { useCatalogFilters } from './hooks/useCatalogFilters'
 import { EmptyState } from '@shared/components/Empty/EmptyState'
-import { BookSkeleton } from '@widgets/BookFeed/components/BookSkeleton'
+import { BookSkeleton } from './components/BookSkeleton/BookSkeleton' // Путь к новому скелетону
 
 const { Title, Text } = Typography
 
@@ -15,6 +15,7 @@ export const CatalogWidget = () => {
   const { data, isLoading } = useCatalog(filters)
   const { data: genres } = useGenres()
   const { data: authors } = useAuthors()
+
   const handleReset = () => {
     updateFilters({
       search: '',
@@ -23,6 +24,7 @@ export const CatalogWidget = () => {
       page: 1,
     })
   }
+
   return (
     <div className={styles.container}>
       <header className={styles.pageHeader}>
@@ -76,29 +78,32 @@ export const CatalogWidget = () => {
         </Space>
       </div>
 
-      {isLoading ? (
-        <BookSkeleton />
-      ) : data?.items.length ? (
-        <>
-          <div className={styles.grid}>
-            {data.items.map(book => (
-              <BookCard key={book.id} book={book} />
-            ))}
-          </div>
-
-          <div className={styles.paginationWrapper}>
-            <Pagination
-              current={filters.page}
-              total={data.pagination.total}
-              pageSize={filters.limit}
-              onChange={page => updateFilters({ page })}
-              showSizeChanger={false}
-              hideOnSinglePage
+      <div className={styles.grid}>
+        {isLoading ? (
+          Array.from({ length: 8 }).map((_, i) => <BookSkeleton key={i} />)
+        ) : data?.items.length ? (
+          data.items.map(book => <BookCard key={book.id} book={book} />)
+        ) : (
+          <div className={styles.emptyWrapper}>
+            <EmptyState
+              onAction={handleReset}
+              actionText="Показать все книги"
             />
           </div>
-        </>
-      ) : (
-        <EmptyState onAction={handleReset} actionText="Показать все книги" />
+        )}
+      </div>
+
+      {!isLoading && data?.items.length > 0 && (
+        <div className={styles.paginationWrapper}>
+          <Pagination
+            current={filters.page}
+            total={data.pagination.total}
+            pageSize={filters.limit}
+            onChange={page => updateFilters({ page })}
+            showSizeChanger={false}
+            hideOnSinglePage
+          />
+        </div>
       )}
     </div>
   )

@@ -1,6 +1,6 @@
 import { UserAvatar } from '@entities/user'
 import { routes } from '@shared/constants'
-import { Link } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 import styles from './MobileNavigation.module.scss'
 import { isMobile } from './utils'
 import { Activity } from 'react'
@@ -13,14 +13,45 @@ export const MobileNavigation = () => {
   return (
     <Activity mode={isShowMobileNavigation ? 'visible' : 'hidden'}>
       <nav className={styles.mobileNav}>
-        <Link to={routes.home}>
-          <HomeOutlined style={{ fontSize: '16px' }} />
-        </Link>
-        <Link to={routes.catalog}>
-          <UnorderedListOutlined style={{ fontSize: '16px' }} />
-        </Link>
-        <CartIcon />
-        <UserAvatar mobile />
+        <NavLink
+          to={routes.home}
+          className={({ isActive }) =>
+            `${styles.navItem} ${isActive ? styles.active : ''}`
+          }
+        >
+          <HomeOutlined />
+          <span className={styles.label}>Главная</span>
+        </NavLink>
+
+        <NavLink
+          to={routes.catalog}
+          className={({ isActive }) =>
+            `${styles.navItem} ${isActive ? styles.active : ''}`
+          }
+        >
+          <UnorderedListOutlined />
+          <span className={styles.label}>Каталог</span>
+        </NavLink>
+
+        <NavLink
+          to={routes.cart} // Предположим, что роут корзины такой
+          className={({ isActive }) =>
+            `${styles.navItem} ${isActive ? styles.active : ''}`
+          }
+        >
+          <CartIcon />
+          <span className={styles.label}>Корзина</span>
+        </NavLink>
+
+        <NavLink
+          to={routes.profile} // Предположим, что роут профиля такой
+          className={({ isActive }) =>
+            `${styles.navItem} ${isActive ? styles.active : ''}`
+          }
+        >
+          <UserAvatar mobile />
+          <span className={styles.label}>Профиль</span>
+        </NavLink>
       </nav>
     </Activity>
   )

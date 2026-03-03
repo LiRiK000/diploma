@@ -76,15 +76,19 @@ export class BookService {
           select: {
             id: true,
             title: true,
+            authorId: true,
             coverImage: true,
             author: { select: { firstName: true, lastName: true } },
           },
         },
         reviews: {
+          orderBy: { createdAt: 'desc' },
+
           select: {
             id: true,
             description: true,
             createdAt: true,
+            userId: true,
             user: { select: { id: true, name: true, surname: true } },
           },
         },
@@ -125,7 +129,8 @@ export class BookService {
         id: r.id,
         text: r.description,
         createdAt: r.createdAt,
-        user: `${r.user.name} ${r.user.surname}`,
+        userName: `${r.user.name} ${r.user.surname}`,
+        userId: r.user.id,
       })),
     };
   }

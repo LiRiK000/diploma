@@ -34,7 +34,7 @@ export interface Book {
   details: BookDetails
   authorBio: string
   reviews: Review[]
-  tags: Tag[]
+  tags: string[]
   recommendedBooks: BookCard[]
 }
 
