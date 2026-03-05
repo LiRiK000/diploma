@@ -36,8 +36,14 @@ export const StickyHeader = ({
         <Space className={styles.buttonContainer}>
           <AddToCartButton bookId={id} />
 
-          <AddToWishlistButton title={title} />
-          <ToShareButton title={title} />
+          {/* Группируем второстепенные действия, чтобы скрыть их на мобилках */}
+          <div className={styles.secondaryAction}>
+            <AddToWishlistButton id={id} title={title} />
+          </div>
+          <div className={styles.secondaryAction}>
+            <ToShareButton title={title} />
+          </div>
+
           <CartIcon flag={true} />
         </Space>
       </div>

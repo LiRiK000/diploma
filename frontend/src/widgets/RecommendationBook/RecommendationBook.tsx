@@ -4,6 +4,7 @@ import { CardBook } from './components/CardBook/CardBook'
 import { RecommendationBookProps } from './types'
 
 const { Title } = Typography
+
 export const RecommendationBook = ({ books }: RecommendationBookProps) => {
   return (
     <Card className={styles.sidebar} variant={'borderless'}>

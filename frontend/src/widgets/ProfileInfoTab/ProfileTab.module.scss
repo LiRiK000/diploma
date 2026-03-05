@@ -1,0 +1,131 @@
+.wrapper {
+  padding: 24px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.sectionHeader {
+  h2 {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  p {
+    font-size: 14px;
+    color: #777;
+    max-width: 600px;
+    line-height: 1.5;
+  }
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(12px);
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+
+  span:first-child {
+    font-size: 14px;
+    color: #666;
+  }
+}
+
+.value {
+  font-weight: 500;
+}
+
+.muted {
+  color: #aaa;
+}
+
+.primaryButton {
+  margin-top: 10px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: none;
+  background: #1677ff;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.2s;
+
+  &:hover {
+    background: #0958d9;
+  }
+}
+
+.secondaryButton {
+  margin-top: 10px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 1px solid #1677ff;
+  background: transparent;
+  color: #1677ff;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.2s;
+
+  &:hover {
+    background: rgba(22, 119, 255, 0.1);
+  }
+}
+
+.avatarWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(12px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 48px;
+  color: #777;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.avatarIcon {
+  font-size: 48px;
+}
+
+.avatarButton {
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 1px solid #1677ff;
+  background: transparent;
+  color: #1677ff;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.2s;
+
+  &:hover {
+    background: rgba(22, 119, 255, 0.1);
+  }
+}

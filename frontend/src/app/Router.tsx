@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { MainLayout } from './layout/MainLayout/MainLayout'
 import { LibrarianLayout } from './layout/LibrarianLayout/LibrarianLayout'
 import { PageProvider } from './providers/PageProvider/PageProvider'
@@ -7,7 +7,6 @@ import { AuthProvider } from './providers/AuthProvider/AuthProvider'
 import { HomePage } from '@pages/home'
 import { RegisterPage } from '@pages/register'
 import { LoginPage } from '@pages/login'
-import { ProfilePage } from '@pages/profile'
 import { routes } from '@shared/constants'
 import { useEffect } from 'react'
 import { NotFound } from '@pages/404'
@@ -21,6 +20,9 @@ import { SearchPage } from '@pages/SearchPage/SearchPage'
 import { OrderPage } from '@pages/order/OrderPage'
 import { OrderList } from '@pages/OrderList/OrderList'
 import { CatalogPage } from '@pages/catalog'
+import { ProfileLayout } from '@app/layout/ProfileLayout'
+import { ProfileInfoPage } from '@pages/profile/ui/ProfileInfoPage'
+import { ProfileSettingsPage } from '@pages/profile/ui/ProfileSettingsPage'
 
 export const Router = () => {
   const init = useCookieConsentStore(useShallow(state => state.init))
@@ -122,17 +124,32 @@ export const Router = () => {
                 </AuthProvider>
               }
             />
+            <Route
+              path={routes.profile}
+              element={
+                <AuthProvider>
+                  <PageProvider>
+                    <ProfileLayout />
+                  </PageProvider>
+                </AuthProvider>
+              }
+            >
+              <Route index element={<ProfileInfoPage />} />
+
+              <Route
+                path={routes.profileSettings}
+                element={<ProfileSettingsPage />}
+              />
+              <Route
+                path={routes.achievements}
+                element={<div>Достижения (Страница в разработке)</div>}
+              />
+              <Route
+                path={routes.secure}
+                element={<div>Безопасность (Страница в разработке)</div>}
+              />
+            </Route>
           </Route>
-          <Route
-            path={routes.profile}
-            element={
-              <AuthProvider>
-                <PageProvider>
-                  <ProfilePage />
-                </PageProvider>
-              </AuthProvider>
-            }
-          />
 
           <Route
             path={routes.librarian}

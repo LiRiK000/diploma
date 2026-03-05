@@ -1,12 +1,12 @@
 import {
-  Row,
-  Col,
-  Typography,
   Button,
   Card,
+  Col,
   Divider,
   Empty,
   Result,
+  Row,
+  Typography,
 } from 'antd'
 import styles from './CartPage.module.scss'
 import { CartItem } from './components/CartItem/CartItem'

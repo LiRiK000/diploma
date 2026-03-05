@@ -3,13 +3,14 @@ import { CardBookProps } from './types'
 import {
   BookOutlined,
   UserOutlined,
-  StockOutlined,
   RightCircleOutlined,
 } from '@ant-design/icons'
 import styles from './CardBook.module.scss'
+import { useNavigate } from 'react-router-dom'
 
 const { Title, Text } = Typography
 export const CardBook = ({ book }: CardBookProps) => {
+  const navigate =  useNavigate()
   return (
     <div className={styles.card}>
       <Title level={5} className={styles.title}>
@@ -20,16 +21,12 @@ export const CardBook = ({ book }: CardBookProps) => {
           <UserOutlined /> {book.author}
         </Text>
         <Button
+          onClick={() => navigate(`/book/${book.id}`)}
           type="text"
           icon={<RightCircleOutlined />}
           className={styles.iconButton}
         />
       </div>
-      {book.availableQuantity && (
-        <Text className={styles.quantity}>
-          <StockOutlined /> {book.availableQuantity} шт.
-        </Text>
-      )}
     </div>
   )
 }

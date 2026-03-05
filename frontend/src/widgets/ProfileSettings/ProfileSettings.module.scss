@@ -1,0 +1,21 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%; // Растягиваем сам враппер
+  align-items: stretch; // Это заставит дочерние элементы (карточки) тянуться вширь
+}
+.card {
+  animation: slideIn 0.3s ease forwards;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}

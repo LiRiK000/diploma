@@ -1,0 +1,30 @@
+.card {
+  width: 100%; // Гарантируем растяжение на всю ширину родителя
+  background: rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 16px;
+  padding: 24px;
+  box-sizing: border-box; // Чтобы паддинги не раздували ширину
+
+  &:hover {
+    border-color: rgba(
+      59,
+      130,
+      246,
+      0.3
+    ); // Подсветка при наведении в цвет твоего градиента
+  }
+}
+
+.title {
+  margin-bottom: 24px !important;
+  font-size: 18px !important;
+  letter-spacing: -0.01em;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}

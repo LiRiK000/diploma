@@ -2,7 +2,7 @@ export const routes = {
   home: '/',
   register: '/register',
   login: '/login',
-  profile: '/me',
+  profile: '/profile',
   catalog: '/catalog',
   cart: '/cart',
   orders: '/orders',
@@ -15,4 +15,7 @@ export const routes = {
   librarianDashboard: '/librarian-dashboard',
   search: '/search',
   order: '/order/:id',
+  profileSettings: 'settings',
+  achievements: 'achievements',
+  secure: 'secure',
 }

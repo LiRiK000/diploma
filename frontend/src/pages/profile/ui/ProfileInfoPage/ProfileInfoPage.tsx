@@ -1,14 +1,13 @@
-import styles from './ProfileTab.module.scss'
+import styles from './ProfileInfoPage.module.scss'
 import {
   LinkOutlined,
   SafetyCertificateOutlined,
   UserOutlined,
 } from '@ant-design/icons'
 
-export const ProfileInfoTab = () => {
+export const ProfileInfoPage = () => {
   return (
     <div className={styles.wrapper}>
-      {/* ===== АВАТАРКА ===== */}
       <div className={styles.avatarWrapper}>
         <div className={styles.avatar}>
           <UserOutlined className={styles.avatarIcon} />
