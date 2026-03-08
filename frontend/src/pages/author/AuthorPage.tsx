@@ -2,11 +2,12 @@ import { AuthorHeroSection } from '@entities/author/ui/AuthorHeroSection/AuthorH
 import { BooksCarousel } from '@entities/author/ui/BooksCarousel/BooksCarousel'
 import styles from './AuthorPage.module.scss'
 import { useAuthor } from '@entities/author/hooks/useAuthor'
+import { Loader } from '@shared/components/Loader'
 
 export const AuthorPage = () => {
   const { author, isLoading, isError } = useAuthor()
 
-  if (isLoading) return <div>Загрузка...</div>
+  if (isLoading) return <Loader />
   if (isError) return <div>Ошибка загрузки</div>
 
   return (

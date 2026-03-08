@@ -1,110 +1,153 @@
 @use '@shared/styles/variables' as *;
 
-.sectionTitle {
-  margin-top: 0;
-  margin-bottom: 8px !important;
-  color: $text-primary;
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 24px;
+
+  @media (max-width: 768px) {
+    padding: 20px 16px;
+  }
 }
 
 .cartSection {
-  background: $background-white;
-  border-radius: $border-size-primary;
-  padding: 24px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  background: var(--glass-bg);
+  backdrop-filter: $liquid-glass-blur;
+  border: 1px solid var(--glass-border);
+  border-radius: $border-radius-lg;
+  padding: 32px;
+  box-shadow: $liquid-glass-shadow-light;
+  transition: $transition-liquid;
+
+  @media (max-width: 576px) {
+    padding: 20px;
+  }
+}
+
+.sectionTitle {
+  margin-top: 0;
+  margin-bottom: 4px !important;
+  color: var(--text-primary) !important;
+  font-weight: 800 !important;
 }
 
 .itemsCount {
-  display: flex;
-  color: $text-secondary;
-  font-size: $font-size-small;
-  margin-bottom: 11px;
+  display: block;
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin-bottom: 24px;
+  opacity: 0.7;
 }
 
 .itemsList {
   display: flex;
   flex-direction: column;
-  gap: 20px;
-}
-
-:global(.ant-row) {
-  align-items: flex-start !important;
-}
-
-.cartCol {
-  width: 100%;
+  gap: 16px;
+  animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .orderCol {
-  position: relative;
+  @media (min-width: 992px) {
+    height: 100%;
+  }
 }
 
 .orderSection {
-  width: 100%;
+  @media (min-width: 992px) {
+    position: sticky;
+    top: 88px;
+    z-index: 10;
+  }
 }
 
 .orderCard {
-  border-radius: $border-size-primary;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-  padding: 8px 0;
+  background: var(--glass-bg) !important;
+  backdrop-filter: $liquid-glass-blur;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: $border-radius-lg !important;
+  box-shadow: $liquid-glass-shadow-light !important;
+
+  :global(.ant-card-body) {
+    padding: 24px;
+  }
 }
 
 .orderTitle {
   margin: 0 !important;
+  color: var(--text-primary) !important;
+  font-weight: 700 !important;
 }
 
 .summaryRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-
-.totalPrice {
-  font-size: $font-size-heading;
-  color: $text-primary;
+  margin: 12px 0;
+  color: var(--text-primary);
+  font-size: 15px;
 }
 
 .orderButton {
-  height: 48px;
-  font-size: $font-size-medium;
-  border-radius: $border-radius-md;
-}
+  height: 54px;
+  font-size: 16px;
+  font-weight: 700;
+  border-radius: 14px;
+  background: #1890ff;
+  border: none;
+  box-shadow: 0 8px 20px rgba(24, 144, 255, 0.25);
+  transition: $transition-liquid;
+  margin-top: 8px;
 
-@media (min-width: 1200px) {
-  .orderSection {
-    width: 470px;
-    position: fixed;
-    left: auto;
-    right: auto;
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(24, 144, 255, 0.35);
+    background: #40a9ff;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    background: var(--glass-border);
   }
 }
 
-@media (max-width: 1199px) {
-  .cartCol,
-  .orderCol {
-    flex: 0 0 100% !important;
-    max-width: 100% !important;
-  }
-
-  .orderSection {
-    position: static;
-    margin-top: 24px;
-  }
+.footerNote {
+  display: block;
+  margin-top: 16px;
+  font-size: 12px;
+  text-align: center;
+  color: var(--text-secondary);
+  line-height: 1.4;
 }
 
-// Добавь к существующим стилям
 .emptyContainer {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 60px 0;
+  min-height: 400px;
+  background: var(--glass-bg);
+  backdrop-filter: $liquid-glass-blur;
+  border-radius: $border-radius-lg;
+  border: 1px dashed var(--glass-border);
   text-align: center;
+  padding: 40px;
 }
 
 .emptyButton {
-  margin-top: 16px;
+  margin-top: 24px;
+  height: 48px;
+  padding: 0 32px;
+  border-radius: 12px;
+  font-weight: 600;
 }
 
-.errorResult {
-  margin-top: 50px;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

@@ -9,10 +9,10 @@ body,
   padding: 0;
   font-family: 'Inter', sans-serif !important;
   scroll-behavior: smooth;
-  color: $text-primary;
-  border-radius: $border-size-primary;
-}
 
-* {
-  box-sizing: border-box;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  transition:
+    background 0.3s ease,
+    color 0.3s ease;
 }

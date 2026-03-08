@@ -1,14 +1,11 @@
 .card {
   padding: 20px;
-  background: #ffffff;
-  border: 1px solid #f0f0f0;
+  background: var(--bg-content);
   border-radius: 16px;
-  transition: all 0.3s ease;
+  transition: var(--transition-liquid);
   margin-bottom: 16px;
 
   &:hover {
-    border-color: #d9d9d9;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   }
 }
 
@@ -26,26 +23,28 @@
   .userName {
     font-size: 15px;
     line-height: 1.4;
+    color: var(--text-primary);
   }
 
   .date {
     font-size: 12px;
-    color: #8c8c8c;
+    color: var(--text-secondary);
   }
 }
 
 .content {
   margin: 0;
-  color: #434343;
+  color: var(--text-secondary);
   line-height: 1.6;
   font-size: 14px;
-  white-space: pre-wrap; // Сохраняем переносы строк пользователя
+  white-space: pre-wrap;
 }
 
 .badge {
-  background: #e6f7ff;
+  background: var(--glass-bg);
   color: #1890ff;
   padding: 2px 8px;
+  border: 1px solid var(--glass-border);
   border-radius: 4px;
   font-size: 11px;
   font-weight: 600;

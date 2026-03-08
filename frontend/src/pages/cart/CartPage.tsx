@@ -8,14 +8,14 @@ import {
   Row,
   Typography,
 } from 'antd'
-import styles from './CartPage.module.scss'
-import { CartItem } from './components/CartItem/CartItem'
 import { Link } from 'react-router-dom'
+import { CartItem } from './components/CartItem/CartItem'
 import { CartItemResponse } from '@shared/services/Cart/types'
 import { Loader } from '@shared/components/Loader'
 import { useCart } from '@features/get-cart'
 import { calculateTotalItems, pluralizeItems } from '@shared/utils'
 import { useCreateOrder } from '@features/create-order/hooks/useCreateOrder'
+import styles from './CartPage.module.scss'
 
 const { Title, Text } = Typography
 
@@ -23,18 +23,34 @@ export const CartPage = () => {
   const { data: cart, isLoading, isError } = useCart()
   const { mutate: createOrder, isPending: isCreatingOrder } = useCreateOrder()
 
-  if (isLoading) {
-    return <Loader />
-  }
+  if (isLoading) return <Loader />
 
   if (isError) {
     return (
-      <Result
-        status="error"
-        title="Ошибка загрузки"
-        subTitle="Не удалось загрузить корзину. Попробуйте обновить страницу."
-        className={styles.errorResult}
-      />
+      <div className={styles.container}>
+        <Result
+          status="error"
+          title={
+            <span style={{ color: 'var(--text-primary)' }}>
+              Ошибка загрузки
+            </span>
+          }
+          subTitle={
+            <span style={{ color: 'var(--text-secondary)' }}>
+              Не удалось загрузить корзину. Попробуйте обновить страницу.
+            </span>
+          }
+          extra={[
+            <Button
+              type="primary"
+              key="retry"
+              onClick={() => window.location.reload()}
+            >
+              Обновить страницу
+            </Button>,
+          ]}
+        />
+      </div>
     )
   }
 
@@ -44,26 +60,31 @@ export const CartPage = () => {
 
   if (isCartEmpty) {
     return (
-      <div className={styles.emptyContainer}>
-        <Empty description="Ваша корзина пока пуста" />
-        <Link to="/">
-          <Button type="primary" size="large" className={styles.emptyButton}>
-            Перейти в каталог
-          </Button>
-        </Link>
+      <div className={styles.container}>
+        <div className={styles.emptyContainer}>
+          <Empty
+            description={
+              <Text type="secondary" style={{ fontSize: '16px' }}>
+                Ваша корзина пока пуста
+              </Text>
+            }
+          />
+          <Link to="/">
+            <Button type="primary" size="large" className={styles.emptyButton}>
+              Перейти в каталог
+            </Button>
+          </Link>
+        </div>
       </div>
     )
   }
 
-  const handleCheckout = () => {
-    createOrder()
-  }
-
   return (
     <div className={styles.container}>
-      <Row gutter={24}>
+      <Row gutter={[24, 24]} align="top">
+        {/* Список товаров */}
         <Col xs={24} lg={16} className={styles.cartCol}>
-          <div className={styles.cartSection}>
+          <section className={styles.cartSection}>
             <Title level={2} className={styles.sectionTitle}>
               Корзина
             </Title>
@@ -76,50 +97,53 @@ export const CartPage = () => {
                 <CartItem key={item.id} item={item} />
               ))}
             </div>
-          </div>
+          </section>
         </Col>
 
         <Col xs={24} lg={8} className={styles.orderCol}>
           <div className={styles.orderSection}>
-            <Card className={styles.orderCard}>
+            <Card className={styles.orderCard} bordered={false}>
               <Title level={4} className={styles.orderTitle}>
-                Итого
+                Детали заказа
               </Title>
-              <Divider className={styles.summaryDivider} />
 
-              <div className={styles.orderSummary}>
-                <div className={styles.summaryRow}>
-                  <Text>
-                    {totalItems} {itemsLabel}
-                  </Text>
-                </div>
-                {/* Если на бэке появится логика стоимости, можно вывести здесь */}
-                <Divider />
+              <Divider
+                style={{ margin: '16px 0', borderColor: 'var(--glass-border)' }}
+              />
+
+              <div className={styles.summaryRow}>
+                <Text type="secondary">Выбрано книг:</Text>
+                <Text strong style={{ color: 'var(--text-primary)' }}>
+                  {totalItems} шт.
+                </Text>
               </div>
+
+              <div className={styles.summaryRow}>
+                <Text type="secondary">Стоимость:</Text>
+                <Text strong style={{ color: '#52c41a' }}>
+                  Бесплатно
+                </Text>
+              </div>
+
+              <Divider
+                style={{ margin: '16px 0', borderColor: 'var(--glass-border)' }}
+              />
 
               <Button
                 type="primary"
                 block
                 size="large"
                 className={styles.orderButton}
-                onClick={handleCheckout}
+                onClick={() => createOrder()}
                 loading={isCreatingOrder}
                 disabled={isCartEmpty}
               >
-                К оформлению
+                ОФОРМИТЬ ВЫДАЧУ
               </Button>
 
-              <Text
-                type="secondary"
-                style={{
-                  display: 'block',
-                  marginTop: 12,
-                  fontSize: '12px',
-                  textAlign: 'center',
-                }}
-              >
-                После оформления заказа вы получите код для получения книг в
-                библиотеке.
+              <Text className={styles.footerNote}>
+                Нажимая кнопку, вы бронируете книги. Код для получения придет в
+                личный кабинет.
               </Text>
             </Card>
           </div>

@@ -6,6 +6,7 @@ import { routes } from '@shared/constants'
 import { MobileNavigation } from '@widgets/MobileNavigation'
 import { Search } from '@features/search'
 import styles from './MainLayout.module.scss'
+import { ThemeToggle } from '@features/theme-toggle/ui/ThemeToggle'
 
 const { Header, Content } = Layout
 
@@ -13,6 +14,7 @@ export const MainLayout = () => {
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <Header className={styles.header}>
+        <div className={styles.blob} />
         <div className={styles.headerLeft}>
           <Link to={routes.home} className={styles.logo}>
             Библиотека
@@ -39,6 +41,7 @@ export const MainLayout = () => {
         <div className={styles.headerRight}>
           <CartIcon />
           <UserAvatar />
+          <ThemeToggle />
         </div>
       </Header>
 

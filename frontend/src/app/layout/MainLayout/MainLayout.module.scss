@@ -1,82 +1,172 @@
 @use '@shared/styles/variables' as *;
 
-.header {
-  background: rgba(20, 20, 20, 0.6);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
+@use '@shared/styles/variables' as *;
 
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 24px;
+.header {
+  background: var(--header-bg);
+  backdrop-filter: blur(25px) saturate(180%);
+  -webkit-backdrop-filter: blur(25px) saturate(180%);
 
   position: sticky;
   top: 0;
   z-index: 100;
-
-  gap: 24px;
   height: 64px;
-
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-
-  box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.37),
-    inset 0 1px rgba(255, 255, 255, 0.05);
-}
-
-.headerLeft {
+  padding: 0 24px;
   display: flex;
   align-items: center;
-  gap: 32px;
-  flex-shrink: 0;
+  justify-content: space-between;
+
+  border-bottom: 1px solid var(--header-border);
+  box-shadow: var(--header-shadow);
+  overflow: hidden;
 }
 
-.navLinks {
-  display: flex;
-  align-items: center;
-  gap: 24px;
+.header::before,
+.header::after,
+.blob {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  z-index: -1;
+  opacity: 0.6;
+  pointer-events: none;
+  mix-blend-mode: screen;
 }
 
-.headerCenter {
-  flex: 1;
-  max-width: 600px;
-  display: flex;
-  justify-content: center;
+.header::before {
+  width: 200px;
+  height: 150px;
+  background: radial-gradient(circle, #007aff 0%, transparent 80%);
+  top: -40px;
+  left: -50px;
+  animation: moveBlue 15s infinite alternate ease-in-out;
 }
 
-.headerRight {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  flex-shrink: 0;
+.header::after {
+  width: 180px;
+  height: 180px;
+  background: radial-gradient(circle, #7dcb07 0%, transparent 80%);
+  bottom: -60px;
+  right: -30px;
+  animation: moveGreen 20s infinite alternate ease-in-out;
+}
+
+@keyframes moveBlue {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(300px, 20px) scale(1.2);
+  }
+  100% {
+    transform: translate(150px, -10px) scale(0.9);
+  }
+}
+
+@keyframes moveGreen {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate(-250px, -20px) scale(1.1);
+  }
+  100% {
+    transform: translate(-100px, 10px) scale(1);
+  }
+}
+
+.blob {
+  width: 120px;
+  height: 120px;
+  background: radial-gradient(circle, #ff2d55 0%, transparent 80%);
+  top: 10px;
+  left: 45%;
+  opacity: 0.3;
+  animation: pulse 8s infinite alternate ease-in-out;
+}
+
+@keyframes pulse {
+  from {
+    transform: scale(0.8);
+    opacity: 0.2;
+  }
+  to {
+    transform: scale(1.5);
+    opacity: 0.4;
+  }
+}
+
+.link {
+  color: var(--header-link-color);
+  font-weight: 600;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    color: #fff;
+    transform: translateY(-1px);
+    text-shadow: 0 0 15px var(--header-link-hover);
+  }
 }
 
 .logo {
-  color: $background-white;
+  color: var(--header-link-color);
   font-weight: 600;
   font-size: 20px;
   text-decoration: none;
 }
 
 .link {
-  color: #fff;
+  color: var(--header-link-color);
   font-size: 16px;
   font-weight: 500;
   text-decoration: none;
   transition: color 0.3s ease;
+
   &:hover {
-    color: #1890ff;
+    color: var(--header-link-hover);
   }
 }
 
 .content {
-  background: $background-white;
+  background: var(--bg-content);
   padding: 24px;
   margin: 16px;
-  border-radius: $border-size-primary;
+  border-radius: var(--border-radius-primary);
   flex: 1;
   overflow-y: auto;
   min-height: calc(100vh - 96px);
+
+  color: var(--text-primary);
+  transition:
+    background 0.3s ease,
+    color 0.3s ease;
+}
+
+.headerLeft,
+.navLinks,
+.headerRight {
+  display: flex;
+  align-items: center;
+}
+
+.headerLeft {
+  gap: 32px;
+  flex-shrink: 0;
+}
+.navLinks {
+  gap: 24px;
+}
+.headerCenter {
+  flex: 1;
+  max-width: 600px;
+  display: flex;
+  justify-content: center;
+}
+.headerRight {
+  gap: 16px;
+  flex-shrink: 0;
 }
 
 @media (max-width: 1024px) {

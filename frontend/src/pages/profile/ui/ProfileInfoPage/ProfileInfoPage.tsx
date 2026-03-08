@@ -8,92 +8,85 @@ import {
 export const ProfileInfoPage = () => {
   return (
     <div className={styles.wrapper}>
-      <div className={styles.avatarWrapper}>
+      <header className={styles.avatarWrapper}>
         <div className={styles.avatar}>
           <UserOutlined className={styles.avatarIcon} />
         </div>
-        <button className={styles.avatarButton}>Изменить аватар</button>
-      </div>
+        <button className={styles.avatarButton}>Изменить фото</button>
+      </header>
 
       <section className={styles.section}>
         <div className={styles.sectionHeader}>
-          <span></span>
           <h2>
             <SafetyCertificateOutlined />
             Учётные данные
           </h2>
           <p>
-            Вы можете менять свои личные данные, подтверждать почту и управлять
-            безопасностью аккаунта.
+            Личные данные для подтверждения личности и безопасности вашего
+            аккаунта.
           </p>
         </div>
 
         <div className={styles.card}>
-          <div className={styles.row}>
-            <span>ФИО</span>
-            <span className={styles.value}>Петухов Фёдор</span>
-          </div>
+          {[
+            {
+              label: 'ФИО',
+              value: 'Битаев Фёдор Михайлович',
+              status: 'normal',
+            },
+            { label: 'Дата рождения', value: '3 Мая 2007', status: 'normal' },
+            { label: 'Пол', value: 'Не указан', status: 'muted' },
+            { label: 'Телефон', value: '+7 996 966 12 80', status: 'normal' },
+            { label: 'Почта', value: 'Не указана', status: 'muted' },
+          ].map((item, idx) => (
+            <div className={styles.row} key={idx}>
+              <span>{item.label}</span>
+              <span
+                className={
+                  item.status === 'muted' ? styles.muted : styles.value
+                }
+              >
+                {item.value}
+              </span>
+            </div>
+          ))}
 
-          <div className={styles.row}>
-            <span>Дата рождения</span>
-            <span className={styles.value}>3 Мая 2007</span>
-          </div>
-
-          <div className={styles.row}>
-            <span>Пол</span>
-            <span className={styles.muted}>Не указан</span>
-          </div>
-
-          <div className={styles.row}>
-            <span>Телефон</span>
-            <span className={styles.value}>+7 996 966 12 80</span>
-          </div>
-
-          <div className={styles.row}>
-            <span>Почта</span>
-            <span className={styles.muted}>Не указана</span>
-          </div>
-
-          <button className={styles.primaryButton}>
-            Изменить учётные данные
-          </button>
+          <button className={styles.primaryButton}>Редактировать данные</button>
         </div>
       </section>
 
-      {/* ===== ПУБЛИЧНЫЕ ДАННЫЕ ===== */}
       <section className={styles.section}>
         <div className={styles.sectionHeader}>
           <h2>
-            {' '}
             <LinkOutlined />
             Публичные данные
           </h2>
           <p>
-            Эта информация отображается рядом с отзывами и видна другим
-            пользователям.
+            Эта информация видна другим читателям библиотеки рядом с вашими
+            рецензиями.
           </p>
         </div>
 
         <div className={styles.card}>
           <div className={styles.row}>
-            <span>Имя</span>
-            <span className={styles.value}>Фёдор П.</span>
+            <span>Отображаемое имя</span>
+            <span className={styles.value}>Фёдор Б.</span>
           </div>
 
           <div className={styles.row}>
-            <span>Страна, город</span>
-            <span className={styles.muted}>Не указано</span>
+            <span>Локация</span>
+            <span className={styles.muted}>Россия, Москва</span>
           </div>
 
           <div className={styles.row}>
             <span>Возраст</span>
             <span className={styles.value}>
-              18 <span className={styles.muted}>(скрыт)</span>
+              18 <span className={styles.muted}>(скрыт настройками)</span>
             </span>
           </div>
 
           <button className={styles.secondaryButton}>
-            Изменить публичные данные
+            Изменить публичный профиль
           </button>
         </div>
       </section>

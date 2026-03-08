@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom'
 
 const { Title, Text } = Typography
 export const CardBook = ({ book }: CardBookProps) => {
-  const navigate =  useNavigate()
+  const navigate = useNavigate()
   return (
     <div className={styles.card}>
       <Title level={5} className={styles.title}>

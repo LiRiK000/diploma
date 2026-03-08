@@ -24,26 +24,14 @@ export const ReviewSection = ({ bookId, tags }: ReviewSectionProps) => {
       </header>
 
       {!userId ? (
-        <div
-          style={{
-            padding: '20px',
-            background: '#fffbe6',
-            borderRadius: '8px',
-          }}
-        >
-          <Text type="warning">
+        <div className={styles.authNotice}>
+          <Text className={styles.noticeText}>
             Чтобы оставить рецензию, пожалуйста, войдите в систему.
           </Text>
         </div>
       ) : myReview ? (
-        <div
-          style={{
-            padding: '20px',
-            background: '#f6ffed',
-            borderRadius: '8px',
-          }}
-        >
-          <Text type="success">
+        <div className={styles.successNotice}>
+          <Text className={styles.noticeText}>
             Спасибо! Вы уже поделились своим мнением о книге.
           </Text>
         </div>
@@ -51,7 +39,7 @@ export const ReviewSection = ({ bookId, tags }: ReviewSectionProps) => {
         <ReviewForm onSubmit={(text: string) => createReview(text)} />
       )}
 
-      <Divider />
+      <Divider style={{ borderColor: 'var(--glass-border)' }} />
 
       <div className={styles.reviews}>
         <Title level={3}>Рецензии читателей</Title>
@@ -73,15 +61,17 @@ export const ReviewSection = ({ bookId, tags }: ReviewSectionProps) => {
             ))}
           </div>
         ) : (
-          <Text type="secondary">
-            У этой книги пока нет рецензий. Будьте первым!
-          </Text>
+          <div className={styles.emptyState}>
+            <Text type="secondary">
+              У этой книги пока нет рецензий. Будьте первым!
+            </Text>
+          </div>
         )}
       </div>
 
       {tags && tags.length > 0 && (
         <div className={styles.tagsSection}>
-          <Divider />
+          <Divider style={{ borderColor: 'var(--glass-border)' }} />
           <Title level={4}>Теги</Title>
           <div className={styles.tags}>
             {tags.map((tag, i) => (

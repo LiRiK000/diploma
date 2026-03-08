@@ -1,13 +1,24 @@
 @use '@shared/styles/variables' as *;
 
 .sidebar {
+  background: var(--bg-content) !important;
   border-radius: $border-radius-lg;
+  border: 1px solid var(--glass-border) !important;
   max-height: 420px;
+  box-shadow: $shadow-light;
+  transition: $transition-liquid;
+
+  &:hover {
+    border-color: var(--text-secondary);
+  }
 }
 
 .heading {
   font-weight: $font-weight-small;
+  color: var(--text-primary) !important;
+  margin-bottom: $spacing-sm !important;
 }
+
 .scrollContainer {
   display: flex;
   flex-direction: column;
@@ -15,8 +26,29 @@
   overflow-y: auto;
   max-height: 300px;
   padding-right: 0.5rem;
+  margin-top: $spacing-md;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--glass-border);
+    border-radius: 10px;
+
+    &:hover {
+      background: var(--text-secondary);
+    }
+  }
+
+  mask-image: linear-gradient(to bottom, black 90%, transparent 100%);
 }
-@media (max-width: 768px) {
+
+@media (max-width: $breakpoint-md) {
   .sidebar {
     padding: 0.75rem;
     max-height: 350px;

@@ -9,6 +9,8 @@
   margin-bottom: 14px;
   overflow: hidden;
   perspective: 1600px;
+  background-color: var(--bg-page);
+  transition: background-color var(--transition-speed);
 }
 
 .hero::before {
@@ -16,11 +18,8 @@
   position: absolute;
   width: 600px;
   height: 600px;
-  background: radial-gradient(
-    circle,
-    rgba(255, 255, 255, 0.6),
-    transparent 70%
-  );
+  background: radial-gradient(circle, var(--hero-glow), transparent 70%);
+
   filter: blur(120px);
   animation: floatGlow 12s ease-in-out infinite;
 }
@@ -43,18 +42,13 @@
   width: 100%;
   padding: 60px;
   border-radius: $border-radius-lg;
-  background: $liquid-glass-bg-light;
-
+  background: var(--glass-bg);
   backdrop-filter: blur(40px) saturate(180%);
   -webkit-backdrop-filter: blur(40px) saturate(180%);
-
-  border: 1px solid rgba(255, 255, 255, 0.9);
-
+  border: 1px solid var(--glass-border);
   box-shadow:
-    0 40px 80px rgba(15, 23, 42, 0.08),
-    0 10px 30px rgba(15, 23, 42, 0.06),
-    inset 0 1px rgba(255, 255, 255, 0.9),
-    inset 0 -1px rgba(255, 255, 255, 0.4);
+    0 40px 80px rgba(0, 0, 0, 0.1),
+    inset 0 1px var(--glass-border);
 
   transform-style: preserve-3d;
   transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
@@ -63,9 +57,8 @@
 .container:hover {
   transform: rotateX(4deg) rotateY(-4deg) translateY(-10px) scale(1.01);
   box-shadow:
-    0 60px 120px rgba(15, 23, 42, 0.12),
-    0 20px 40px rgba(15, 23, 42, 0.08),
-    inset 0 1px rgba(255, 255, 255, 1);
+    0 60px 120px rgba(0, 0, 0, 0.2),
+    inset 0 1px var(--glass-border);
 }
 
 .cover {
@@ -75,9 +68,8 @@
   border-radius: $border-radius-md;
 
   box-shadow:
-    0 30px 60px rgba(15, 23, 42, 0.18),
-    0 8px 20px rgba(15, 23, 42, 0.12),
-    0 0 0 1px rgba(255, 255, 255, 0.9);
+    0 30px 60px rgba(0, 0, 0, 0.2),
+    0 0 0 1px var(--glass-border);
 
   transform: translateZ(60px);
   transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
@@ -93,9 +85,8 @@
   flex-direction: column;
   justify-content: center;
   gap: $spacing-lg;
-
   transform: translateZ(40px);
-  color: #0f172a;
+  color: var(--text-primary);
 }
 
 .title {
@@ -104,35 +95,35 @@
   letter-spacing: -0.02em;
   margin: 0;
 
-  background: linear-gradient(180deg, #0f172a 0%, #334155 100%);
-
+  background: linear-gradient(
+    180deg,
+    var(--text-primary) 0%,
+    var(--text-secondary) 100%
+  );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .author {
   font-size: $font-size-hero-author;
-  color: rgba(15, 23, 42, 0.6);
+  color: var(--text-primary);
+  opacity: 0.6;
 }
 
 .badge {
   padding: 8px 18px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  color: rgba(15, 23, 42, 0.75);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--text-primary);
   backdrop-filter: blur(10px);
-  box-shadow:
-    0 4px 12px rgba(15, 23, 42, 0.08),
-    inset 0 1px rgba(255, 255, 255, 1);
+  box-shadow: inset 0 1px var(--glass-border);
   transition: all 0.3s;
 }
 
 .badge:hover {
   transform: translateY(-2px);
-  box-shadow:
-    0 10px 20px rgba(15, 23, 42, 0.12),
-    inset 0 1px rgba(255, 255, 255, 1);
+  background: var(--glass-border);
 }
 
 .actions {
@@ -145,12 +136,9 @@
     backdrop-filter: blur(10px);
     border-radius: $border-radius-md;
     transition: all 0.3s;
-    box-shadow: 0 4px 10px rgba(15, 23, 42, 0.08);
-  }
-
-  :global(button:hover) {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(15, 23, 42, 0.12);
+    border: 1px solid var(--glass-border);
+    background: var(--glass-bg);
+    color: var(--text-primary);
   }
 }
 
@@ -159,73 +147,25 @@
     padding: 20px $padding-xl;
     perspective: none;
   }
-
   .container {
     flex-direction: column;
     align-items: center;
     text-align: center;
     padding: 32px 20px;
     gap: 32px;
-    border-radius: $border-radius-lg;
-
     &:hover {
       transform: translateY(-5px) scale(1.01);
     }
   }
-
   .cover {
     width: 220px;
-    height: auto;
-    aspect-ratio: 2 / 3;
     transform: none;
-
-    &:hover {
-      transform: scale(1.05);
-    }
   }
-
   .info {
-    width: 100%;
-    align-items: center;
-    gap: $spacing-lg;
     transform: none;
+    align-items: center;
   }
-
   .title {
     font-size: $font-size-title;
-    line-height: 1.2;
-  }
-
-  .author {
-    font-size: 1.1rem;
-    margin-top: 12px;
-  }
-
-  .actions {
-    margin-top: 8px;
-    width: 100%;
-    flex-direction: column;
-    gap: $spacing-md;
-
-    :global(button) {
-      width: 100%;
-      justify-content: center;
-      padding: 14px;
-      font-size: 1rem;
-    }
-  }
-}
-
-@media (max-width: 480px) {
-  .title {
-    font-size: 1.75rem;
-  }
-
-  .container {
-    padding: 24px 16px;
-  }
-
-  .cover {
-    width: 180px;
   }
 }

@@ -1,30 +1,39 @@
+@use '@shared/styles/variables' as *;
+
 .layout {
   min-height: 100vh;
-
-  background:
-    radial-gradient(
-      circle at 10% 20%,
-      rgba(59, 130, 246, 0.08),
-      transparent 40%
-    ),
-    radial-gradient(
-      circle at 90% 80%,
-      rgba(99, 102, 241, 0.08),
-      transparent 40%
-    ),
-    #f5f7fb;
+  background: var(--bg-gradient), var(--bg-page);
 }
 
-/* SIDEBAR */
-
 .sider {
-  background: rgba(255, 255, 255, 0.75) !important;
-
-  backdrop-filter: blur(20px);
-
-  border-right: 1px solid rgba(0, 0, 0, 0.05);
-
+  background: var(--glass-bg) !important;
+  backdrop-filter: $liquid-glass-blur;
+  border-right: 1px solid var(--glass-border) !important;
   padding-top: 16px;
+
+  :global(.ant-menu) {
+    background: transparent !important;
+    border-inline-end: none !important;
+
+    :global(.ant-menu-item) {
+      border-radius: $border-radius-md;
+      margin: 4px 8px !important;
+      color: var(--text-secondary);
+      transition: $transition-liquid;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.05) !important;
+        color: var(--text-primary) !important;
+      }
+    }
+
+    :global(.ant-menu-item-selected) {
+      background: var(--glass-bg) !important;
+      color: #1890ff !important;
+      border: 1px solid var(--glass-border);
+      box-shadow: $shadow-light;
+    }
+  }
 }
 
 .siderHeader {
@@ -32,73 +41,60 @@
   font-size: 20px;
   font-weight: 600;
   letter-spacing: -0.02em;
+  color: var(--text-primary);
 }
-
-/* CONTENT */
 
 .contentLayout {
   padding: 60px 24px;
 
-  @media (max-width: 768px) {
+  @include mobile {
     padding: 0;
   }
 }
 
 .content {
-  background: rgba(255, 255, 255, 0.75);
-
+  background: var(--glass-bg);
   backdrop-filter: blur(30px);
-
   border-radius: 20px;
-
-  box-shadow:
-    0 10px 30px rgba(0, 0, 0, 0.06),
-    0 1px 0 rgba(255, 255, 255, 0.6) inset;
+  border: 1px solid var(--glass-border);
+  box-shadow: $liquid-glass-shadow-light;
   padding: 40px;
-
   min-height: 80vh;
+  transition: $transition-liquid;
 
-  transition: all 0.3s ease;
-
-  @media (max-width: 768px) {
+  @include mobile {
     border-radius: 0;
     padding: 20px;
     min-height: 100vh;
+    border: none;
+    background: var(--bg-page);
   }
 }
 
 .inner {
-  animation: fade 0.25s ease;
+  animation: fade 0.3s ease-out;
 }
 
 @keyframes fade {
   from {
     opacity: 0;
-    transform: translateY(6px);
+    transform: translateY(10px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-/* MOBILE */
-
 .mobileHeader {
   display: none;
-
   align-items: center;
-
   gap: 12px;
-
   margin-bottom: 24px;
-
   padding-bottom: 16px;
+  border-bottom: 1px solid var(--glass-border);
 
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-
-  @media (max-width: 768px) {
+  @include mobile {
     display: flex;
   }
 }
@@ -107,8 +103,14 @@
   font-size: 18px;
   font-weight: 600;
   letter-spacing: -0.02em;
+  color: var(--text-primary);
 }
 
 .burger {
   font-size: 18px;
+  color: var(--text-primary);
+
+  &:hover {
+    background: var(--glass-bg) !important;
+  }
 }

@@ -11,7 +11,12 @@ export class CartService {
   private readonly MAX_CART_ITEMS = 3;
 
   constructor(private prisma: PrismaService) {}
-
+  private readonly s3PublicUrl = process.env.S3_PUBLIC_URL;
+  private getFullCoverUrl(path: string | null): string {
+    if (!path) return '';
+    if (path.startsWith('http')) return path;
+    return `${this.s3PublicUrl}/${path}`;
+  }
   async getCart(userId: string) {
     const cart = await this.prisma.cart.findUnique({
       where: { userId },
@@ -38,7 +43,7 @@ export class CartService {
       bookId: item.book.id,
       title: item.book.title,
       author: `${item.book.author.firstName} ${item.book.author.lastName}`,
-      coverUrl: item.book.coverImage || null,
+      coverUrl: this.getFullCoverUrl(item.book.coverImage),
       genre: item.book.genre.label,
       quantity: item.quantity,
       available: item.book.availableQuantity,
@@ -66,7 +71,6 @@ export class CartService {
       );
     }
 
-    // Находим или создаем корзину
     let cart = await this.prisma.cart.findUnique({ where: { userId } });
     if (!cart) {
       cart = await this.prisma.cart.create({ data: { userId } });

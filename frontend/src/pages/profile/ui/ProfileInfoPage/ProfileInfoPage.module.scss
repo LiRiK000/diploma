@@ -1,16 +1,16 @@
+@use '@shared/styles/variables' as *;
+
 .wrapper {
   padding: 32px;
   display: flex;
   flex-direction: column;
   gap: 48px;
 
-  @media (max-width: 768px) {
+  @include mobile {
     padding: 16px;
     gap: 32px;
   }
 }
-
-/* SECTION */
 
 .section {
   display: flex;
@@ -26,61 +26,56 @@
   h2 {
     font-size: 22px;
     font-weight: 600;
+    color: var(--text-primary);
     display: flex;
     align-items: center;
     gap: 10px;
+    margin: 0;
+
+    svg {
+      color: #1890ff;
+    }
   }
 
   p {
     font-size: 14px;
-    color: #777;
+    color: var(--text-secondary);
     max-width: 620px;
     line-height: 1.5;
   }
 }
 
 /* CARD */
-
 .card {
-  background: rgba(255, 255, 255, 0.65);
-  backdrop-filter: blur(16px);
-
-  border-radius: 18px;
-
+  background: var(--glass-bg);
+  backdrop-filter: $liquid-glass-blur;
+  border-radius: $border-radius-lg;
   padding: 24px;
-
   display: flex;
   flex-direction: column;
   gap: 18px;
-
-  border: 1px solid rgba(0, 0, 0, 0.05);
-
-  box-shadow:
-    0 6px 20px rgba(0, 0, 0, 0.04),
-    0 1px 0 rgba(255, 255, 255, 0.6) inset;
-
-  transition: all 0.25s ease;
+  border: 1px solid var(--glass-border);
+  box-shadow: $liquid-glass-shadow-light;
+  transition: $transition-liquid;
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
+    border-color: var(--text-secondary);
+    box-shadow: $shadow-medium;
   }
 }
 
 /* ROW */
-
 .row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-
   padding-bottom: 12px;
-
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid var(--glass-border);
 
   span:first-child {
     font-size: 14px;
-    color: #666;
+    color: var(--text-secondary);
   }
 
   @media (max-width: 520px) {
@@ -92,63 +87,49 @@
 
 .value {
   font-weight: 500;
+  color: var(--text-primary);
 }
 
 .muted {
-  color: #aaa;
+  color: var(--text-secondary);
+  opacity: 0.6;
 }
-
-/* BUTTONS */
 
 .primaryButton {
   margin-top: 12px;
-
-  padding: 10px 16px;
-
-  border-radius: 10px;
-
+  padding: 12px 20px;
+  border-radius: $border-radius-md;
   border: none;
-
-  background: #1677ff;
-
+  background: #1890ff;
   color: white;
-
-  font-weight: 500;
-
+  font-weight: 600;
   cursor: pointer;
-
-  transition: all 0.2s;
+  transition: $transition-liquid;
+  box-shadow: 0 4px 12px rgba(24, 144, 255, 0.3);
 
   &:hover {
-    background: #0958d9;
+    background: #40a9ff;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(24, 144, 255, 0.4);
   }
 }
 
 .secondaryButton {
   margin-top: 12px;
-
   padding: 10px 16px;
-
-  border-radius: 10px;
-
-  border: 1px solid #1677ff;
-
-  background: transparent;
-
-  color: #1677ff;
-
-  font-weight: 500;
-
+  border-radius: $border-radius-md;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  color: #1890ff;
+  font-weight: 600;
   cursor: pointer;
-
-  transition: all 0.2s;
+  transition: $transition-liquid;
 
   &:hover {
-    background: rgba(22, 119, 255, 0.1);
+    background: var(--glass-border);
+    border-color: #1890ff;
   }
 }
-
-/* AVATAR */
 
 .avatarWrapper {
   display: flex;
@@ -158,50 +139,43 @@
 }
 
 .avatar {
-  width: 100px;
-  height: 100px;
-
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
-
-  background: rgba(255, 255, 255, 0.65);
-
-  backdrop-filter: blur(14px);
-
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
   display: flex;
   justify-content: center;
   align-items: center;
+  border: 2px solid var(--glass-border);
+  box-shadow: $shadow-medium;
+  transition: $transition-liquid;
 
-  font-size: 42px;
-
-  color: #777;
-
-  border: 1px solid rgba(0, 0, 0, 0.05);
-
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+  &:hover {
+    border-color: #1890ff;
+    transform: scale(1.02);
+  }
 }
 
 .avatarIcon {
-  font-size: 42px;
+  font-size: 54px;
+  color: var(--text-secondary);
 }
 
 .avatarButton {
-  padding: 8px 14px;
-
-  border-radius: 10px;
-
-  border: 1px solid #1677ff;
-
+  padding: 8px 16px;
+  border-radius: $border-radius-sm;
+  border: 1px solid var(--glass-border);
   background: transparent;
-
-  color: #1677ff;
-
+  color: var(--text-primary);
+  font-size: 13px;
   font-weight: 500;
-
   cursor: pointer;
-
-  transition: 0.2s;
+  transition: $transition-liquid;
 
   &:hover {
-    background: rgba(22, 119, 255, 0.1);
+    border-color: #1890ff;
+    color: #1890ff;
+    background: var(--glass-bg);
   }
 }

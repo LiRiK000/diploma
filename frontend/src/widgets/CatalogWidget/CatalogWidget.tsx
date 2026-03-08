@@ -6,13 +6,12 @@ import { useGenres } from './hooks/useGenres'
 import styles from './CatalogWidget.module.scss'
 import { useCatalogFilters } from './hooks/useCatalogFilters'
 import { EmptyState } from '@shared/components/Empty/EmptyState'
-import { BookSkeleton } from './components/BookSkeleton/BookSkeleton' // Путь к новому скелетону
-
+import { BookSkeleton } from './components/BookSkeleton/BookSkeleton'
 const { Title, Text } = Typography
 
 export const CatalogWidget = () => {
   const { filters, updateFilters } = useCatalogFilters()
-  const { data, isLoading } = useCatalog(filters)
+  const { data, isLoading, isError } = useCatalog(filters)
   const { data: genres } = useGenres()
   const { data: authors } = useAuthors()
 
@@ -23,6 +22,19 @@ export const CatalogWidget = () => {
       authorId: undefined,
       page: 1,
     })
+  }
+
+  if (isError) {
+    return (
+      <div className={styles.container}>
+        <EmptyState
+          title="Ошибка загрузки"
+          description="Не удалось получить список книг. Попробуйте позже."
+          onAction={() => window.location.reload()}
+          actionText="Обновить страницу"
+        />
+      </div>
+    )
   }
 
   return (
@@ -41,7 +53,7 @@ export const CatalogWidget = () => {
             className={styles.select}
             allowClear
             value={filters.genreId}
-            onChange={val => updateFilters({ genreId: val })}
+            onChange={val => updateFilters({ genreId: val, page: 1 })}
             options={genres?.map(g => ({ label: g.label, value: g.id }))}
             style={{ width: 180 }}
           />
@@ -52,12 +64,15 @@ export const CatalogWidget = () => {
             className={styles.select}
             allowClear
             value={filters.authorId}
-            onChange={val => updateFilters({ authorId: val })}
+            onChange={val => updateFilters({ authorId: val, page: 1 })}
             options={authors?.map(a => ({
               label: `${a.firstName} ${a.lastName}`,
               value: a.id,
             }))}
             style={{ width: 200 }}
+            filterOption={(input, option) =>
+              (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+            }
           />
         </div>
 
@@ -65,10 +80,9 @@ export const CatalogWidget = () => {
           <Text type="secondary">Сортировка:</Text>
           <Select
             variant="borderless"
-            style={{ width: 120 }}
+            style={{ width: 140 }}
             value={filters.sort}
             onChange={val => updateFilters({ sort: val })}
-            className={styles.sortSelect}
             options={[
               { value: 'newest', label: 'По новизне' },
               { value: 'oldest', label: 'Старые' },
@@ -81,7 +95,7 @@ export const CatalogWidget = () => {
       <div className={styles.grid}>
         {isLoading ? (
           Array.from({ length: 8 }).map((_, i) => <BookSkeleton key={i} />)
-        ) : data?.items.length ? (
+        ) : data?.items && data.items.length > 0 ? (
           data.items.map(book => <BookCard key={book.id} book={book} />)
         ) : (
           <div className={styles.emptyWrapper}>
@@ -93,7 +107,7 @@ export const CatalogWidget = () => {
         )}
       </div>
 
-      {!isLoading && data?.items.length > 0 && (
+      {!isLoading && (data?.items?.length ?? 0) > 0 && data?.pagination && (
         <div className={styles.paginationWrapper}>
           <Pagination
             current={filters.page}

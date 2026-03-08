@@ -1,25 +1,30 @@
+@use '@shared/styles/variables' as *;
+
 .card {
-  width: 100%; // Гарантируем растяжение на всю ширину родителя
-  background: rgba(255, 255, 255, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  border-radius: 16px;
+  width: 100%;
+  background: var(--glass-bg);
+  backdrop-filter: $liquid-glass-blur;
+
+  border: 1px solid var(--glass-border);
+  border-radius: $border-radius-lg;
   padding: 24px;
-  box-sizing: border-box; // Чтобы паддинги не раздували ширину
+  box-sizing: border-box;
+  box-shadow: $liquid-glass-shadow-light;
+  transition: $transition-liquid;
 
   &:hover {
-    border-color: rgba(
-      59,
-      130,
-      246,
-      0.3
-    ); // Подсветка при наведении в цвет твоего градиента
+    border-color: rgba(24, 144, 255, 0.4);
+    box-shadow: $shadow-medium;
+    transform: translateY(-1px);
   }
 }
 
 .title {
   margin-bottom: 24px !important;
   font-size: 18px !important;
+  font-weight: 700 !important;
   letter-spacing: -0.01em;
+  color: var(--text-primary) !important;
 }
 
 .body {

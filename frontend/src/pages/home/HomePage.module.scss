@@ -1,34 +1,32 @@
 @use '@shared/styles/variables' as *;
 
 .container {
+  background-color: transparent;
   max-width: 1400px;
   margin: 0 auto;
   padding: 60px 24px;
+
+  color: var(--text-primary);
+  transition: color var(--transition-speed) ease;
 }
 
-.hero {
-  margin-bottom: 80px;
-  text-align: left;
+.sectionTitle {
+  color: var(--text-primary) !important;
+  font-size: 32px !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.02em !important;
+  margin-bottom: 8px !important;
 }
 
-.mainTitle {
-  font-size: 56px !important;
-  font-weight: 700 !important;
-  letter-spacing: -0.03em !important;
-  margin: 0 !important;
-  line-height: 1.1 !important;
-}
-
-.subtitle {
-  font-size: 20px !important;
+.sectionDesc {
+  color: var(--text-secondary) !important;
+  font-size: 16px;
   display: block;
-  margin-top: 12px;
 }
 
 .feedSection {
   animation: fadeIn 0.8s ease-out;
 }
-
 .sectionHeader {
   margin-bottom: 40px;
 }

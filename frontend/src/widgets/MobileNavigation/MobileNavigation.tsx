@@ -1,6 +1,7 @@
 import { UserAvatar } from '@entities/user'
 import { routes } from '@shared/constants'
 import { NavLink } from 'react-router-dom'
+
 import styles from './MobileNavigation.module.scss'
 import { isMobile } from './utils'
 import { Activity } from 'react'
@@ -34,7 +35,7 @@ export const MobileNavigation = () => {
         </NavLink>
 
         <NavLink
-          to={routes.cart} // Предположим, что роут корзины такой
+          to={routes.cart}
           className={({ isActive }) =>
             `${styles.navItem} ${isActive ? styles.active : ''}`
           }
@@ -44,7 +45,7 @@ export const MobileNavigation = () => {
         </NavLink>
 
         <NavLink
-          to={routes.profile} // Предположим, что роут профиля такой
+          to={routes.profile}
           className={({ isActive }) =>
             `${styles.navItem} ${isActive ? styles.active : ''}`
           }

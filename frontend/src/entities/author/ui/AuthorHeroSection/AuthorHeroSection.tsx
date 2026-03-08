@@ -3,6 +3,9 @@ import { ToShareButton } from '@features/to-share/components'
 import { AuthorHeroSectionProps } from '../../types'
 import { formatDate } from '@shared/utils/dataFormater'
 import { FollowButton } from '../FollowButton/FollowButton'
+import { Typography } from 'antd'
+
+const { Title, Text } = Typography
 
 export const AuthorHeroSection = ({ author }: AuthorHeroSectionProps) => {
   const dateOfBirth = formatDate(author.dateOfBirth)
@@ -10,20 +13,15 @@ export const AuthorHeroSection = ({ author }: AuthorHeroSectionProps) => {
   return (
     <section className={styles.hero}>
       <div className={styles.container}>
-        <img
-          src="/book.png"
-          alt={`${author.firstName} ${author.lastName}`}
-          className={styles.cover}
-        />
+        <img src={author.avatar || '/book.png'} className={styles.cover} />
 
         <div className={styles.info}>
-          <h1 className={styles.title}>
-            {author.firstName} {author.lastName}
-          </h1>
-
-          <p className={styles.dates}>Дата рождения: {dateOfBirth}</p>
-
-          <div className={styles.stats}></div>
+          <div className={styles.headerBlock}>
+            <h1 className={styles.title}>
+              {author.firstName} {author.lastName}
+            </h1>
+            <Text className={styles.dates}>Родился: {dateOfBirth}</Text>
+          </div>
 
           <div className={styles.actions}>
             <FollowButton
@@ -33,7 +31,7 @@ export const AuthorHeroSection = ({ author }: AuthorHeroSectionProps) => {
             />
 
             <div className={styles.secondaryActions}>
-              <ToShareButton title={author.firstName} />
+              <ToShareButton title={`${author.firstName} ${author.lastName}`} />
             </div>
           </div>
         </div>

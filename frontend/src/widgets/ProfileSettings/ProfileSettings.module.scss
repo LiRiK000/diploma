@@ -1,21 +1,89 @@
+@use '@shared/styles/variables' as *;
+
 .wrapper {
   display: flex;
   flex-direction: column;
   gap: 24px;
-  width: 100%; // Растягиваем сам враппер
-  align-items: stretch; // Это заставит дочерние элементы (карточки) тянуться вширь
+  width: 100%;
+  align-items: stretch;
 }
+
+.settingsRow {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--glass-border);
+  transition: $transition-liquid;
+
+  &:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  &:first-child {
+    padding-top: 0;
+  }
+}
+
+.description {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
 .card {
-  animation: slideIn 0.3s ease forwards;
+  animation: slideIn 0.4s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
 }
 
 @keyframes slideIn {
   from {
     opacity: 0;
-    transform: translateX(10px);
+    transform: translateX(12px);
   }
   to {
     opacity: 1;
     transform: translateX(0);
   }
+}
+
+:global(.ant-switch) {
+  background: var(--glass-border);
+
+  &:global(.ant-switch-checked) {
+    background: #1890ff;
+  }
+}
+
+.settingsCardCustom {
+  background: var(--glass-bg) !important;
+  backdrop-filter: $liquid-glass-blur;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: $border-radius-lg;
+  box-shadow: $liquid-glass-shadow-light;
+  transition: $transition-liquid;
+
+  &:hover {
+    border-color: rgba(24, 144, 255, 0.3) !important;
+    box-shadow: $shadow-medium;
+  }
+
+  :global(.ant-card-body) {
+    padding: 24px !important;
+  }
+
+  :global(.ant-card-head) {
+    border-bottom: 1px solid var(--glass-border);
+    background: transparent;
+
+    :global(.ant-card-head-title) {
+      color: var(--text-primary);
+      font-weight: 700;
+    }
+  }
+}
+
+.description {
+  font-size: 13px;
+  color: var(--text-secondary);
+  opacity: 0.8;
+  margin-top: 4px;
 }

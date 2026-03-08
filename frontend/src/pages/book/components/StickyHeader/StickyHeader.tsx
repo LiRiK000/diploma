@@ -36,7 +36,6 @@ export const StickyHeader = ({
         <Space className={styles.buttonContainer}>
           <AddToCartButton bookId={id} />
 
-          {/* Группируем второстепенные действия, чтобы скрыть их на мобилках */}
           <div className={styles.secondaryAction}>
             <AddToWishlistButton id={id} title={title} />
           </div>
@@ -44,7 +43,7 @@ export const StickyHeader = ({
             <ToShareButton title={title} />
           </div>
 
-          <CartIcon flag={true} />
+          <CartIcon />
         </Space>
       </div>
     </header>

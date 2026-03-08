@@ -48,3 +48,15 @@ export interface GetCatalogParams {
   search?: string
   sort?: CatalogSort
 }
+
+export interface PaginationInfo {
+  page: number
+  limit: number
+  total: number
+  totalPages: number
+}
+
+export interface CatalogResponse {
+  items: Book[]
+  pagination: PaginationInfo
+}

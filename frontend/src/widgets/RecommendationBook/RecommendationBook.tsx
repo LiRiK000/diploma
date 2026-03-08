@@ -7,11 +7,18 @@ const { Title } = Typography
 
 export const RecommendationBook = ({ books }: RecommendationBookProps) => {
   return (
-    <Card className={styles.sidebar} variant={'borderless'}>
+    <Card className={styles.sidebar} bordered={false}>
       <Title level={4} className={styles.heading}>
         Книги в том же духе
       </Title>
-      <Divider style={{ margin: '0.1rem 0' }} />
+
+      <Divider
+        style={{
+          margin: '0.5rem 0',
+          borderColor: 'var(--glass-border)',
+          opacity: 0.6,
+        }}
+      />
 
       <div className={styles.scrollContainer}>
         {books.recommendedBooks.map(book => (

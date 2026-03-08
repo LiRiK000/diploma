@@ -3,12 +3,12 @@
 .content {
   display: flex;
   flex-direction: column;
-  background: $background-white;
+  background: var(--bg-content);
   border-radius: $border-size-primary;
   max-width: $breakpoint-lg;
   margin: 0 auto;
   width: 100%;
-
+  border: 1px solid var(--glass-border);
   @media (min-width: $breakpoint-lg) {
     padding: 32px;
   }
@@ -21,7 +21,7 @@
 }
 
 .description {
-  color: $text-secondary;
+  color: var(--text-secondary);
   line-height: 1.6;
   font-size: $font-size-medium;
   text-align: justify;
@@ -40,16 +40,19 @@
   padding: 4px 12px;
   font-size: $font-size-small;
   border-radius: $border-radius-md;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--text-primary);
 }
-
 .details {
   width: 100%;
   padding: $padding-xl;
-  background: $background-gray;
+  background: var(--glass-bg);
   border-radius: $border-radius-sm;
+  border: 1px solid var(--glass-border);
 
   @media (max-width: $breakpoint-md) {
-    .ant-space-item {
+    :global(.ant-space-item) {
       width: 100%;
     }
   }
@@ -65,11 +68,10 @@
   }
 }
 
-.sectionTitle {
+.subSectionTitle {
   margin-bottom: $padding-xl;
-  color: #08a6f0ff;
+  color: var(--text-primary);
 }
-
 .subSectionTitle {
   margin-bottom: $padding-xl;
 }
@@ -95,6 +97,9 @@
 
 .details,
 .previewDetails {
+  background: var(--glass-bg);
+  border-radius: $border-radius-sm;
+  border: 1px solid var(--glass-border);
   transition: all 0.3s ease;
 }
 

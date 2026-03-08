@@ -2,25 +2,28 @@
 
 .wrapper {
   position: relative;
+  margin: 32px 0;
 }
 
 .title {
   text-align: start;
-  font-size: 24px;
-  font-weight: $font-weight;
-  margin-bottom: 16px;
-  color: $text-primary;
+  font-size: 28px;
+  font-weight: 800;
+  margin-bottom: 24px;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
 }
 
 .carouselWrapper {
   position: relative;
+  padding: 10px 0;
 }
 
 .grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  padding: 16px;
+  gap: 24px;
+  padding: 10px 4px;
 }
 
 .arrowLeft,
@@ -28,13 +31,53 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 20px;
+  z-index: 10;
+
+  width: 44px !important;
+  height: 44px !important;
+
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: $liquid-glass-shadow-light !important;
+  border-radius: 50% !important;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease !important;
+
+  &:hover {
+    background: var(--header-link-hover) !important;
+    color: #fff !important;
+    transform: translateY(-50%) scale(1.1);
+  }
+
+  :global(.anticon) {
+    font-size: 18px;
+  }
 }
 
 .arrowLeft {
-  left: -8px;
+  left: -22px;
 }
 
 .arrowRight {
-  right: -8px;
+  right: -22px;
+}
+
+@media (max-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .arrowLeft,
+  .arrowRight {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
 }

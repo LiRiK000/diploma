@@ -23,6 +23,7 @@ import { CatalogPage } from '@pages/catalog'
 import { ProfileLayout } from '@app/layout/ProfileLayout'
 import { ProfileInfoPage } from '@pages/profile/ui/ProfileInfoPage'
 import { ProfileSettingsPage } from '@pages/profile/ui/ProfileSettingsPage'
+import { ThemeProvider } from './providers/ThemeProvider/ThemeProvider'
 
 export const Router = () => {
   const init = useCookieConsentStore(useShallow(state => state.init))
@@ -36,134 +37,136 @@ export const Router = () => {
   return (
     <BrowserRouter>
       <QueryProvider>
-        <Routes>
-          <Route path="/" element={<MainLayout />}>
-            <Route
-              index
-              element={
-                <PageProvider>
-                  <HomePage />
-                </PageProvider>
-              }
-            />
-            <Route
-              path={routes.register}
-              element={
-                <PageProvider>
-                  <RegisterPage />
-                </PageProvider>
-              }
-            />
-            <Route
-              path={routes.login}
-              element={
-                <PageProvider>
-                  <LoginPage />
-                </PageProvider>
-              }
-            />
-            <Route
-              path={routes.bookPage}
-              element={
-                <PageProvider>
-                  <BookPage />
-                </PageProvider>
-              }
-            />{' '}
-            <Route
-              path={routes.order}
-              element={
-                <PageProvider>
-                  <OrderPage />
-                </PageProvider>
-              }
-            />
-            <Route
-              path={routes.search}
-              element={
-                <PageProvider>
-                  <SearchPage />
-                </PageProvider>
-              }
-            />
-            <Route
-              path={routes.authorPage}
-              element={
-                <PageProvider>
-                  <AuthorPage />
-                </PageProvider>
-              }
-            />
-            <Route
-              path={routes.cart}
-              element={
-                <AuthProvider>
+        <ThemeProvider>
+          <Routes>
+            <Route path="/" element={<MainLayout />}>
+              <Route
+                index
+                element={
                   <PageProvider>
-                    <CartPage />
+                    <HomePage />
                   </PageProvider>
-                </AuthProvider>
-              }
-            />
-            <Route
-              path={routes.catalog}
-              element={
-                <AuthProvider>
+                }
+              />
+              <Route
+                path={routes.register}
+                element={
                   <PageProvider>
-                    <CatalogPage />
+                    <RegisterPage />
                   </PageProvider>
-                </AuthProvider>
-              }
-            />
-            <Route
-              path={routes.orders}
-              element={
-                <AuthProvider>
+                }
+              />
+              <Route
+                path={routes.login}
+                element={
                   <PageProvider>
-                    <OrderList />
+                    <LoginPage />
                   </PageProvider>
-                </AuthProvider>
-              }
-            />
-            <Route
-              path={routes.profile}
-              element={
-                <AuthProvider>
+                }
+              />
+              <Route
+                path={routes.bookPage}
+                element={
                   <PageProvider>
-                    <ProfileLayout />
+                    <BookPage />
                   </PageProvider>
-                </AuthProvider>
-              }
-            >
-              <Route index element={<ProfileInfoPage />} />
+                }
+              />{' '}
+              <Route
+                path={routes.order}
+                element={
+                  <PageProvider>
+                    <OrderPage />
+                  </PageProvider>
+                }
+              />
+              <Route
+                path={routes.search}
+                element={
+                  <PageProvider>
+                    <SearchPage />
+                  </PageProvider>
+                }
+              />
+              <Route
+                path={routes.authorPage}
+                element={
+                  <PageProvider>
+                    <AuthorPage />
+                  </PageProvider>
+                }
+              />
+              <Route
+                path={routes.cart}
+                element={
+                  <AuthProvider>
+                    <PageProvider>
+                      <CartPage />
+                    </PageProvider>
+                  </AuthProvider>
+                }
+              />
+              <Route
+                path={routes.catalog}
+                element={
+                  <AuthProvider>
+                    <PageProvider>
+                      <CatalogPage />
+                    </PageProvider>
+                  </AuthProvider>
+                }
+              />
+              <Route
+                path={routes.orders}
+                element={
+                  <AuthProvider>
+                    <PageProvider>
+                      <OrderList />
+                    </PageProvider>
+                  </AuthProvider>
+                }
+              />
+              <Route
+                path={routes.profile}
+                element={
+                  <AuthProvider>
+                    <PageProvider>
+                      <ProfileLayout />
+                    </PageProvider>
+                  </AuthProvider>
+                }
+              >
+                <Route index element={<ProfileInfoPage />} />
 
-              <Route
-                path={routes.profileSettings}
-                element={<ProfileSettingsPage />}
-              />
-              <Route
-                path={routes.achievements}
-                element={<div>Достижения (Страница в разработке)</div>}
-              />
-              <Route
-                path={routes.secure}
-                element={<div>Безопасность (Страница в разработке)</div>}
-              />
+                <Route
+                  path={routes.profileSettings}
+                  element={<ProfileSettingsPage />}
+                />
+                <Route
+                  path={routes.achievements}
+                  element={<div>Достижения (Страница в разработке)</div>}
+                />
+                <Route
+                  path={routes.secure}
+                  element={<div>Безопасность (Страница в разработке)</div>}
+                />
+              </Route>
             </Route>
-          </Route>
 
-          <Route
-            path={routes.librarian}
-            element={
-              <AuthProvider>
-                <PageProvider>
-                  <LibrarianLayout />
-                </PageProvider>
-              </AuthProvider>
-            }
-          />
-          <Route path={routes.privacy} element={<PrivacyPage />} />
-          <Route path={routes.notFound} element={<NotFound />} />
-        </Routes>
+            <Route
+              path={routes.librarian}
+              element={
+                <AuthProvider>
+                  <PageProvider>
+                    <LibrarianLayout />
+                  </PageProvider>
+                </AuthProvider>
+              }
+            />
+            <Route path={routes.privacy} element={<PrivacyPage />} />
+            <Route path={routes.notFound} element={<NotFound />} />
+          </Routes>
+        </ThemeProvider>
       </QueryProvider>
     </BrowserRouter>
   )

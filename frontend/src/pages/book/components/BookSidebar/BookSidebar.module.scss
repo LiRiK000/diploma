@@ -1,30 +1,41 @@
 @use '@shared/styles/variables' as *;
 
 .sidebar {
+  background: var(--bg-content) !important;
   border-radius: $border-radius-lg;
   box-shadow: $shadow-light;
   padding: $spacing-md;
-  transition: box-shadow 0.3s ease;
+  border: 1px solid var(--glass-border) !important;
+  transition: $transition-liquid;
+
+  &:hover {
+    box-shadow: $shadow-medium;
+    border-color: var(--text-secondary);
+  }
 }
 
 .heading {
-  color: $text-heading;
   font-weight: $font-weight;
   font-size: $font-size-small;
   margin-bottom: $spacing-xs;
   display: flex;
   align-items: center;
   gap: $spacing-xs;
+
+  svg {
+    font-size: 14px;
+  }
 }
 
 .name {
   display: block;
   font-size: $font-size-medium;
-  color: $text-primary;
+  color: var(--text-primary);
+  margin-top: $spacing-sm;
 }
 
 .bio {
-  color: $text-secondary;
+  color: var(--text-secondary);
   line-height: 1.4;
   font-size: $font-size-small;
   margin: 0 0 $spacing-md 0;
@@ -33,7 +44,16 @@
 .authorButton {
   margin-top: 15px;
   font-size: $font-size-small;
-  height: 24px;
+  height: 28px;
+  background: var(--glass-bg) !important;
+  border-color: var(--glass-border) !important;
+  color: var(--text-primary) !important;
+  transition: $transition-liquid;
+
+  &:hover {
+    border-color: #69b1ff !important;
+    color: #69b1ff !important;
+  }
 }
 
 @media (max-width: $breakpoint-md) {

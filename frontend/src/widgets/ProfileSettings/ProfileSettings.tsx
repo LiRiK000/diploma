@@ -2,37 +2,32 @@ import { Col, Row, Switch, Typography } from 'antd'
 import { SettingsCard } from './components/SettingsCard'
 import styles from './ProfileSettings.module.scss'
 import { PreferenceSelector } from '@features/update-preferences/PreferenceSelector.tsx'
+import { ThemeToggle } from '@features/theme-toggle/ui/ThemeToggle'
 
 const { Text } = Typography
 
 export const ProfileSettings = () => {
   return (
     <div className={styles.wrapper}>
-      {/* Секция Интерфейс */}
-
-      <SettingsCard title="Настройки интерфейса">
+      <SettingsCard
+        className={styles.settingsCardCustom}
+        title="Настройки интерфейса"
+      >
         <Row align="middle" justify="space-between">
           <Col>
             <Text strong>Цветовая тема</Text>
-            <div style={{ color: 'rgba(0,0,0,0.45)', fontSize: '13px' }}>
+            <div className={styles.description}>
               Выберите между светлым и темным оформлением
             </div>
           </Col>
           <Col>
-            <Switch
-              checkedChildren="Dark"
-              unCheckedChildren="Light"
-              defaultChecked={false}
-            />
+            <ThemeToggle />
           </Col>
         </Row>
-
-        <Row align="middle" justify="space-between"></Row>
       </SettingsCard>
       <SettingsCard title="Уточнить предпочтения">
         <PreferenceSelector />
       </SettingsCard>
-      {/* Секция Уведомления */}
       <SettingsCard title="Уведомления">
         <Row align="middle" justify="space-between">
           <Col>

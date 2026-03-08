@@ -1,5 +1,5 @@
 import styles from './BookCard.module.scss'
-import { Typography, Button, Space } from 'antd'
+import { Typography, Space } from 'antd'
 import { BookCardProps } from './types'
 import { Link, useNavigate } from 'react-router-dom'
 import { AddToCartButton } from '@features/add-to-cart/components'
