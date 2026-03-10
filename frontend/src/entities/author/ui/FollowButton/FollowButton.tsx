@@ -1,4 +1,3 @@
-// FollowButton.tsx
 import { useState } from 'react'
 import { Button } from 'antd'
 import {
@@ -51,7 +50,11 @@ export const FollowButton = ({
         danger={isFollowing && isHovered}
         className={isFollowing ? styles.subscribed : ''}
       >
-        {isFollowing ? 'Вы подписаны' : 'Подписаться'}
+        {isFollowing
+          ? isHovered
+            ? 'Отписаться'
+            : 'Вы подписаны'
+          : 'Подписаться'}
       </Button>
 
       <span className={styles.counter}>

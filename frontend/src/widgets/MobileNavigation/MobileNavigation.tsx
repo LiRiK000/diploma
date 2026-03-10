@@ -40,7 +40,7 @@ export const MobileNavigation = () => {
             `${styles.navItem} ${isActive ? styles.active : ''}`
           }
         >
-          <CartIcon />
+          <CartIcon noLink />
           <span className={styles.label}>Корзина</span>
         </NavLink>
 

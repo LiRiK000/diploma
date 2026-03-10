@@ -14,7 +14,10 @@ export const MainLayout = () => {
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <Header className={styles.header}>
-        <div className={styles.blob} />
+        <div className={styles.backgroundWrapper}>
+          <div className={styles.blob} />
+        </div>
+
         <div className={styles.headerLeft}>
           <Link to={routes.home} className={styles.logo}>
             Библиотека

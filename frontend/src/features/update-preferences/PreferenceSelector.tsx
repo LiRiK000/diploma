@@ -1,70 +1,60 @@
-import { useState } from 'react'
-import { Button, Col, Input, Row } from 'antd'
+import { useState, useMemo } from 'react'
+import { Button, Col, Input, Row, Spin } from 'antd'
 import { SearchOutlined } from '@ant-design/icons'
-import styles from './PreferenceSelector.module.scss'
 import { ArtistItem } from '@features/update-preferences/ui/AuthorItem'
-
-const MOCK_INITIAL = [
-  { id: 1, name: 'PHARAOH' },
-  { id: 2, name: 'Akon' },
-  { id: 3, name: 'Баста' },
-  { id: 4, name: 'LSP' },
-  { id: 5, name: 'Boulevard Depo' },
-  { id: 6, name: 'Yanix' },
-]
-
-const MOCK_POOL = [
-  { id: 7, name: 'Thomas Mraz' },
-  { id: 8, name: 'GONE.Fludd' },
-  { id: 9, name: 'Mnogoznaal' },
-  { id: 10, name: 'Saluki' },
-  { id: 11, name: 'Rocket' },
-  { id: 12, name: 'Big Baby Tape' },
-  { id: 13, name: 'Kizaru' },
-  { id: 14, name: 'Obladaet' },
-]
+import styles from './PreferenceSelector.module.scss'
+import { usePreferenceAuthors } from './hooks/usePreferences'
 
 export const PreferenceSelector = () => {
-  const [artists, setArtists] = useState(MOCK_INITIAL)
-  const [pool, setPool] = useState(MOCK_POOL)
-  const [selectedIds, setSelectedIds] = useState<number[]>([])
+  const { displayAuthors, popFromPool, isLoading, isSubmitting, submit } =
+    usePreferenceAuthors(12)
+
+  const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [search, setSearch] = useState('')
 
-  const handleSelect = (id: number) => {
-    const isSelected = selectedIds.includes(id)
+  const handleSelect = (id: string) => {
+    const isAlreadySelected = selectedIds.includes(id)
 
-    if (isSelected) {
+    if (isAlreadySelected) {
       setSelectedIds(prev => prev.filter(item => item !== id))
     } else {
       setSelectedIds(prev => [...prev, id])
-
-      if (pool.length > 0) {
-        const randomIndex = Math.floor(Math.random() * pool.length)
-        const randomArtist = pool[randomIndex]
-
-        setArtists(prev => [...prev, randomArtist])
-        setPool(prev => prev.filter((_, index) => index !== randomIndex))
-      }
+      popFromPool()
     }
   }
 
-  const displayedArtists = artists.filter(a =>
-    a.name.toLowerCase().includes(search.toLowerCase()),
-  )
+  const filteredArtists = useMemo(() => {
+    return displayAuthors.filter(a =>
+      a.fullName.toLowerCase().includes(search.toLowerCase()),
+    )
+  }, [displayAuthors, search])
+
+  const handleSubmit = () => {
+    submit(selectedIds)
+  }
+
+  if (isLoading) {
+    return (
+      <div className={styles.loaderWrapper}>
+        <Spin size="large" tip="Загрузка авторов..." />
+      </div>
+    )
+  }
 
   return (
     <div className={styles.container}>
       <Input
         size="large"
-        placeholder="Поиск любимых авторов или жанров..."
+        placeholder="Поиск любимых авторов..."
         prefix={<SearchOutlined />}
         className={styles.searchInput}
         onChange={e => setSearch(e.target.value)}
+        allowClear
       />
 
       <div className={styles.gridWrapper}>
         <Row gutter={[16, 40]} justify="start">
-          {displayedArtists.map(artist => (
+          {filteredArtists.map(artist => (
             <Col
               key={artist.id}
               xs={12}
@@ -74,8 +64,8 @@ export const PreferenceSelector = () => {
               className={styles.artistCol}
             >
               <ArtistItem
-                name={artist.name}
-                image="https://api.dicebear.com/7.x/avataaars/svg?seed=Fedor"
+                name={artist.fullName}
+                image={`https://api.dicebear.com/7.x/avataaars/svg?seed=${artist.id}`}
                 isSelected={selectedIds.includes(artist.id)}
                 onClick={() => handleSelect(artist.id)}
               />
@@ -91,7 +81,9 @@ export const PreferenceSelector = () => {
           block
           size="large"
           className={styles.submitBtn}
+          loading={isSubmitting}
           disabled={selectedIds.length === 0}
+          onClick={handleSubmit}
         >
           ПОДТВЕРДИТЬ ВЫБОР{' '}
           {selectedIds.length > 0 && `(${selectedIds.length})`}

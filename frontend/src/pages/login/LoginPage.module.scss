@@ -11,10 +11,10 @@
 .formWrapper {
   width: 100%;
   max-width: 450px;
-  background: $background-white;
+  background: var(--bg-content);
   padding: 20px;
   border-radius: $border-size-primary;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 32px rgba(2, 99, 177, 0.2);
 }
 
 .header {

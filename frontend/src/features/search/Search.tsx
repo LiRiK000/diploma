@@ -1,5 +1,5 @@
 import { SearchOutlined, UserOutlined } from '@ant-design/icons'
-import { Input, List, Typography, Spin, Empty, Button } from 'antd'
+import { Input, List, Typography, Spin, Empty } from 'antd'
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { createPortal } from 'react-dom'
@@ -28,22 +28,12 @@ export const Search = () => {
     return () => window.removeEventListener('keydown', handleEsc)
   }, [])
 
-  useEffect(() => {
-    if (isFocused && window.innerWidth <= 768) {
-      document.body.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = ''
-    }
-    return () => {
-      document.body.style.overflow = ''
-    }
-  }, [isFocused])
-
   const handleSearch = (query: string) => {
     const trimmed = query.trim()
     if (!trimmed) return
     navigate(`/search?q=${encodeURIComponent(trimmed)}`)
     setIsFocused(false)
+    setValue('')
   }
 
   const navigateToItem = (item: any) => {
@@ -55,13 +45,6 @@ export const Search = () => {
   }
 
   const showDropdown = isFocused && value.trim().length >= 2
-
-  const overlay = isFocused ? (
-    <div
-      className={`${styles.overlay} ${styles.overlayVisible}`}
-      onClick={() => setIsFocused(false)}
-    />
-  ) : null
 
   return (
     <>
@@ -79,7 +62,7 @@ export const Search = () => {
       >
         <div className={styles.searchContainer}>
           <AntdSearch
-            placeholder="Поиск"
+            placeholder="Поиск книг или авторов..."
             size="large"
             value={value}
             onChange={e => setValue(e.target.value)}
@@ -99,7 +82,7 @@ export const Search = () => {
             <div className={styles.dropdownList}>
               {isLoading ? (
                 <div className={styles.infoState}>
-                  <Spin size="small" />
+                  <Spin tip="Ищем..." />
                 </div>
               ) : suggestions.length > 0 ? (
                 <List
@@ -121,9 +104,13 @@ export const Search = () => {
                           )}
                         </div>
                         <div className={styles.suggestionText}>
-                          <Text strong={false}>{item.title}</Text>
+                          <Text strong>{item.title}</Text>
                           {item.author && (
-                            <Text className={styles.authorName}>
+                            <Text
+                              className={styles.authorName}
+                              type="secondary"
+                              block
+                            >
                               {item.author}
                             </Text>
                           )}
@@ -136,7 +123,7 @@ export const Search = () => {
                 <div className={styles.infoState}>
                   <Empty
                     image={Empty.PRESENTED_IMAGE_SIMPLE}
-                    description="Нет результатов"
+                    description="Ничего не нашли"
                   />
                 </div>
               )}

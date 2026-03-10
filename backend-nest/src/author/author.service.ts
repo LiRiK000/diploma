@@ -6,8 +6,14 @@ import { CreateAuthorDto } from './dto/author.dto';
 export class AuthorsService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll() {
+  async findAll(excludeIds: string[] = [], limit: number = 10) {
     const authors = await this.prisma.author.findMany({
+      where: {
+        id: {
+          notIn: excludeIds,
+        },
+      },
+      take: limit,
       select: {
         id: true,
         firstName: true,
@@ -16,9 +22,16 @@ export class AuthorsService {
         dateOfDeath: true,
         _count: { select: { books: true } },
       },
-      orderBy: { lastName: 'asc' },
     });
-    return { status: 'success', results: authors.length, data: authors };
+
+    return {
+      status: 'success',
+      results: authors.length,
+      data: authors.map((a) => ({
+        ...a,
+        fullName: `${a.firstName} ${a.lastName}`,
+      })),
+    };
   }
 
   async findOne(id: string, currentUserId?: string) {
@@ -44,25 +57,37 @@ export class AuthorsService {
       where: { authorId: id },
       take: 6,
       orderBy: { createdAt: 'desc' },
-      include: { author: true, genre: true },
+      include: {
+        author: true,
+        genre: true,
+      },
     });
-
-    const topBooks = topBooksData.map((book) => ({
-      ...book,
-      author: `${book.author.firstName} ${book.author.lastName}`,
-      genre: book.genre.label,
-    }));
 
     return {
       status: 'success',
       data: {
         ...author,
         fullName: `${author.firstName} ${author.lastName}`,
-        topBooks,
         followersCount: author._count.followers,
-        isFollowing: Boolean(isFollowing),
+        isFollowing: !!isFollowing,
+        topBooks: topBooksData.map((book) => ({
+          ...book,
+          author: `${book.author.firstName} ${book.author.lastName}`,
+          genre: book.genre.label,
+        })),
       },
     };
+  }
+
+  async bulkFollow(userId: string, authorIds: string[]) {
+    return await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        followedAuthors: {
+          connect: authorIds.map((id) => ({ id })),
+        },
+      },
+    });
   }
 
   async create(dto: CreateAuthorDto) {

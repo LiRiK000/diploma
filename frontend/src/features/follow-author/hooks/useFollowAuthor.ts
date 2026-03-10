@@ -1,6 +1,7 @@
 import { authorService } from '@shared/services/AuthorService'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { message } from 'antd'
+
 export const useAuthorMutation = (authorId: string) => {
   const queryClient = useQueryClient()
 
@@ -9,7 +10,6 @@ export const useAuthorMutation = (authorId: string) => {
 
     onMutate: async () => {
       await queryClient.cancelQueries({ queryKey: ['author', authorId] })
-
       const previousAuthor = queryClient.getQueryData(['author', authorId])
 
       queryClient.setQueryData(['author', authorId], (old: any) => {
@@ -21,8 +21,8 @@ export const useAuthorMutation = (authorId: string) => {
           ...old,
           isFollowing: !isCurrentlyFollowing,
           followersCount: isCurrentlyFollowing
-            ? old.followersCount - 1
-            : old.followersCount + 1,
+            ? Math.max(0, (old.followersCount || 0) - 1)
+            : (old.followersCount || 0) + 1,
         }
       })
 

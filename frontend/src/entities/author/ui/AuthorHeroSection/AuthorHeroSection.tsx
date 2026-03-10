@@ -2,25 +2,33 @@ import styles from './AuthorHeroSection.module.scss'
 import { ToShareButton } from '@features/to-share/components'
 import { AuthorHeroSectionProps } from '../../types'
 import { formatDate } from '@shared/utils/dataFormater'
-import { FollowButton } from '../FollowButton/FollowButton'
 import { Typography } from 'antd'
+import { FollowButton } from '../FollowButton/FollowButton'
 
-const { Title, Text } = Typography
+const { Text } = Typography
 
 export const AuthorHeroSection = ({ author }: AuthorHeroSectionProps) => {
-  const dateOfBirth = formatDate(author.dateOfBirth)
+  const dateOfBirth = author.dateOfBirth
+    ? formatDate(author.dateOfBirth)
+    : 'Неизвестно'
 
   return (
     <section className={styles.hero}>
       <div className={styles.container}>
-        <img src={author.avatar || '/book.png'} className={styles.cover} />
+        <img
+          src={author.avatar || '/author-placeholder.png'}
+          className={styles.cover}
+          alt={author.fullName}
+        />
 
         <div className={styles.info}>
           <div className={styles.headerBlock}>
-            <h1 className={styles.title}>
-              {author.firstName} {author.lastName}
-            </h1>
-            <Text className={styles.dates}>Родился: {dateOfBirth}</Text>
+            <h1 className={styles.title}>{author.fullName}</h1>
+            <Text className={styles.dates}>
+              Родился: {dateOfBirth}
+              {author.dateOfDeath &&
+                ` — Умер: ${formatDate(author.dateOfDeath)}`}
+            </Text>
           </div>
 
           <div className={styles.actions}>
@@ -31,7 +39,7 @@ export const AuthorHeroSection = ({ author }: AuthorHeroSectionProps) => {
             />
 
             <div className={styles.secondaryActions}>
-              <ToShareButton title={`${author.firstName} ${author.lastName}`} />
+              <ToShareButton title={author.fullName} />
             </div>
           </div>
         </div>
