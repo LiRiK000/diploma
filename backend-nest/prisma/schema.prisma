@@ -5,9 +5,9 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider =   "prisma-client-js"
-  output          = "../src/generated/prisma"
-  moduleFormat    = "cjs"
+  provider = "prisma-client-js"
+  // using default output for @prisma/client; no custom src path (safer for dist runtime)
+  // moduleFormat = "cjs"
 }
 datasource db {
   provider = "postgresql"
@@ -15,7 +15,11 @@ datasource db {
 
 
 
-
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
 
 model User {
   id        String   @id @default(uuid())
@@ -23,6 +27,13 @@ model User {
   password  String
   name      String
   surname   String
+
+  displayName  String?   // никнейм
+  phone        String?  @unique
+  birthDate    DateTime?
+  gender       Gender?  @default(OTHER)
+  avatarUrl    String?  // Сразу на будущее для аватарок
+
   refreshToken String?
   role      Role     @default(USER)
   isInBlacklist Boolean @default(false)
@@ -33,7 +44,7 @@ model User {
   readBooks Book[] @relation("ReadBooks")
   cart Cart?
   reviews Review[]
- orders       Order[] @relation("UserOrders") // Заказы самого юзера
+  orders       Order[] @relation("UserOrders") // Заказы самого юзера
   issuedOrders Order[] @relation("LibrarianOrders") // Заказы, которые этот юзе
   notifications Notification[]
   

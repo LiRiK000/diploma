@@ -11,8 +11,12 @@ import {
   Divider,
   Alert,
   Popconfirm,
+  Space,
 } from 'antd'
-import { SafetyCertificateOutlined } from '@ant-design/icons'
+import {
+  SafetyCertificateOutlined,
+  ClockCircleOutlined,
+} from '@ant-design/icons'
 import dayjs from 'dayjs'
 
 import { useOrder } from '@entities/order/hooks'
@@ -46,35 +50,40 @@ export const OrderPage: React.FC = () => {
   return (
     <div className={styles.container}>
       <header className={styles.header}>
-        <Title level={2} style={{ margin: 0 }}>
-          Заказ #{order.id.slice(0, 8)}
-        </Title>
+        <Space direction="vertical" size={0}>
+          <Text type="secondary">Заказ из библиотеки</Text>
+          <Title level={2} style={{ margin: 0 }}>
+            #{order.id.slice(-8).toUpperCase()}
+          </Title>
+        </Space>
 
         {order.status === 'PENDING' && (
           <Popconfirm
             title="Отменить заказ?"
             description="Вы уверены, что хотите отменить заявку?"
-            // Обернули в стрелку, чтобы не передавать Event в mutate
             onConfirm={() => cancelOrder()}
             okText="Да, отменить"
             cancelText="Нет"
             okButtonProps={{ danger: true }}
           >
-            <Button danger loading={isCancelling}>
+            <Button danger loading={isCancelling} shape="round">
               Отменить заказ
             </Button>
           </Popconfirm>
         )}
       </header>
 
-      <Card className={styles.orderCard}>
+      <Card className={styles.orderCard} bordered={false}>
         {!isCancelled && (
           <div className={styles.stepsWrapper}>
-            <Steps current={currentStatus?.step} items={ORDER_STEPS} />
+            <Steps
+              current={currentStatus?.step}
+              items={ORDER_STEPS}
+              size="small"
+              responsive={true}
+            />
           </div>
         )}
-
-        <Divider />
 
         <main className={styles.statusContent}>
           {isCancelled && (
@@ -87,9 +96,9 @@ export const OrderPage: React.FC = () => {
 
           {order.status === 'PENDING' && (
             <Result
-              status="info"
-              title="Ожидайте подтверждения"
-              subTitle="Библиотекарь проверяет книги. Страница обновится автоматически."
+              icon={<ClockCircleOutlined style={{ color: '#1890ff' }} />}
+              title="Заявка на рассмотрении"
+              subTitle="Библиотекарь проверяет наличие книг. Мы уведомим вас о готовности."
             />
           )}
 
@@ -98,9 +107,10 @@ export const OrderPage: React.FC = () => {
               <Text type="secondary">Ваш секретный код получения:</Text>
               <div className={styles.pickupCode}>{order.pickupCode}</div>
               <Alert
-                message="Покажите этот код библиотекарю в зале выдачи"
+                message="Покажите этот код библиотекарю для получения книг"
                 type="info"
                 showIcon
+                style={{ borderRadius: '12px' }}
               />
             </div>
           )}
@@ -110,15 +120,16 @@ export const OrderPage: React.FC = () => {
               icon={
                 <SafetyCertificateOutlined className={styles.successIcon} />
               }
-              title="Книги готовы к передаче"
-              subTitle="Нажмите кнопку ниже, когда физически получите книги в руки."
+              title="Можно забирать!"
+              subTitle="Книги ждут вас на стойке выдачи. Подтвердите получение после того, как возьмете их."
               extra={
                 <Button
                   type="primary"
                   size="large"
+                  shape="round"
                   loading={isConfirming}
-                  // Обернули в стрелку, чтобы TS не ругался на MouseEvent
                   onClick={() => confirmReceipt()}
+                  style={{ padding: '0 40px' }}
                 >
                   Я получил книги
                 </Button>
@@ -129,8 +140,8 @@ export const OrderPage: React.FC = () => {
           {order.status === 'ON_HAND' && (
             <Result
               status="success"
-              title="Книги у вас!"
-              subTitle="Желаем приятного и полезного чтения."
+              title="Книги у вас"
+              subTitle="Приятного чтения! Не забудьте вернуть их в срок."
             />
           )}
         </main>
@@ -139,25 +150,32 @@ export const OrderPage: React.FC = () => {
 
         <footer className={styles.infoGrid}>
           <div className={styles.infoBlock}>
-            <Text type="secondary">Оформлен </Text>
-            <Text strong>
-              {dayjs(order.orderDate).format('DD MMMM YYYY, HH:mm')}
+            <Text className={styles.label}>Оформлен</Text>
+            <Text strong className={styles.value}>
+              {dayjs(order.orderDate).format('DD.MM.YYYY, HH:mm')}
             </Text>
           </div>
 
-          {order.status === 'ON_HAND' && order.dueDate && (
-            <div className={styles.infoBlock}>
-              <Text type="secondary">Вернуть до </Text>
-              <Text strong type="danger">
+          <div className={styles.infoBlock}>
+            <Text className={styles.label}>Срок возврата</Text>
+            {order.status === 'ON_HAND' && order.dueDate ? (
+              <Text strong className={`${styles.value} ${styles.danger}`}>
                 {dayjs(order.dueDate).format('DD MMMM YYYY')}
               </Text>
-            </div>
-          )}
+            ) : (
+              <Text className={styles.value} type="secondary">
+                —
+              </Text>
+            )}
+          </div>
 
           <div className={styles.infoBlock}>
-            <Text type="secondary">Текущий статус </Text>
-            <Tag color={currentStatus?.color || 'default'}>
-              {currentStatus?.label || order.status}
+            <Text className={styles.label}>Текущий статус</Text>
+            <Tag
+              color={currentStatus?.color || 'default'}
+              className={styles.statusTag}
+            >
+              {(currentStatus?.label || order.status).toUpperCase()}
             </Tag>
           </div>
         </footer>

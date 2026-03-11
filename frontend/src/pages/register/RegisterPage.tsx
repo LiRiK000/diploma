@@ -1,116 +1,192 @@
-import { Button, Form, Input, Typography } from 'antd'
+import { useState } from 'react'
+import { Button, Form, Input, Typography, Steps, DatePicker, Radio } from 'antd'
 import { Link } from 'react-router-dom'
 import { registerSchema } from './model/schema'
 import { useRegister } from './hooks/useRegister'
-import { RegisterFormValues } from '@shared/services/Auth/types'
 import styles from './RegisterPage.module.scss'
+import z from 'zod'
 
 const { Title, Text } = Typography
 
 export const RegisterPage = () => {
-  const { register } = useRegister()
+  const { register, isLoading } = useRegister()
+  const [currentStep, setCurrentStep] = useState(0)
   const [form] = Form.useForm()
 
-  const handleSubmit = async (values: RegisterFormValues) => {
-    const validatedValues = registerSchema.parse(values)
-    const { passwordConfirm: _passwordConfirm, ...dataToSend } = validatedValues
-    register(dataToSend)
+  const next = async () => {
+    try {
+      const fields =
+        currentStep === 0
+          ? ['email', 'password', 'passwordConfirm']
+          : ['name', 'surname']
+
+      await form.validateFields(fields)
+      setCurrentStep(currentStep + 1)
+    } catch (err) {
+      console.log('Validate Failed:', err)
+    }
   }
 
-  return (
-    <div className={styles.container}>
-      <div className={styles.formWrapper}>
-        <div className={styles.header}>
-          <Title level={2} className={styles.title}>
-            Регистрация
-          </Title>
-          <Text className={styles.subtitle}>
-            Создайте аккаунт для доступа к сервису
-          </Text>
-        </div>
-
-        <Form<RegisterFormValues>
-          form={form}
-          layout="vertical"
-          onFinish={handleSubmit}
-          size="large"
-        >
+  const onFinish = () => {
+    try {
+      const allValues = form.getFieldsValue(true)
+      const cleanValues = Object.fromEntries(
+        Object.entries(allValues).map(([key, value]) => [
+          key,
+          value === '' ? undefined : value,
+        ]),
+      )
+      const validated = registerSchema.parse(cleanValues)
+      const { passwordConfirm: _, ...dataToSend } = validated
+      if (dataToSend.birthDate && dataToSend.birthDate.$d) {
+        dataToSend.birthDate = dataToSend.birthDate.toISOString()
+      }
+      console.log('Отправка на бэк:', dataToSend)
+      register(dataToSend)
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        console.error('Детальные ошибки Zod:', err.flatten().fieldErrors)
+      }
+    }
+  }
+  const steps = [
+    {
+      title: 'Аккаунт',
+      content: (
+        <>
           <Form.Item
             name="email"
             label="Email"
-            rules={[
-              { required: true, message: 'Пожалуйста, введите email' },
-              { type: 'email', message: 'Неверный формат email' },
-            ]}
+            rules={[{ required: true, type: 'email' }]}
           >
-            <Input placeholder="Введите email" />
-          </Form.Item>
-          <Form.Item
-            name="name"
-            label="Имя"
-            rules={[
-              { required: true, message: 'Пожалуйста, введите имя' },
-              { min: 1, message: 'Имя обязательно' },
-            ]}
-          >
-            <Input placeholder="Введите имя" />
-          </Form.Item>
-          <Form.Item
-            name="surname"
-            label="Фамилия"
-            rules={[
-              { required: true, message: 'Пожалуйста, введите фамилию' },
-              { min: 1, message: 'Фамилия обязательна' },
-            ]}
-          >
-            <Input placeholder="Введите фамилию" />
+            <Input placeholder="example@mail.com" />
           </Form.Item>
           <Form.Item
             name="password"
             label="Пароль"
-            rules={[
-              { required: true, message: 'Пожалуйста, введите пароль' },
-              { min: 8, message: 'Пароль должен быть не менее 8 символов' },
-            ]}
+            rules={[{ required: true, min: 8 }]}
           >
-            <Input.Password placeholder="Введите пароль" />
+            <Input.Password placeholder="минимум 8 символов" />
           </Form.Item>
           <Form.Item
             name="passwordConfirm"
             label="Подтвердите пароль"
             dependencies={['password']}
             rules={[
-              { required: true, message: 'Пожалуйста, подтвердите пароль' },
+              { required: true },
               ({ getFieldValue }) => ({
                 validator(_, value) {
-                  if (!value || getFieldValue('password') === value) {
+                  if (!value || getFieldValue('password') === value)
                     return Promise.resolve()
-                  }
                   return Promise.reject(new Error('Пароли не совпадают'))
                 },
               }),
             ]}
           >
-            <Input.Password placeholder="Подтвердите пароль" />
+            <Input.Password placeholder="еще раз" />
           </Form.Item>
-          <Form.Item>
-            <Button
-              type="primary"
-              htmlType="submit"
+        </>
+      ),
+    },
+    {
+      title: 'Профиль',
+      content: (
+        <>
+          <Form.Item name="name" label="Имя" rules={[{ required: true }]}>
+            <Input placeholder="Иван" />
+          </Form.Item>
+          <Form.Item
+            name="surname"
+            label="Фамилия"
+            rules={[{ required: true }]}
+          >
+            <Input placeholder="Иванов" />
+          </Form.Item>
+          <Form.Item name="displayName" label="Никнейм (необязательно)">
+            <Input placeholder="IvanCool2005" />
+          </Form.Item>
+        </>
+      ),
+    },
+    {
+      title: 'Дополнительно',
+      content: (
+        <>
+          <Form.Item
+            name="phone"
+            label="Телефон"
+            rules={[{ pattern: /^7\d{10}$/, message: '7XXXXXXXXXX' }]}
+          >
+            <Input placeholder="79998887766" />
+          </Form.Item>
+          <Form.Item name="gender" label="Пол" initialValue="OTHER">
+            <Radio.Group optionType="button" buttonStyle="solid">
+              <Radio value="MALE">Мужчина</Radio>
+              <Radio value="FEMALE">Женщина</Radio>
+              <Radio value="OTHER">Другой</Radio>
+            </Radio.Group>
+          </Form.Item>
+          <Form.Item name="birthDate" label="Дата рождения">
+            <DatePicker
               style={{ width: '100%' }}
-              size="large"
-            >
-              Зарегистрироваться
-            </Button>
+              placeholder="Выберите дату"
+              format="DD.MM.YYYY"
+            />
           </Form.Item>
+        </>
+      ),
+    },
+  ]
+
+  return (
+    <div className={styles.container}>
+      <div className={styles.formWrapper}>
+        <div className={styles.header}>
+          <Title level={3}>Регистрация</Title>
+          <Steps
+            size="small"
+            current={currentStep}
+            className={styles.steps}
+            items={steps.map(s => ({ title: s.title }))}
+          />
+        </div>
+
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={onFinish}
+          size="large"
+          preserve={true}
+        >
+          <div className={styles.stepContent}>{steps[currentStep].content}</div>
+
+          <div className={styles.actions}>
+            {currentStep > 0 && (
+              <Button onClick={() => setCurrentStep(currentStep - 1)}>
+                Назад
+              </Button>
+            )}
+
+            {currentStep < steps.length - 1 ? (
+              <Button type="primary" onClick={next} style={{ flex: 1 }}>
+                Далее
+              </Button>
+            ) : (
+              <Button
+                type="primary"
+                htmlType="submit"
+                loading={isLoading}
+                style={{ flex: 1 }}
+              >
+                Завершить
+              </Button>
+            )}
+          </div>
         </Form>
 
-        <div className={styles.footer}>
-          <Text>
-            Уже есть аккаунт?{' '}
-            <Link to="/login" className={styles.loginLink}>
-              Войти
-            </Link>
+        <div className={styles.footer} style={{ marginTop: 20 }}>
+          <Text type="secondary">
+            Уже есть аккаунт? <Link to="/login">Войти</Link>
           </Text>
         </div>
       </div>

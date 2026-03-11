@@ -18,15 +18,28 @@ export interface LoginFormValues {
   password: string
 }
 
+export type UserRole = 'LIBRARIAN' | 'USER' | 'ADMIN'
+export type Gender = 'MALE' | 'FEMALE' | 'OTHER'
+
+export interface User {
+  id: string
+  email: string
+  name: string
+  surname: string
+  displayName: string | null
+  phone: string | null
+  role: UserRole
+  gender: Gender | null
+  birthDate?: string | null
+  avatarUrl: string | null
+  isInBlacklist: boolean
+  createdAt: string
+  updatedAt: string
+}
+
 export interface MeResponse {
-  status: string
+  status: 'success' | 'error'
   data: {
-    user: {
-      id: string
-      email: string
-      name: string
-      surname: string
-      role: 'LIBRARIAN' | 'USER'
-    }
+    user: User
   }
 }

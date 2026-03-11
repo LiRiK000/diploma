@@ -1,16 +1,26 @@
+import { useGetMe } from '@app/providers/AuthProvider/hooks/useGetMe'
 import styles from './ProfileInfoPage.module.scss'
 import {
   LinkOutlined,
   SafetyCertificateOutlined,
   UserOutlined,
 } from '@ant-design/icons'
-
 export const ProfileInfoPage = () => {
+  const { data, isLoading } = useGetMe()
+
+  const user = data?.data.user
+
+  if (isLoading) return <div>Загрузка профиля...</div>
+
   return (
     <div className={styles.wrapper}>
       <header className={styles.avatarWrapper}>
         <div className={styles.avatar}>
-          <UserOutlined className={styles.avatarIcon} />
+          {user?.avatarUrl ? (
+            <img src={user.avatarUrl} alt="Avatar" />
+          ) : (
+            <UserOutlined className={styles.avatarIcon} />
+          )}
         </div>
         <button className={styles.avatarButton}>Изменить фото</button>
       </header>
@@ -28,28 +38,42 @@ export const ProfileInfoPage = () => {
         </div>
 
         <div className={styles.card}>
-          {[
-            {
-              label: 'ФИО',
-              value: 'Битаев Фёдор Михайлович',
-              status: 'normal',
-            },
-            { label: 'Дата рождения', value: '3 Мая 2007', status: 'normal' },
-            { label: 'Пол', value: 'Не указан', status: 'muted' },
-            { label: 'Телефон', value: '+7 996 966 12 80', status: 'normal' },
-            { label: 'Почта', value: 'Не указана', status: 'muted' },
-          ].map((item, idx) => (
-            <div className={styles.row} key={idx}>
-              <span>{item.label}</span>
-              <span
-                className={
-                  item.status === 'muted' ? styles.muted : styles.value
-                }
-              >
-                {item.value}
-              </span>
-            </div>
-          ))}
+          <div className={styles.row}>
+            <span>ФИО</span>
+            <span className={styles.value}>
+              {user?.name} {user?.surname}
+            </span>
+          </div>
+
+          <div className={styles.row}>
+            <span>Телефон</span>
+            <span className={user?.phone ? styles.value : styles.muted}>
+              {user?.phone ?? 'Не указан'}
+            </span>
+          </div>
+
+          <div className={styles.row}>
+            <span>Пол</span>
+            <span className={user?.gender ? styles.value : styles.muted}>
+              {user?.gender === 'MALE'
+                ? 'Мужской'
+                : user?.gender === 'FEMALE'
+                  ? 'Женский'
+                  : 'Не указан'}
+            </span>
+          </div>
+
+          <div className={styles.row}>
+            <span>Телефон</span>
+            <span className={user?.phone ? styles.value : styles.muted}>
+              {user?.phone ? `+${user.phone}` : 'Не указан'}
+            </span>
+          </div>
+
+          <div className={styles.row}>
+            <span>Почта</span>
+            <span className={styles.value}>{user?.email}</span>
+          </div>
 
           <button className={styles.primaryButton}>Редактировать данные</button>
         </div>
@@ -70,19 +94,19 @@ export const ProfileInfoPage = () => {
         <div className={styles.card}>
           <div className={styles.row}>
             <span>Отображаемое имя</span>
-            <span className={styles.value}>Фёдор Б.</span>
+            <span className={styles.value}>
+              {user?.displayName || `${user?.name} ${user?.surname?.[0]}.`}
+            </span>
           </div>
 
           <div className={styles.row}>
             <span>Локация</span>
-            <span className={styles.muted}>Россия, Москва</span>
+            <span className={styles.muted}>Россия, Москва</span>{' '}
           </div>
 
           <div className={styles.row}>
-            <span>Возраст</span>
-            <span className={styles.value}>
-              18 <span className={styles.muted}>(скрыт настройками)</span>
-            </span>
+            <span>Роль</span>
+            <span className={styles.value}>{user?.role}</span>
           </div>
 
           <button className={styles.secondaryButton}>

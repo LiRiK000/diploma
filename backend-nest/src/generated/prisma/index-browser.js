@@ -126,6 +126,11 @@ exports.Prisma.UserScalarFieldEnum = {
   password: 'password',
   name: 'name',
   surname: 'surname',
+  displayName: 'displayName',
+  phone: 'phone',
+  birthDate: 'birthDate',
+  gender: 'gender',
+  avatarUrl: 'avatarUrl',
   refreshToken: 'refreshToken',
   role: 'role',
   isInBlacklist: 'isInBlacklist',
@@ -238,6 +243,12 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
+exports.Gender = exports.$Enums.Gender = {
+  MALE: 'MALE',
+  FEMALE: 'FEMALE',
+  OTHER: 'OTHER'
+};
+
 exports.Role = exports.$Enums.Role = {
   LIBRARIAN: 'LIBRARIAN',
   USER: 'USER'

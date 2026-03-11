@@ -59,7 +59,6 @@ export const OrderList = () => {
             color: 'default',
             label: order.status,
           }
-          const extraItems = order.items.length - MAX_VISIBLE_COVERS
 
           return (
             <List.Item className={styles.listItem}>
@@ -97,7 +96,7 @@ export const OrderList = () => {
                             className={styles.stackedCover}
                             style={{
                               zIndex: 10 - idx,
-                              transform: `translateX(-${idx * 20}px)`,
+                              transform: `translateX(-${idx * (window.innerWidth < 768 ? 12 : 20)}px)`,
                             }}
                           >
                             <img
@@ -106,11 +105,6 @@ export const OrderList = () => {
                             />
                           </div>
                         ))}
-                      {extraItems > 0 && (
-                        <div className={styles.glassCounter}>
-                          <Text>+{extraItems}</Text>
-                        </div>
-                      )}
                     </div>
                     <div className={styles.arrowIcon}>
                       <Button type="text" icon={<span>→</span>} />

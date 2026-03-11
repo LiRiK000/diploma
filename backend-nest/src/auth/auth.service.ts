@@ -6,9 +6,10 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { Response } from 'express';
-import { LoginDto, RegisterDto } from './dto/register.dto';
+import { RegisterDto } from './dto/register.dto';
+import { LoginDto } from './dto/login.dto';
+import type { User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { User } from 'src/generated/prisma/client';
 export interface JwtPayload {
   id: string;
   role: string;
@@ -23,15 +24,34 @@ export class AuthService {
   ) {}
 
   async register(dto: RegisterDto, res: Response) {
+    const { email, password, phone, birthDate, ...otherData } = dto;
+
     const existingUser = await this.prisma.user.findUnique({
-      where: { email: dto.email },
+      where: { email },
     });
     if (existingUser)
-      throw new BadRequestException('Пользователь уже существует');
+      throw new BadRequestException(
+        'Пользователь с таким email уже существует',
+      );
 
-    const hashedPassword = await bcrypt.hash(dto.password, 12);
+    if (phone) {
+      const existingPhone = await this.prisma.user.findUnique({
+        where: { phone },
+      });
+      if (existingPhone)
+        throw new BadRequestException('Этот номер телефона уже используется');
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 12);
+
     const user = await this.prisma.user.create({
-      data: { ...dto, password: hashedPassword },
+      data: {
+        email,
+        password: hashedPassword,
+        phone,
+        birthDate: birthDate ? new Date(birthDate) : null,
+        ...otherData,
+      },
     });
 
     return this.createSendTokens(user, res);
@@ -49,6 +69,17 @@ export class AuthService {
       throw new UnauthorizedException('Неверный email или пароль');
 
     return this.createSendTokens(user, res);
+  }
+
+  async getUserFullProfile(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) throw new UnauthorizedException('Пользователь не найден');
+
+    const { password, refreshToken, ...publicUser } = user;
+    return publicUser;
   }
 
   async refresh(refreshToken: string, res: Response) {
@@ -76,7 +107,6 @@ export class AuthService {
 
     return this.createSendTokens(user, res);
   }
-  // МЕТОД ЛОГАУТА
   async logout(userId: string, res: Response) {
     await this.prisma.user.update({
       where: { id: userId },
@@ -89,7 +119,10 @@ export class AuthService {
     return { status: 'success', message: 'Вы успешно вышли' };
   }
 
-  private async createSendTokens(user: User, res: Response) {
+  private async createSendTokens(
+    user: Pick<User, 'id' | 'email' | 'role'>,
+    res: Response,
+  ) {
     const accessToken = this.jwtService.sign(
       { id: user.id, role: user.role },
       { expiresIn: '15m' },

@@ -1,3 +1,4 @@
+import { useGetMe } from '@app/providers/AuthProvider/hooks/useGetMe'
 import styles from './ProfileInfoPage.module.scss'
 import {
   LinkOutlined,
@@ -9,7 +10,6 @@ export const ProfileInfoPage = () => {
   return (
     <div className={styles.wrapper}>
       <div className={styles.grid}>
-        {/* AVATAR */}
         <div className={styles.profileBlock}>
           <div className={styles.avatarWrapper}>
             <div className={styles.avatar}>
@@ -20,10 +20,7 @@ export const ProfileInfoPage = () => {
           </div>
         </div>
 
-        {/* CONTENT */}
         <div className={styles.contentBlock}>
-          {/* ===== ACCOUNT DATA ===== */}
-
           <section className={styles.section}>
             <div className={styles.sectionHeader}>
               <h2>
@@ -68,8 +65,6 @@ export const ProfileInfoPage = () => {
               </button>
             </div>
           </section>
-
-          {/* ===== PUBLIC DATA ===== */}
 
           <section className={styles.section}>
             <div className={styles.sectionHeader}>
