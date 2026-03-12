@@ -10,6 +10,7 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import type { User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { UpdateMeDto } from './dto/update-me.dto';
 export interface JwtPayload {
   id: string;
   role: string;
@@ -77,6 +78,42 @@ export class AuthService {
     });
 
     if (!user) throw new UnauthorizedException('Пользователь не найден');
+
+    const { password, refreshToken, ...publicUser } = user;
+    return publicUser;
+  }
+
+  async updateMe(userId: string, dto: UpdateMeDto) {
+    if (dto.phone !== undefined) {
+      const normalizedPhone = dto.phone.trim();
+      if (normalizedPhone.length > 0) {
+        const existingPhone = await this.prisma.user.findUnique({
+          where: { phone: normalizedPhone },
+        });
+        if (existingPhone && existingPhone.id !== userId) {
+          throw new BadRequestException('Этот номер телефона уже используется');
+        }
+      }
+    }
+
+    const user = await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        ...(dto.name !== undefined ? { name: dto.name.trim() } : {}),
+        ...(dto.surname !== undefined ? { surname: dto.surname.trim() } : {}),
+        ...(dto.displayName !== undefined
+          ? { displayName: dto.displayName.trim() || null }
+          : {}),
+        ...(dto.phone !== undefined ? { phone: dto.phone.trim() || null } : {}),
+        ...(dto.birthDate !== undefined
+          ? { birthDate: dto.birthDate ? new Date(dto.birthDate) : null }
+          : {}),
+        ...(dto.gender !== undefined ? { gender: dto.gender } : {}),
+        ...(dto.avatarUrl !== undefined
+          ? { avatarUrl: dto.avatarUrl.trim() || null }
+          : {}),
+      },
+    });
 
     const { password, refreshToken, ...publicUser } = user;
     return publicUser;

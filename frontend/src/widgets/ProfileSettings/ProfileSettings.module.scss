@@ -87,3 +87,10 @@
   opacity: 0.8;
   margin-top: 4px;
 }
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 8px;
+}

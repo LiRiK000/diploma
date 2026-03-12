@@ -1,4 +1,12 @@
-import { Body, Controller, Post, Res, Get, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  Res,
+  Get,
+  UseGuards,
+  Patch,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import * as express from 'express';
@@ -7,6 +15,7 @@ import type { User } from '@prisma/client';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { Cookie } from 'src/common/decorators/get-cookies.decorator';
 import { LoginDto } from './dto/login.dto';
+import { UpdateMeDto } from './dto/update-me.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -33,6 +42,16 @@ export class AuthController {
   async getMe(@CurrentUser('id') userId: string) {
     // Вызываем сервис, чтобы получить свежие данные из БД
     const user = await this.authService.getUserFullProfile(userId);
+    return {
+      status: 'success',
+      data: { user },
+    };
+  }
+
+  @Patch('me')
+  @UseGuards(JwtAuthGuard)
+  async updateMe(@CurrentUser('id') userId: string, @Body() dto: UpdateMeDto) {
+    const user = await this.authService.updateMe(userId, dto);
     return {
       status: 'success',
       data: { user },

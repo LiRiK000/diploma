@@ -12,7 +12,7 @@ interface ArtistItemProps {
 }
 export const ArtistItem = ({
   name,
-  // image,
+  image,
   isSelected,
   onClick,
 }: ArtistItemProps) => {
@@ -24,9 +24,7 @@ export const ArtistItem = ({
       <div className={styles.avatarContainer}>
         <Avatar
           size={{ xs: 80, sm: 110, md: 140, lg: 160, xl: 120 }}
-          src={
-            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbOzkvsEjCljaTxmCHGNwsMS_Ib_iulbLbDA&s'
-          }
+          src={image}
           className={styles.avatar}
         />
         <div className={styles.heartBadge}>
