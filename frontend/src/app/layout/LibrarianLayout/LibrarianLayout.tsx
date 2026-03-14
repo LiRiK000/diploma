@@ -21,6 +21,7 @@ import {
 } from '@entities/widgets-grid'
 import { VerifyCodeModal } from '@features/manage-orders/ui/VerifyCodeModal'
 import { ReturnBookModal } from '@features/manage-orders/ui/ReturnBookModal'
+import { ThemeToggle } from '@features/theme-toggle/ui/ThemeToggle'
 
 const { Content, Sider, Header } = Layout
 
@@ -106,6 +107,7 @@ export const LibrarianLayout = () => {
                 <LibrarianSettings />
               </>
             )}
+            <ThemeToggle />
           </div>
         </Header>
 

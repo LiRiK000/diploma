@@ -1,6 +1,7 @@
 import { CSSProperties, ReactNode } from 'react'
 
 export interface IWidgetWrapper {
+  id: string
   title?: string
   className?: string
   style?: CSSProperties

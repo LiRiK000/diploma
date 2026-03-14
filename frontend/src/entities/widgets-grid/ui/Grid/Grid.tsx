@@ -1,148 +1,47 @@
-// FIXME Почему-то е работает выключение перетаскивания и изменения размера в fullscreen режиме
-// TODO Понять почему не работает и исправить в идеале, текущий подход работает, но он не идеальный
-import {
-  CSSProperties,
-  FC,
-  useCallback,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from 'react'
-import {
-  Layout,
-  Layouts,
-  Responsive as ResponsiveGridLayout,
-} from 'react-grid-layout'
+import { CSSProperties, FC, useLayoutEffect, useState } from 'react'
+import { Responsive as ResponsiveGridLayout, Layouts } from 'react-grid-layout'
 import classes from './Grid.module.scss'
-import {
-  BREAKPOINTS,
-  COLS,
-  CONTAINER_PADDING,
-  GRID_ID,
-  ROWS,
-  WIDGET_MARGINS,
-} from '../../constants'
-import { GridProps } from '../../types'
-import { useShallow } from 'zustand/react/shallow'
-import { useFullscreenStore, useLayoutStore } from '../../model/store'
 import { GridItem } from '../GridItem/GridItem'
-import { hasLayoutInLocalStorage } from '../../model/utils'
-import { createInitialLayouts } from '../../lib/utils'
+import {
+  GRID_BREAKPOINTS,
+  GRID_COLS,
+  GRID_CONTAINER_PADDING,
+  GRID_MARGIN,
+  GRID_ROW_HEIGHT,
+  DRAGGABLE_HANDLE,
+} from './model/constants'
+import { loadLayoutsFromStorage } from '@widgets/LibrarianDashboardTab/utils'
+import { useGridWidth } from './hooks/useGridWidth'
+import { useLayoutPersistence } from './hooks/useLayoutPersistence'
+import { GridProps } from './types'
 
-export const Grid: FC<GridProps> = props => {
-  const {
-    items,
-    layouts: propLayouts,
-    isDraggable,
-    isResizable,
-    useCSSTransforms = true,
-    compactType = 'vertical',
-    config = {},
-    hideOverflowX,
-    hideOverflowY,
-  } = props
-
-  const [isFullscreen, fullScreenItemId] = useFullscreenStore(
-    useShallow(store => [
-      store.gridFullScreenStates[GRID_ID]?.isFullscreen,
-      store.gridFullScreenStates[GRID_ID]?.fullScreenItemId,
-    ]),
-  )
-
-  const {
-    layout,
-    saveLayouts,
-    setLayoutsChanged,
-    loadLayouts,
-    loadHasLayoutsChanged,
-  } = useLayoutStore(
-    useShallow(store => ({
-      layout: store.gridLayoutsStates[GRID_ID],
-      saveLayouts: store.saveLayouts,
-      loadLayouts: store.loadLayouts,
-      setLayoutsChanged: store.setLayoutsChanged,
-      loadHasLayoutsChanged: store.loadHasLayoutsChanged,
-    })),
-  )
-
-  useLayoutEffect(() => {
-    if (layout) return
-
-    if (hasLayoutInLocalStorage()) {
-      loadLayouts()
-      loadHasLayoutsChanged()
-    } else if (propLayouts) {
-      saveLayouts(propLayouts)
-    } else {
-      const newLayout = createInitialLayouts(items.map(item => item.id))
-      saveLayouts(newLayout)
-    }
-  }, [
-    layout,
-    loadLayouts,
-    loadHasLayoutsChanged,
-    saveLayouts,
-    propLayouts,
-    items,
-  ])
-
+export const Grid: FC<GridProps> = ({
+  items,
+  layouts,
+  isDraggable = false,
+  isResizable = false,
+  hideOverflowX,
+  hideOverflowY,
+}) => {
+  const { containerRef, width } = useGridWidth()
+  const [currentLayouts, setCurrentLayouts] = useState<Layouts>(layouts)
   const [isDragging, setIsDragging] = useState(false)
   const [isResizing, setIsResizing] = useState(false)
-  const [rowHeight, setRowHeight] = useState(0)
-  const [gridWidth, setGridWidth] = useState(0)
+  const handleLayoutChange = useLayoutPersistence()
 
   useLayoutEffect(() => {
-    const gridContainer = gridContainerRef.current
-    if (!gridContainer) return
+    const stored = loadLayoutsFromStorage()
 
-    const updateGridSizes = () => {
-      setRowHeight(Math.floor(gridContainer.clientHeight / ROWS) - 1)
-      setGridWidth(gridContainer.clientWidth)
+    if (stored) {
+      setCurrentLayouts(stored)
+    } else {
+      setCurrentLayouts(layouts)
     }
-
-    updateGridSizes()
-
-    const resizeObserver = new ResizeObserver(updateGridSizes)
-    resizeObserver.observe(gridContainer)
-
-    return () => {
-      resizeObserver.disconnect()
-    }
-  }, [])
-
-  const handleLayoutChange = useCallback(
-    (_: Layout[], allLayouts: Layouts) => {
-      if (!isFullscreen) {
-        saveLayouts(allLayouts)
-      }
-    },
-    [isFullscreen, saveLayouts],
-  )
-
-  const handleDragStart = useCallback(() => setIsDragging(true), [])
-  const handleDragStop = useCallback(() => {
-    setIsDragging(false)
-    setLayoutsChanged(true)
-  }, [setLayoutsChanged])
-
-  const handleResizeStart = useCallback(() => setIsResizing(true), [])
-  const handleResizeStop = useCallback(() => {
-    setIsResizing(false)
-    setLayoutsChanged(true)
-  }, [setLayoutsChanged])
-
-  const gridContainerRef = useRef<HTMLDivElement>(null)
-
-  const filteredItems = isFullscreen
-    ? items.filter(item => item.id === fullScreenItemId)
-    : items
-
-  const gridIsDraggable = !isFullscreen && isDraggable
-  const gridIsResizable = !isFullscreen && isResizable
+  }, [layouts])
 
   return (
     <div
-      ref={gridContainerRef}
+      ref={containerRef}
       className={classes.grid}
       style={
         {
@@ -151,60 +50,43 @@ export const Grid: FC<GridProps> = props => {
         } as CSSProperties
       }
     >
-      {layout && (
-        <>
-          {isFullscreen ? (
-            <div className={classes.grid__fullscreen}>
-              {filteredItems.map(item => (
-                <div
-                  key={item.id}
-                  className={classes.grid__item}
-                  data-fullscreen="true"
-                >
-                  <GridItem isDragging={false} isResizing={false}>
-                    {item.content}
-                  </GridItem>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <ResponsiveGridLayout
-              width={gridWidth}
-              className={`layout ${gridIsResizable ? 'resizable-grid' : 'resizable-grid_hidden'}`}
-              layouts={layout}
-              breakpoints={BREAKPOINTS}
-              cols={COLS}
-              rowHeight={rowHeight - WIDGET_MARGINS[1] + 1.5}
-              margin={WIDGET_MARGINS as [number, number]}
-              containerPadding={CONTAINER_PADDING as [number, number]}
-              onLayoutChange={handleLayoutChange}
-              onDragStart={handleDragStart}
-              onDragStop={handleDragStop}
-              onResizeStart={handleResizeStart}
-              onResizeStop={handleResizeStop}
-              isDraggable={gridIsDraggable}
-              isResizable={gridIsResizable}
-              isBounded={true}
-              compactType={compactType}
-              useCSSTransforms={useCSSTransforms}
-              innerRef={gridContainerRef}
-              {...config}
+      <ResponsiveGridLayout
+        width={width}
+        layouts={currentLayouts}
+        breakpoints={GRID_BREAKPOINTS}
+        cols={GRID_COLS}
+        rowHeight={GRID_ROW_HEIGHT}
+        margin={GRID_MARGIN}
+        containerPadding={GRID_CONTAINER_PADDING}
+        preventCollision={false}
+        compactType="vertical"
+        draggableHandle={DRAGGABLE_HANDLE}
+        isDraggable={isDraggable}
+        isResizable={isResizable}
+        resizeHandles={['se']}
+        useCSSTransforms
+        isBounded
+        onLayoutChange={(layout, allLayouts) => {
+          setCurrentLayouts(allLayouts)
+          handleLayoutChange(layout, allLayouts)
+        }}
+        onDragStart={() => setIsDragging(true)}
+        onDragStop={() => setIsDragging(false)}
+        onResizeStart={() => setIsResizing(true)}
+        onResizeStop={() => setIsResizing(false)}
+      >
+        {items.map(item => (
+          <div key={item.id}>
+            <GridItem
+              isDragging={isDragging}
+              isResizing={isResizing}
+              isEditing={isDraggable}
             >
-              {filteredItems.map(item => (
-                <div
-                  key={item.id}
-                  className={classes.grid__item}
-                  data-fullscreen="false"
-                >
-                  <GridItem isDragging={isDragging} isResizing={isResizing}>
-                    {item.content}
-                  </GridItem>
-                </div>
-              ))}
-            </ResponsiveGridLayout>
-          )}
-        </>
-      )}
+              {item.content}
+            </GridItem>
+          </div>
+        ))}
+      </ResponsiveGridLayout>
     </div>
   )
 }

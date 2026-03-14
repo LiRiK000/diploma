@@ -1,22 +1,40 @@
+@use '@shared/styles/variables' as *;
+
 .widget {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    background: transparent;
-    transition: all 0.2s ease-in-out;
-    position: relative;
+  width: 100%;
+  height: 100%;
 
-    &_dragging {
-        cursor: grabbing;
-    }
+  position: relative;
 
-    &_resizing {
-        cursor: col-resize;
-    }
+  border-radius: $border-radius-md;
 
-    &__content {
-        flex: 1;
-        height: 100%;
-        width: 100%;
-    }
+  overflow: hidden;
+
+  transition:
+    transform 200ms ease,
+    box-shadow 200ms ease;
+}
+
+.widget:hover {
+  transform: translateY(-2px);
+
+  box-shadow: $shadow-light;
+}
+
+.dragging {
+  transform: scale(1.03);
+
+  box-shadow: $shadow-strong;
+
+  z-index: 100;
+}
+
+.resizing {
+  opacity: 0.85;
+}
+
+.editing {
+  outline: 2px dashed rgba(24, 144, 255, 0.4);
+
+  outline-offset: -4px;
 }

@@ -1,22 +1,44 @@
 @use '@shared/styles/variables' as *;
 
+.layout {
+  min-height: 100vh;
+  background: var(--bg-page);
+  transition: background var(--transition-speed);
+}
+
 .sider {
-  background: $background-white !important;
+  background: var(--bg-content) !important;
   position: fixed !important;
   height: 100vh;
   left: 0;
   top: 0;
   z-index: 10;
+  border-right: 1px solid var(--glass-border);
+  transition: all var(--transition-speed);
+
+  :global(.ant-layout-sider-children) {
+    background: var(--bg-content);
+  }
+
+  :global(.ant-menu) {
+    background: transparent;
+    border-inline-end: none !important;
+    color: var(--text-primary);
+  }
 }
 
 .rightLayout {
   margin-left: 200px;
   min-height: 100vh;
-  background: $background-gray !important;
+  background: var(--bg-page) !important;
+  transition: background var(--transition-speed);
 }
 
 .header {
-  background: $background-white;
+  background: var(--header-bg-sticky) !important;
+  backdrop-filter: var(--header-blur);
+  border-bottom: 1px solid var(--glass-border);
+
   padding: 0 24px;
   height: 64px;
   display: flex;
@@ -25,21 +47,39 @@
   position: sticky;
   top: 0;
   z-index: 5;
-}
-
-.headerActions {
-  display: flex;
-  gap: 16px;
+  transition: all var(--transition-speed);
 }
 
 .title {
   margin: 0 !important;
+  color: var(--text-primary) !important;
+  font-weight: 800 !important;
+  font-size: 24px !important;
+}
+
+.headerActions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
 }
 
 .content {
-  background: $background-white;
-  padding: 16px;
-  margin: 8px;
-  border-radius: $border-size-primary;
-  min-height: calc(100vh - 96px);
+  background: var(--bg-content) !important;
+  padding: 24px;
+  margin: 20px;
+  border-radius: var(--border-radius-primary);
+  border: 1px solid var(--glass-border);
+  min-height: calc(100vh - 104px);
+  box-shadow: $liquid-glass-shadow-light;
+  color: var(--text-primary);
+  transition: all var(--transition-speed);
+}
+
+@media (max-width: 768px) {
+  .sider {
+    display: none;
+  }
+  .rightLayout {
+    margin-left: 0;
+  }
 }

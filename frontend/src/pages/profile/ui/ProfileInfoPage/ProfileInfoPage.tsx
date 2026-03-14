@@ -186,11 +186,6 @@ export const ProfileInfoPage = () => {
             <span>Локация</span>
             <span className={styles.muted}>Россия, Москва</span>
           </div>
-
-          <div className={styles.row}>
-            <span>Роль</span>
-            <span className={styles.value}>{user.role}</span>
-          </div>
         </div>
       </section>
     </div>
