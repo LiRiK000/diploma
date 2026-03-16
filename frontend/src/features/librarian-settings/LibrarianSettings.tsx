@@ -8,16 +8,12 @@ import { useLibrarianSettingsStore } from './model/store'
 import { useShallow } from 'zustand/react/shallow'
 
 export const LibrarianSettings = () => {
-  const currentLibrarianAtPage = localStorage.getItem('librarianSelectedKey')
-
   const { isEditing, toggleEditing } = useLibrarianSettingsStore(
     useShallow(store => ({
       isEditing: store.isEditing,
       toggleEditing: store.toggleEditing,
     })),
   )
-
-  if (currentLibrarianAtPage !== 'dashboard') return null
 
   return (
     <Tooltip title="Настройки" placement="bottomLeft">

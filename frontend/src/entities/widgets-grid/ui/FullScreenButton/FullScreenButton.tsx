@@ -15,33 +15,31 @@ export const FullScreenButton = ({
       store.gridFullScreenStates[GRID_ID]?.isFullscreen,
       store.gridFullScreenStates[GRID_ID]?.fullScreenItemId,
       store.toggleFullscreen,
-      store.gridFullScreenStates,
     ]),
   )
 
   const isCurrentWidgetFullScreen =
     isFullScreen && fullScreenItemId === widgetId
   const ariaTitle = isCurrentWidgetFullScreen ? 'Свернуть' : 'Развернуть'
-  const handleToggleFullScreen = (
-    e: React.MouseEvent | React.KeyboardEvent | React.TouchEvent,
-  ) => {
+
+  const handleToggleFullScreen = (e: React.MouseEvent) => {
     e.stopPropagation()
     toggleFullscreen(widgetId)
   }
 
   return (
     <button
-      className={classes.fullscreen_button}
+      className={`${classes.fullscreen_button} ${isCurrentWidgetFullScreen ? classes.is_active : ''}`}
       aria-label={ariaTitle}
-      onMouseDown={(e: React.MouseEvent) => handleToggleFullScreen(e)}
-      onTouchStart={(e: React.TouchEvent) => handleToggleFullScreen(e)}
+      onClick={handleToggleFullScreen}
     >
       <Typography.Link>
         <Space>
           {isCurrentWidgetFullScreen ? (
-            <FullscreenExitOutlined
-              style={{ fontSize: params?.fontSize || 18, color: '#fff' }}
-            />
+            <>
+              <FullscreenExitOutlined style={{ fontSize: 20, color: '#fff' }} />
+              <span className={classes.exitText}>Выйти</span>
+            </>
           ) : (
             <FullscreenOutlined
               style={{ fontSize: params?.fontSize || 18, color: '#fff' }}

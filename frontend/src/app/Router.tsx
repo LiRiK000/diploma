@@ -24,6 +24,7 @@ import { ProfileLayout } from '@app/layout/ProfileLayout'
 import { ProfileInfoPage } from '@pages/profile/ui/ProfileInfoPage'
 import { ProfileSettingsPage } from '@pages/profile/ui/ProfileSettingsPage'
 import { ThemeProvider } from './providers/ThemeProvider/ThemeProvider'
+import { AchievementsPage } from '@pages/profile/AchievementsPage'
 
 export const Router = () => {
   const init = useCookieConsentStore(useShallow(state => state.init))
@@ -144,7 +145,7 @@ export const Router = () => {
                 />
                 <Route
                   path={routes.achievements}
-                  element={<div>Достижения (Страница в разработке)</div>}
+                  element={<AchievementsPage />}
                 />
                 <Route
                   path={routes.secure}
