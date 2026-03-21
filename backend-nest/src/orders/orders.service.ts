@@ -187,11 +187,21 @@ export class OrdersService {
     });
   }
 
-  async returnOrder(orderId: string) {
+  async returnOrder(shortId: string) {
+    // 1. Ищем заказ, у которого ID начинается с этих 8 символов
+    // Добавляем проверку длины, чтобы поиск не был слишком размытым
+    if (shortId.length < 8) {
+      throw new BadRequestException('Введите минимум 8 символов ID заказа');
+    }
+
     const order = await this.prisma.order.findFirst({
       where: {
         id: {
-          startsWith: orderId,
+          startsWith: shortId.toLowerCase(),
+        },
+        // Ищем только те, что реально могут быть возвращены
+        status: {
+          in: [OrderStatus.ON_HAND, OrderStatus.OVERDUE],
         },
       },
       include: { items: true },
@@ -199,20 +209,13 @@ export class OrdersService {
 
     if (!order) {
       throw new NotFoundException(
-        `Заказ с ID, начинающимся на ${orderId}, не найден`,
+        `Активный заказ с ID "${shortId}..." не найден или уже возвращен`,
       );
     }
 
-    if (
-      order.status !== OrderStatus.ON_HAND &&
-      order.status !== OrderStatus.OVERDUE
-    ) {
-      throw new BadRequestException(
-        `Нельзя вернуть заказ в статусе ${order.status}.`,
-      );
-    }
-
+    // 2. Сама транзакция возврата
     return this.prisma.$transaction(async (tx) => {
+      // Увеличиваем количество книг на складе
       for (const item of order.items) {
         await tx.book.update({
           where: { id: item.bookId },
@@ -220,13 +223,24 @@ export class OrdersService {
         });
       }
 
-      return tx.order.update({
+      // Обновляем статус заказа
+      const updatedOrder = await tx.order.update({
         where: { id: order.id },
         data: {
           status: OrderStatus.RETURNED,
           returnDate: new Date(),
         },
       });
+
+      // Создаем уведомление пользователю (опционально, но полезно)
+      await tx.notification.create({
+        data: {
+          userId: order.userId,
+          message: `Книги по заказу #${order.id.slice(0, 8)} успешно возвращены. Спасибо!`,
+        },
+      });
+
+      return updatedOrder;
     });
   }
 
