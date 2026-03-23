@@ -16,12 +16,17 @@ import {
 import {
   SafetyCertificateOutlined,
   ClockCircleOutlined,
+  CheckCircleOutlined,
 } from '@ant-design/icons'
 import dayjs from 'dayjs'
 
 import { useOrder } from '@entities/order/hooks'
 import styles from './OrderPage.module.scss'
-import { ORDER_STEPS, STATUS_CONFIG } from '@entities/order/consts/statusConfig'
+import {
+  ORDER_STEPS,
+  STATUS_CONFIG,
+  OrderStatus,
+} from '@entities/order/consts/statusConfig'
 
 const { Title, Text } = Typography
 
@@ -45,7 +50,13 @@ export const OrderPage: React.FC = () => {
   if (isLoading) return <Spin size="large" className={styles.loader} />
   if (isError || !order) return <Result status="404" title="Заказ не найден" />
 
-  const isCancelled = order.status === 'CANCELLED'
+  const status = order.status as OrderStatus
+  const isCancelled = status === 'CANCELLED'
+  const isReturned = status === 'RETURNED'
+  const isOverdue = status === 'OVERDUE'
+  const isOnHand = status === 'ON_HAND' || isOverdue
+
+  const returnCode = order.id.slice(0, 8).toUpperCase()
 
   return (
     <div className={styles.container}>
@@ -57,12 +68,11 @@ export const OrderPage: React.FC = () => {
           </Title>
         </Space>
 
-        {order.status === 'PENDING' && (
+        {status === 'PENDING' && (
           <Popconfirm
             title="Отменить заказ?"
-            description="Вы уверены, что хотите отменить заявку?"
             onConfirm={() => cancelOrder()}
-            okText="Да, отменить"
+            okText="Да"
             cancelText="Нет"
             okButtonProps={{ danger: true }}
           >
@@ -80,12 +90,13 @@ export const OrderPage: React.FC = () => {
               current={currentStatus?.step}
               items={ORDER_STEPS}
               size="small"
-              responsive={true}
+              responsive
             />
           </div>
         )}
 
         <main className={styles.statusContent}>
+          {/* ОТМЕНЕНО */}
           {isCancelled && (
             <Result
               status="error"
@@ -94,7 +105,8 @@ export const OrderPage: React.FC = () => {
             />
           )}
 
-          {order.status === 'PENDING' && (
+          {/* В ОЖИДАНИИ */}
+          {status === 'PENDING' && (
             <Result
               icon={<ClockCircleOutlined style={{ color: '#1890ff' }} />}
               title="Заявка на рассмотрении"
@@ -102,26 +114,29 @@ export const OrderPage: React.FC = () => {
             />
           )}
 
-          {order.status === 'APPROVED' && order.pickupCode && (
+          {/* ОДОБРЕНО (ПОЛУЧЕНИЕ) */}
+          {status === 'APPROVED' && order.pickupCode && (
             <div className={styles.pickupSection}>
-              <Text type="secondary">Ваш секретный код получения:</Text>
+              <Text className={styles.instructionText}>
+                Ваш секретный код получения:
+              </Text>
               <div className={styles.pickupCode}>{order.pickupCode}</div>
               <Alert
                 message="Покажите этот код библиотекарю для получения книг"
                 type="info"
                 showIcon
-                style={{ borderRadius: '12px' }}
               />
             </div>
           )}
 
-          {order.status === 'READY_TO_PICKUP' && (
+          {/* ГОТОВ К ВЫДАЧЕ */}
+          {status === 'READY_TO_PICKUP' && (
             <Result
               icon={
                 <SafetyCertificateOutlined className={styles.successIcon} />
               }
               title="Можно забирать!"
-              subTitle="Книги ждут вас на стойке выдачи. Подтвердите получение после того, как возьмете их."
+              subTitle="Книги ждут вас на стойке выдачи."
               extra={
                 <Button
                   type="primary"
@@ -129,7 +144,6 @@ export const OrderPage: React.FC = () => {
                   shape="round"
                   loading={isConfirming}
                   onClick={() => confirmReceipt()}
-                  style={{ padding: '0 40px' }}
                 >
                   Я получил книги
                 </Button>
@@ -137,11 +151,51 @@ export const OrderPage: React.FC = () => {
             />
           )}
 
-          {order.status === 'ON_HAND' && (
+          {/* НА РУКАХ / ПРОСРОЧЕНО (ВОЗВРАТ) */}
+          {isOnHand && (
+            <div className={styles.pickupSection}>
+              <Result
+                status={isOverdue ? 'warning' : 'success'}
+                title={isOverdue ? 'Срок возврата истек' : 'Книги у вас'}
+                subTitle={
+                  isOverdue
+                    ? 'Пожалуйста, верните книги как можно скорее.'
+                    : 'Приятного чтения!'
+                }
+              />
+              <Divider dashed>Код для возврата</Divider>
+              <Text className={styles.instructionText}>
+                Назовите этот номер библиотекарю при возврате:
+              </Text>
+              <div className={`${styles.pickupCode} ${styles.returnVariant}`}>
+                {returnCode}
+              </div>
+              {isOverdue && (
+                <Alert
+                  message="Внимание: за просрочку может быть начислен штраф согласно правилам библиотеки."
+                  type="error"
+                  showIcon
+                  style={{ marginTop: 16 }}
+                />
+              )}
+            </div>
+          )}
+
+          {/* ВОЗВРАЩЕНО */}
+          {isReturned && (
             <Result
-              status="success"
-              title="Книги у вас"
-              subTitle="Приятного чтения! Не забудьте вернуть их в срок."
+              icon={<CheckCircleOutlined className={styles.successIcon} />}
+              title="Книги возвращены"
+              subTitle="Заказ успешно закрыт. Ждем вас снова!"
+              extra={
+                <Button
+                  type="default"
+                  shape="round"
+                  onClick={() => (window.location.href = '/')}
+                >
+                  На главную
+                </Button>
+              }
             />
           )}
         </main>
@@ -150,16 +204,19 @@ export const OrderPage: React.FC = () => {
 
         <footer className={styles.infoGrid}>
           <div className={styles.infoBlock}>
-            <Text className={styles.label}>Оформлен</Text>
+            <span className={styles.label}>Оформлен</span>
             <Text strong className={styles.value}>
               {dayjs(order.orderDate).format('DD.MM.YYYY, HH:mm')}
             </Text>
           </div>
 
           <div className={styles.infoBlock}>
-            <Text className={styles.label}>Срок возврата</Text>
-            {order.status === 'ON_HAND' && order.dueDate ? (
-              <Text strong className={`${styles.value} ${styles.danger}`}>
+            <span className={styles.label}>Срок возврата</span>
+            {order.dueDate ? (
+              <Text
+                strong
+                className={`${styles.value} ${isOverdue ? styles.danger : ''}`}
+              >
                 {dayjs(order.dueDate).format('DD MMMM YYYY')}
               </Text>
             ) : (
@@ -170,12 +227,12 @@ export const OrderPage: React.FC = () => {
           </div>
 
           <div className={styles.infoBlock}>
-            <Text className={styles.label}>Текущий статус</Text>
+            <span className={styles.label}>Текущий статус</span>
             <Tag
               color={currentStatus?.color || 'default'}
               className={styles.statusTag}
             >
-              {(currentStatus?.label || order.status).toUpperCase()}
+              {(currentStatus?.label || status).toUpperCase()}
             </Tag>
           </div>
         </footer>

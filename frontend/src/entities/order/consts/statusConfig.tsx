@@ -5,6 +5,16 @@ import {
   BookOutlined,
   RollbackOutlined,
 } from '@ant-design/icons'
+import React from 'react'
+
+export type OrderStatus =
+  | 'PENDING'
+  | 'APPROVED'
+  | 'READY_TO_PICKUP'
+  | 'ON_HAND'
+  | 'OVERDUE'
+  | 'RETURNED'
+  | 'CANCELLED'
 
 export const STATUS_CONFIG: Record<
   string,
