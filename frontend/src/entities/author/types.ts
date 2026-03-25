@@ -16,6 +16,7 @@ export interface Author {
   }
   createdAt: string
   updatedAt: string
+  photoUrl?: string
 }
 
 export interface AuthorHeroSectionProps {

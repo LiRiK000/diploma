@@ -10,7 +10,7 @@ export const StickyHeader = ({
   id,
   title,
   author,
-  coverUrl = '/book.png',
+  coverUrl,
   isVisible,
 }: StickyHeaderProps) => {
   console.log(coverUrl, 'scscscs')
@@ -23,7 +23,7 @@ export const StickyHeader = ({
       <div className={styles.content}>
         <div className={styles.bookInfo}>
           <img
-            src={coverUrl}
+            src={coverUrl || '/book.png'}
             alt={`Обложка книги "${title}"`}
             className={styles.cover}
             loading="lazy"

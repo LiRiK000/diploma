@@ -1,4 +1,3 @@
-import { SearchOutlined, UserOutlined } from '@ant-design/icons'
 import { Input, List, Typography, Spin, Empty } from 'antd'
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -96,15 +95,34 @@ export const Search = () => {
                       }}
                     >
                       <div className={styles.suggestionItem}>
-                        <div className={styles.iconWrapper}>
-                          {item.type === 'author' ? (
-                            <UserOutlined />
-                          ) : (
-                            <SearchOutlined />
-                          )}
+                        <div className={styles.imageWrapper}>
+                          <img
+                            src={
+                              item.image ||
+                              (item.type === 'author'
+                                ? '/author.png'
+                                : '/book.png')
+                            }
+                            alt={item.title}
+                            className={`${styles.suggestionImage} ${
+                              item.type === 'author'
+                                ? styles.authorImg
+                                : styles.bookImg
+                            }`}
+                            onError={e => {
+                              const target = e.target as HTMLImageElement
+                              target.src =
+                                item.type === 'author'
+                                  ? '/author.png'
+                                  : '/book.png'
+                            }}
+                          />
                         </div>
+
                         <div className={styles.suggestionText}>
-                          <Text strong>{item.title}</Text>
+                          <Text strong className={styles.itemTitle}>
+                            {item.title}
+                          </Text>
                           {item.author && (
                             <Text
                               className={styles.authorName}

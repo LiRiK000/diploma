@@ -16,7 +16,7 @@ export const AuthorHeroSection = ({ author }: AuthorHeroSectionProps) => {
     <section className={styles.hero}>
       <div className={styles.container}>
         <img
-          src={author.avatar || '/author-placeholder.png'}
+          src={author.photoUrl || '/author.png'}
           className={styles.cover}
           alt={author.fullName}
         />

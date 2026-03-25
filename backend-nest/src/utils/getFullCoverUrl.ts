@@ -1,5 +1,5 @@
 export function getFullUrl(path: string | null): string {
-  if (!path) return '';
+  if (!path) return null;
 
   if (path.startsWith('http')) {
     return path;

@@ -20,6 +20,8 @@ export interface Author {
   isFollowing?: boolean
   followersCount?: number
   topBooks?: AuthorBook[]
+  photoUrl?: string | null
+  _count?: any
 }
 
 export interface GetAuthorsParams {
@@ -35,7 +37,8 @@ export interface UpsertAuthorPayload {
 }
 
 export class AuthorService {
-  private mapAuthor(author: any): Author {
+  private mapAuthor(author: Author): Author {
+    if (!author) return {} as Author
     return {
       id: author.id,
       firstName: author.firstName,
@@ -47,7 +50,37 @@ export class AuthorService {
       isFollowing: author.isFollowing ?? false,
       followersCount: author.followersCount ?? author._count?.followers ?? 0,
       topBooks: author.topBooks || [],
+      photoUrl: author.photoUrl ?? null,
     }
+  }
+
+  private createFormData(payload: UpsertAuthorPayload, file?: File): FormData {
+    const formData = new FormData()
+    Object.entries(payload).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        formData.append(key, value)
+      }
+    })
+    if (file) {
+      formData.append('file', file)
+    }
+    return formData
+  }
+
+  async update(
+    id: string,
+    payload: UpsertAuthorPayload,
+    file?: File,
+  ): Promise<Author> {
+    const fd = this.createFormData(payload, file)
+    const response = await api.put(`/authors/${id}`, fd, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
+    return this.mapAuthor(response.data.data || response.data)
+  }
+
+  async delete(id: string): Promise<void> {
+    await api.delete(`/authors/${id}`)
   }
 
   async getById(id: string): Promise<Author> {
@@ -57,23 +90,13 @@ export class AuthorService {
 
   async getAll(params?: GetAuthorsParams): Promise<Author[]> {
     const response = await api.get('/authors', { params })
-
-    const data = response.data.data || response.data
-    return data.map((author: any) => this.mapAuthor(author))
+    const data = response.data.data || []
+    return data.map((author: Author) => this.mapAuthor(author))
   }
 
   async create(payload: UpsertAuthorPayload): Promise<Author> {
     const response = await api.post('/authors', payload)
     return this.mapAuthor(response.data.data)
-  }
-
-  async update(id: string, payload: UpsertAuthorPayload): Promise<Author> {
-    const response = await api.put(`/authors/${id}`, payload)
-    return this.mapAuthor(response.data.data)
-  }
-
-  async delete(id: string): Promise<void> {
-    await api.delete(`/authors/${id}`)
   }
 
   async toggleFollow(authorId: string) {
@@ -83,5 +106,17 @@ export class AuthorService {
 
   async bulkFollow(authorIds: string[]): Promise<void> {
     await api.post('/authors/bulk-follow', { authorIds })
+  }
+  async uploadPhoto(id: string, file: File): Promise<Author> {
+    const formData = new FormData()
+    formData.append('file', file)
+
+    const response = await api.post(`/authors/${id}/photo`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+
+    return this.mapAuthor(response.data.data)
   }
 }

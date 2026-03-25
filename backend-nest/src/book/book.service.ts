@@ -18,7 +18,7 @@ export class BookService {
   ) {}
 
   private getFullCoverUrl(path: string | null): string {
-    if (!path) return '';
+    if (!path) return null;
     if (path.startsWith('http')) return path;
     return `${this.s3PublicUrl}/${path}`;
   }

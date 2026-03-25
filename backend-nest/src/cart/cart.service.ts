@@ -13,7 +13,7 @@ export class CartService {
   constructor(private prisma: PrismaService) {}
   private readonly s3PublicUrl = process.env.S3_PUBLIC_URL;
   private getFullCoverUrl(path: string | null): string {
-    if (!path) return '';
+    if (!path) return null;
     if (path.startsWith('http')) return path;
     return `${this.s3PublicUrl}/${path}`;
   }

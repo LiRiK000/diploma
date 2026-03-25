@@ -1,232 +1,136 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import {
   Button,
-  DatePicker,
   Form,
-  Input,
   Modal,
   Space,
   Table,
   Typography,
+  Popconfirm,
+  Avatar,
 } from 'antd'
-import type { ColumnsType } from 'antd/es/table'
-import dayjs, { Dayjs } from 'dayjs'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import {
-  authorService,
-  type Author,
-  type UpsertAuthorPayload,
-} from '@shared/services/AuthorService'
-
-type AuthorFormValues = {
-  firstName: string
-  lastName: string
-  dateOfBirth: Dayjs
-  dateOfDeath?: Dayjs
-}
-
-type Mode = 'create' | 'edit'
-
-const AUTHORS_QUERY_KEY = ['librarian-authors']
+import { UserOutlined } from '@ant-design/icons'
+import type { UploadFile } from 'antd/es/upload/interface'
+import dayjs from 'dayjs'
+import { Author } from '@shared/services/AuthorService'
+import { useLibrarianAuthors } from '@features/manage-authors'
+import { AuthorForm } from '@entities/author/ui/AuthorForm/AuthorForm'
 
 export const LibrarianAuthorsTab = () => {
-  const queryClient = useQueryClient()
+  const { authors, isLoading, isUpserting, deleteAuthor, upsertAuthor } =
+    useLibrarianAuthors()
+  const [form] = Form.useForm()
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [mode, setMode] = useState<Mode>('create')
   const [editingAuthor, setEditingAuthor] = useState<Author | null>(null)
-  const [form] = Form.useForm<AuthorFormValues>()
+  const [fileList, setFileList] = useState<UploadFile[]>([])
 
-  const { data, isLoading } = useQuery({
-    queryKey: AUTHORS_QUERY_KEY,
-    queryFn: () => authorService.getAll(),
-  })
-
-  const openCreateModal = () => {
-    setMode('create')
-    setEditingAuthor(null)
-    form.resetFields()
+  const handleOpenModal = (author?: Author) => {
+    setEditingAuthor(author || null)
+    if (author) {
+      form.setFieldsValue({
+        firstName: author.firstName,
+        lastName: author.lastName,
+        dateOfBirth: dayjs(author.dateOfBirth),
+        dateOfDeath: author.dateOfDeath ? dayjs(author.dateOfDeath) : undefined,
+      })
+      setFileList(
+        author.photoUrl
+          ? [{ uid: '-1', name: 'photo', status: 'done', url: author.photoUrl }]
+          : [],
+      )
+    } else {
+      form.resetFields()
+      setFileList([])
+    }
     setIsModalOpen(true)
   }
 
-  const openEditModal = (author: Author) => {
-    setMode('edit')
-    setEditingAuthor(author)
-    form.setFieldsValue({
-      firstName: author.firstName,
-      lastName: author.lastName,
-      dateOfBirth: dayjs(author.dateOfBirth),
-      dateOfDeath: author.dateOfDeath ? dayjs(author.dateOfDeath) : undefined,
-    })
-    setIsModalOpen(true)
-  }
-
-  const closeModal = () => {
-    setIsModalOpen(false)
-  }
-
-  const createMutation = useMutation({
-    mutationFn: (payload: UpsertAuthorPayload) => authorService.create(payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: AUTHORS_QUERY_KEY })
-      closeModal()
-    },
-  })
-
-  const updateMutation = useMutation({
-    mutationFn: (params: { id: string; payload: UpsertAuthorPayload }) =>
-      authorService.update(params.id, params.payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: AUTHORS_QUERY_KEY })
-      closeModal()
-    },
-  })
-
-  const deleteMutation = useMutation({
-    mutationFn: (id: string) => authorService.delete(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: AUTHORS_QUERY_KEY })
-    },
-  })
-
-  const handleSubmit = async () => {
+  const handleFinish = async () => {
     try {
       const values = await form.validateFields()
-      const payload: UpsertAuthorPayload = {
-        firstName: values.firstName,
-        lastName: values.lastName,
-        dateOfBirth: values.dateOfBirth.toISOString(),
-        dateOfDeath: values.dateOfDeath
-          ? values.dateOfDeath.toISOString()
-          : undefined,
-      }
+      const file = fileList[0]?.originFileObj as File
 
-      if (mode === 'create') {
-        createMutation.mutate(payload)
-      } else if (mode === 'edit' && editingAuthor) {
-        updateMutation.mutate({ id: editingAuthor.id, payload })
-      }
-    } catch {
-      // validation errors are handled by antd Form
+      await upsertAuthor({
+        id: editingAuthor?.id,
+        payload: {
+          ...values,
+          dateOfBirth: values.dateOfBirth.toISOString(),
+          dateOfDeath: values.dateOfDeath?.toISOString(),
+        },
+        file,
+      })
+      setIsModalOpen(false)
+    } catch (e) {
+      console.error(e)
     }
   }
 
-  const handleDelete = (authorId: string) => {
-    deleteMutation.mutate(authorId)
-  }
-
-  const columns: ColumnsType<Author> = [
-    {
-      title: 'Имя',
-      dataIndex: 'firstName',
-      key: 'firstName',
-    },
-    {
-      title: 'Фамилия',
-      dataIndex: 'lastName',
-      key: 'lastName',
-    },
-    {
-      title: 'Дата рождения',
-      dataIndex: 'dateOfBirth',
-      key: 'dateOfBirth',
-      render: value => dayjs(value).format('DD.MM.YYYY'),
-    },
-    {
-      title: 'Дата смерти',
-      dataIndex: 'dateOfDeath',
-      key: 'dateOfDeath',
-      render: value => (value ? dayjs(value).format('DD.MM.YYYY') : '—'),
-    },
-    {
-      title: 'Книг',
-      dataIndex: 'booksCount',
-      key: 'booksCount',
-      render: value => value ?? 0,
-    },
-    {
-      title: 'Действия',
-      key: 'actions',
-      render: (_, record) => (
-        <Space>
-          <Button size="small" onClick={() => openEditModal(record)}>
-            Редактировать
-          </Button>
-          <Button
-            size="small"
-            danger
-            loading={deleteMutation.isPending}
-            onClick={() => handleDelete(record.id)}
-          >
-            Удалить
-          </Button>
-        </Space>
-      ),
-    },
-  ]
+  const columns = useMemo(
+    () => [
+      {
+        title: 'Фото',
+        dataIndex: 'photoUrl',
+        width: 80,
+        render: (url: string) => (
+          <Avatar src={url} icon={<UserOutlined />} shape="square" size={48} />
+        ),
+      },
+      { title: 'Имя', dataIndex: 'firstName' },
+      { title: 'Фамилия', dataIndex: 'lastName' },
+      {
+        title: 'Действия',
+        width: 200,
+        render: (_: any, record: Author) => (
+          <Space>
+            <Button size="small" onClick={() => handleOpenModal(record)}>
+              Редактировать
+            </Button>
+            <Popconfirm
+              title="Удалить?"
+              onConfirm={() => deleteAuthor(record.id)}
+              okText="Да"
+              cancelText="Нет"
+            >
+              <Button size="small" danger>
+                Удалить
+              </Button>
+            </Popconfirm>
+          </Space>
+        ),
+      },
+    ],
+    [deleteAuthor],
+  )
 
   return (
     <>
-      <Space
+      <div
         style={{
-          marginBottom: 16,
           display: 'flex',
           justifyContent: 'space-between',
+          marginBottom: 20,
         }}
       >
-        <Typography.Title level={4} style={{ margin: 0 }}>
-          Авторы
-        </Typography.Title>
-        <Button type="primary" onClick={openCreateModal}>
+        <Typography.Title level={4}>Управление авторами</Typography.Title>
+        <Button type="primary" onClick={() => handleOpenModal()}>
           Добавить автора
         </Button>
-      </Space>
+      </div>
       <Table
-        loading={isLoading}
-        dataSource={data ?? []}
+        dataSource={authors}
         columns={columns}
         rowKey="id"
-        scroll={{ x: 'max-content' }}
+        loading={isLoading}
       />
-
       <Modal
         open={isModalOpen}
-        title={mode === 'create' ? 'Добавить автора' : 'Редактировать автора'}
-        onCancel={closeModal}
-        onOk={handleSubmit}
-        confirmLoading={createMutation.isPending || updateMutation.isPending}
-        destroyOnClose
+        confirmLoading={isUpserting}
+        onOk={handleFinish}
+        onCancel={() => setIsModalOpen(false)}
+        title={editingAuthor ? 'Редактировать' : 'Новый автор'}
+        destroyOnHidden
       >
-        <Form form={form} layout="vertical">
-          <Form.Item
-            name="firstName"
-            label="Имя"
-            rules={[{ required: true, message: 'Введите имя автора' }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="lastName"
-            label="Фамилия"
-            rules={[{ required: true, message: 'Введите фамилию автора' }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="dateOfBirth"
-            label="Дата рождения"
-            rules={[
-              {
-                required: true,
-                message: 'Укажите дату рождения',
-              },
-            ]}
-          >
-            <DatePicker style={{ width: '100%' }} />
-          </Form.Item>
-          <Form.Item name="dateOfDeath" label="Дата смерти">
-            <DatePicker style={{ width: '100%' }} />
-          </Form.Item>
-        </Form>
+        <AuthorForm form={form} fileList={fileList} setFileList={setFileList} />
       </Modal>
     </>
   )

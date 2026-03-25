@@ -16,7 +16,11 @@ export const HeroSection = ({
   return (
     <section className={styles.hero}>
       <div className={styles.container}>
-        <img src={coverUrl} alt={title} className={styles.cover} />
+        <img
+          src={coverUrl || '/book.png'}
+          alt={title}
+          className={styles.cover}
+        />
 
         <div className={styles.info}>
           <div className={styles.header}>
