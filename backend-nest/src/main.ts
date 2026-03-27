@@ -2,12 +2,13 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
+import { FileUrlInterceptor } from './common/interceptors/file-url.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.setGlobalPrefix('api');
-
+  app.useGlobalInterceptors(new FileUrlInterceptor());
   app.use(cookieParser());
 
   app.enableCors({

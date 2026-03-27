@@ -1,0 +1,41 @@
+@use '@shared/styles/variables' as *;
+
+.wrapper {
+  padding: $spacing-lg;
+  max-width: $breakpoint-xl;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.header {
+  .title {
+    margin: 0 !important;
+    color: var(--text-primary);
+  }
+}
+
+.topSection {
+  width: 100%;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: $spacing-lg;
+  margin-top: $spacing-md;
+
+  @include mobile {
+    grid-template-columns: 1fr;
+  }
+}
+
+.tabs {
+  :global(.ant-tabs-nav-list) {
+    color: var(--text-secondary);
+  }
+  :global(.ant-tabs-tab-active .ant-tabs-tab-btn) {
+    color: #1890ff !important;
+  }
+}

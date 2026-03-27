@@ -11,6 +11,8 @@ import { OrdersModule } from './orders/orders.module';
 import { FileModule } from './common/file/file.module';
 import { CatalogModule } from './catalog/catalog.module';
 import { ReviewsModule } from './reviews/reviews.module';
+import { UserModule } from './user/user.module';
+import { GamificationModule } from './gamification/gamification.module';
 
 @Module({
   imports: [
@@ -26,6 +28,8 @@ import { ReviewsModule } from './reviews/reviews.module';
     FileModule,
     CatalogModule,
     ReviewsModule,
+    UserModule,
+    GamificationModule,
   ],
 })
 export class AppModule {}

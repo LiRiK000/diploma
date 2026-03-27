@@ -65,7 +65,7 @@ export const PreferenceSelector = () => {
             >
               <ArtistItem
                 name={artist.fullName}
-                image={`https://api.dicebear.com/7.x/avataaars/svg?seed=${artist.id}`}
+                image={artist.photoUrl || '/author.png'}
                 isSelected={selectedIds.includes(artist.id)}
                 onClick={() => handleSelect(artist.id)}
               />

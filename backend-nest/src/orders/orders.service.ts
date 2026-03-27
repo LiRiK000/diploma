@@ -6,13 +6,16 @@ import {
 } from '@nestjs/common';
 import { OrderStatus } from '@prisma/client';
 import * as crypto from 'crypto';
+import { GamificationService } from 'src/gamification/gamification.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { getFullUrl } from 'src/utils/getFullCoverUrl';
 
 @Injectable()
 export class OrdersService {
-  constructor(private readonly prisma: PrismaService) {}
-
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly gamificationService: GamificationService,
+  ) {}
   async create(userId: string) {
     return this.prisma.$transaction(async (tx) => {
       const cart = await tx.cart.findUnique({
@@ -188,34 +191,23 @@ export class OrdersService {
   }
 
   async returnOrder(shortId: string) {
-    // 1. Ищем заказ, у которого ID начинается с этих 8 символов
-    // Добавляем проверку длины, чтобы поиск не был слишком размытым
     if (shortId.length < 8) {
       throw new BadRequestException('Введите минимум 8 символов ID заказа');
     }
 
     const order = await this.prisma.order.findFirst({
       where: {
-        id: {
-          startsWith: shortId.toLowerCase(),
-        },
-        // Ищем только те, что реально могут быть возвращены
-        status: {
-          in: [OrderStatus.ON_HAND, OrderStatus.OVERDUE],
-        },
+        id: { startsWith: shortId.toLowerCase() },
+        status: { in: [OrderStatus.ON_HAND, OrderStatus.OVERDUE] },
       },
       include: { items: true },
     });
 
     if (!order) {
-      throw new NotFoundException(
-        `Активный заказ с ID "${shortId}..." не найден или уже возвращен`,
-      );
+      throw new NotFoundException(`Заказ не найден или уже возвращен`);
     }
 
-    // 2. Сама транзакция возврата
     return this.prisma.$transaction(async (tx) => {
-      // Увеличиваем количество книг на складе
       for (const item of order.items) {
         await tx.book.update({
           where: { id: item.bookId },
@@ -223,7 +215,28 @@ export class OrdersService {
         });
       }
 
-      // Обновляем статус заказа
+      const user = await tx.user.findUnique({
+        where: { id: order.userId },
+        select: { experience: true, level: true },
+      });
+
+      const progress = this.gamificationService.calculateProgress(
+        user.experience,
+        user.level,
+        order.items.length,
+      );
+
+      await tx.user.update({
+        where: { id: order.userId },
+        data: {
+          experience: progress.experience,
+          level: progress.level,
+          readBooks: {
+            connect: order.items.map((item) => ({ id: item.bookId })),
+          },
+        },
+      });
+
       const updatedOrder = await tx.order.update({
         where: { id: order.id },
         data: {
@@ -232,18 +245,23 @@ export class OrdersService {
         },
       });
 
-      // Создаем уведомление пользователю (опционально, но полезно)
+      let message = `Книги успешно возвращены. Вы получили ${progress.gainedExp} XP!`;
+
+      if (progress.isLevelUp) {
+        const rank = this.gamificationService.getRankTitle(progress.level);
+        message = `Поздравляем! Ваш уровень повышен до ${progress.level}! Ваш новый ранг: ${rank}.`;
+      }
+
       await tx.notification.create({
         data: {
           userId: order.userId,
-          message: `Книги по заказу #${order.id.slice(0, 8)} успешно возвращены. Спасибо!`,
+          message,
         },
       });
 
       return updatedOrder;
     });
   }
-
   async rejectOrder(orderId: string) {
     const order = await this.prisma.order.findUnique({
       where: { id: orderId },

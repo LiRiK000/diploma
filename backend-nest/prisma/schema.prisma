@@ -32,8 +32,11 @@ model User {
   phone        String?  @unique
   birthDate    DateTime?
   gender       Gender?  @default(OTHER)
-  avatarUrl    String?  // Сразу на будущее для аватарок
+  avatarUrl    String?  
 
+  experience    Int      @default(0)
+  level         Int      @default(1)
+  achievements  UserAchievement[]
   refreshToken String?
   role      Role     @default(USER)
   isInBlacklist Boolean @default(false)
@@ -196,6 +199,54 @@ model OrderItem {
   updatedAt DateTime @updatedAt
   @@map("order_items")
 }
+
+model Achievement {
+  id          String   @id @default(uuid())
+  title       String  @unique  // "Книжный червь"
+  description String   // "Прочитайте 10 книг"
+  icon        String   // Эмодзи или код иконки
+  
+  category    AchievementCategory @default(READING)
+  
+  targetValue Int      // Сколько нужно выполнить (например, 10)
+  rewardExp   Int      // Сколько XP даем за выполнение
+  
+  users       UserAchievement[]
+
+  createdAt   DateTime @default(now())
+  @@map("achievements")
+}
+
+model UserAchievement {
+  id            String   @id @default(uuid())
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String
+  achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+  achievementId String
+  
+  currentValue  Int      @default(0) // Текущий прогресс юзера (например, прочитал 4 из 10)
+  isCompleted   Boolean  @default(false)
+  completedAt   DateTime?
+
+  @@unique([userId, achievementId])
+  @@map("user_achievements")
+}
+
+// Конфиг уровней (Ранги)
+model LevelConfig {
+  level      Int    @id // 1, 2, 3...
+  minExp     Int    // Сколько нужно XP для этого уровня
+  title      String // "Новичок", "Читатель", "Магистр"
+  
+  @@map("level_config")
+}
+
+enum AchievementCategory {
+  READING   // За чтение
+  SOCIAL    // За отзывы и активность
+  SYSTEM    // За стаж регистрации, профиль и т.д.
+}
+
 
 enum Role {
   LIBRARIAN

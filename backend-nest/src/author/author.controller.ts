@@ -37,7 +37,11 @@ export class AuthorsController {
       : excludeIds
         ? [excludeIds]
         : [];
-    return this.authorsService.findAll(formattedExclude, Number(limit) || 10);
+
+    return this.authorsService.findAll(
+      formattedExclude,
+      limit ? Number(limit) : undefined,
+    );
   }
 
   @Post('bulk-follow')

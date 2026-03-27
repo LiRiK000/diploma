@@ -19,6 +19,7 @@ import { AuthorForm } from '@entities/author/ui/AuthorForm/AuthorForm'
 export const LibrarianAuthorsTab = () => {
   const { authors, isLoading, isUpserting, deleteAuthor, upsertAuthor } =
     useLibrarianAuthors()
+
   const [form] = Form.useForm()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingAuthor, setEditingAuthor] = useState<Author | null>(null)
@@ -26,16 +27,26 @@ export const LibrarianAuthorsTab = () => {
 
   const handleOpenModal = (author?: Author) => {
     setEditingAuthor(author || null)
+
     if (author) {
-      form.setFieldsValue({
-        firstName: author.firstName,
-        lastName: author.lastName,
-        dateOfBirth: dayjs(author.dateOfBirth),
+      const formValues = {
+        ...author,
+        dateOfBirth: author.dateOfBirth ? dayjs(author.dateOfBirth) : undefined,
         dateOfDeath: author.dateOfDeath ? dayjs(author.dateOfDeath) : undefined,
-      })
+      }
+
+      form.setFieldsValue(formValues)
+
       setFileList(
         author.photoUrl
-          ? [{ uid: '-1', name: 'photo', status: 'done', url: author.photoUrl }]
+          ? [
+              {
+                uid: '-1',
+                name: 'photo',
+                status: 'done',
+                url: author.photoUrl,
+              },
+            ]
           : [],
       )
     } else {
@@ -48,20 +59,28 @@ export const LibrarianAuthorsTab = () => {
   const handleFinish = async () => {
     try {
       const values = await form.validateFields()
+
       const file = fileList[0]?.originFileObj as File
 
       await upsertAuthor({
         id: editingAuthor?.id,
         payload: {
           ...values,
-          dateOfBirth: values.dateOfBirth.toISOString(),
-          dateOfDeath: values.dateOfDeath?.toISOString(),
+          dateOfBirth: values.dateOfBirth?.isValid()
+            ? values.dateOfBirth.toISOString()
+            : undefined,
+          dateOfDeath: values.dateOfDeath?.isValid()
+            ? values.dateOfDeath.toISOString()
+            : null,
         },
         file,
       })
+
       setIsModalOpen(false)
+      form.resetFields()
+      setFileList([])
     } catch (e) {
-      console.error(e)
+      console.error('Ошибка при сохранении автора:', e)
     }
   }
 
@@ -86,7 +105,8 @@ export const LibrarianAuthorsTab = () => {
               Редактировать
             </Button>
             <Popconfirm
-              title="Удалить?"
+              title="Удалить этого автора?"
+              description="Это действие нельзя будет отменить."
               onConfirm={() => deleteAuthor(record.id)}
               okText="Да"
               cancelText="Нет"
@@ -108,27 +128,37 @@ export const LibrarianAuthorsTab = () => {
         style={{
           display: 'flex',
           justifyContent: 'space-between',
+          alignItems: 'center',
           marginBottom: 20,
         }}
       >
-        <Typography.Title level={4}>Управление авторами</Typography.Title>
+        <Typography.Title level={4} style={{ margin: 0 }}>
+          Управление авторами
+        </Typography.Title>
         <Button type="primary" onClick={() => handleOpenModal()}>
           Добавить автора
         </Button>
       </div>
+
       <Table
         dataSource={authors}
         columns={columns}
         rowKey="id"
         loading={isLoading}
+        pagination={{ pageSize: 10 }}
       />
+
       <Modal
         open={isModalOpen}
         confirmLoading={isUpserting}
         onOk={handleFinish}
         onCancel={() => setIsModalOpen(false)}
-        title={editingAuthor ? 'Редактировать' : 'Новый автор'}
-        destroyOnHidden
+        title={
+          editingAuthor ? 'Редактировать автора' : 'Добавить нового автора'
+        }
+        okText="Сохранить"
+        cancelText="Отмена"
+        destroyOnClose
       >
         <AuthorForm form={form} fileList={fileList} setFileList={setFileList} />
       </Modal>

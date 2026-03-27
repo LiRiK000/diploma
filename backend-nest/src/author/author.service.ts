@@ -5,22 +5,16 @@ import { FileService } from 'src/common/file/file.service';
 
 @Injectable()
 export class AuthorsService {
-  private readonly s3PublicUrl = process.env.S3_PUBLIC_URL;
-
   constructor(
     private readonly prisma: PrismaService,
     private readonly fileService: FileService,
   ) {}
 
-  private getFullUrl(path: string | null): string {
-    if (!path) return null;
-    if (path.startsWith('http')) return path;
-    return `${this.s3PublicUrl}/${path}`;
-  }
-
-  async findAll(excludeIds: string[] = [], limit: number = 10) {
+  async findAll(excludeIds: string[] = [], limit?: number) {
     const authors = await this.prisma.author.findMany({
-      where: { id: { notIn: excludeIds } },
+      where: {
+        id: { notIn: excludeIds },
+      },
       take: limit,
       select: {
         id: true,
@@ -38,7 +32,6 @@ export class AuthorsService {
       data: authors.map((a) => ({
         ...a,
         fullName: `${a.firstName} ${a.lastName}`,
-        photoUrl: this.getFullUrl(a.photoUrl),
       })),
     };
   }
@@ -46,8 +39,15 @@ export class AuthorsService {
   async findOne(id: string, currentUserId?: string) {
     const author = await this.prisma.author.findUnique({
       where: { id },
-      include: { _count: { select: { followers: true } } },
+      include: {
+        _count: { select: { followers: true } },
+        books: {
+          take: 6,
+          include: { author: true, genre: true },
+        },
+      },
     });
+
     if (!author) throw new NotFoundException('Автор не найден');
 
     const isFollowing = currentUserId
@@ -56,25 +56,18 @@ export class AuthorsService {
         })
       : null;
 
-    const topBooks = await this.prisma.book.findMany({
-      where: { authorId: id },
-      take: 6,
-      include: { author: true, genre: true },
-    });
-
     return {
       status: 'success',
       data: {
         ...author,
         fullName: `${author.firstName} ${author.lastName}`,
-        photoUrl: this.getFullUrl(author.photoUrl),
         followersCount: author._count.followers,
         isFollowing: !!isFollowing,
-        topBooks: topBooks.map((b) => ({
+        topBooks: author.books.map((b) => ({
           ...b,
           author: `${b.author.firstName} ${b.author.lastName}`,
           genre: b.genre.label,
-          coverUrl: this.getFullUrl(b.coverImage),
+          coverUrl: b.coverImage,
         })),
       },
     };
@@ -108,23 +101,33 @@ export class AuthorsService {
     const existing = await this.prisma.author.findUnique({ where: { id } });
     if (!existing) throw new NotFoundException('Автор не найден');
 
-    let photoUrl = existing.photoUrl;
+    const {
+      photoUrl: _,
+      dateOfBirth,
+      dateOfDeath,
+      ...cleanDto
+    } = dto as UpdateAuthorDto & { photoUrl?: string };
+
+    let newPhotoPath: string | undefined;
     if (file) {
-      photoUrl = await this.fileService.uploadImage(file, 'authors', id);
+      newPhotoPath = await this.fileService.uploadImage(file, 'authors', id);
     }
 
     return this.prisma.author.update({
       where: { id },
       data: {
-        ...dto,
-        dateOfBirth: dto.dateOfBirth ? new Date(dto.dateOfBirth) : undefined,
-        dateOfDeath: dto.dateOfDeath ? new Date(dto.dateOfDeath) : undefined,
-        photoUrl,
+        ...cleanDto,
+        dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : undefined,
+        dateOfDeath: dateOfDeath ? new Date(dateOfDeath) : undefined,
+        photoUrl: newPhotoPath ?? undefined,
       },
     });
   }
 
   async delete(id: string) {
+    const existing = await this.prisma.author.findUnique({ where: { id } });
+    if (!existing) throw new NotFoundException('Автор не найден');
+
     await this.prisma.author.delete({ where: { id } });
     return { status: 'success' };
   }
@@ -134,7 +137,8 @@ export class AuthorsService {
       where: { id: userId },
       select: { followedAuthors: { where: { id: authorId } } },
     });
-    const isAlreadyFollowing = user?.followedAuthors.length > 0;
+
+    const isAlreadyFollowing = (user?.followedAuthors.length ?? 0) > 0;
 
     await this.prisma.user.update({
       where: { id: userId },
@@ -152,14 +156,6 @@ export class AuthorsService {
     return this.prisma.user.update({
       where: { id: userId },
       data: { followedAuthors: { connect: authorIds.map((id) => ({ id })) } },
-    });
-  }
-
-  async uploadAuthorPhoto(authorId: string, file: Express.Multer.File) {
-    const path = await this.fileService.uploadImage(file, 'authors', authorId);
-    return this.prisma.author.update({
-      where: { id: authorId },
-      data: { photoUrl: path },
     });
   }
 }

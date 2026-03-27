@@ -1,0 +1,95 @@
+@use '@shared/styles/variables' as *;
+
+.card {
+  padding: $spacing-lg;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: $border-radius-md;
+  backdrop-filter: $liquid-glass-blur;
+  transition: $transition-liquid;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+  position: relative;
+  overflow: hidden;
+
+  &:hover {
+    transform: translateY(-4px);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(24, 144, 255, 0.4);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+  }
+
+  &.completed {
+    border-color: rgba(82, 196, 26, 0.3);
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(
+        135deg,
+        transparent 50%,
+        rgba(82, 196, 26, 0.1) 50%
+      );
+    }
+  }
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.iconWrapper {
+  position: relative;
+  font-size: 32px;
+
+  .checkIcon {
+    position: absolute;
+    bottom: -2px;
+    right: -4px;
+    font-size: 16px;
+    color: #52c41a;
+    background: white;
+    border-radius: 50%;
+  }
+}
+
+.expBadge {
+  font-size: 12px;
+  font-weight: 700;
+  color: #1890ff;
+  background: rgba(24, 144, 255, 0.1);
+  padding: 2px 8px;
+  border-radius: $border-radius-sm;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  .title {
+    font-weight: 700;
+    font-size: $font-size-medium;
+    color: var(--text-primary);
+  }
+  .description {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.4;
+  }
+}
+
+.progressInfo {
+  display: flex;
+  justify-content: space-between;
+  margin-top: $spacing-xs;
+  .values,
+  .percent {
+    font-size: 11px;
+    color: var(--text-secondary);
+  }
+}

@@ -1,7 +1,6 @@
 import 'dotenv/config';
 import { PrismaPg } from '@prisma/adapter-pg';
-import { PrismaClient } from '@prisma/client';
-
+import { PrismaClient, AchievementCategory } from '@prisma/client';
 const pool = new PrismaPg({
   connectionString: process.env.DATABASE_URL,
 });
@@ -11,6 +10,45 @@ const prisma = new PrismaClient({
 });
 
 async function main() {
+  // Добавь это в main() в файле seed.ts
+  const achievementsData = [
+    {
+      title: 'Первые шаги',
+      description: 'Верните свою первую книгу в библиотеку',
+      icon: '📚',
+      category: AchievementCategory.READING, // Используем Enum вместо строки
+      targetValue: 1,
+      rewardExp: 100,
+    },
+    {
+      title: 'Книжный червь',
+      description: 'Прочитайте 10 книг',
+      icon: '🐛',
+      category: AchievementCategory.READING,
+      targetValue: 10,
+      rewardExp: 500,
+    },
+    // ... остальные ачивки с AchievementCategory.READING или AchievementCategory.SOCIAL
+  ];
+
+  for (const ach of achievementsData) {
+    // Так как в схеме title не unique, используем findFirst + create
+    // Или, если хочешь именно upsert, нужно добавить @unique к title в schema.prisma
+    const existing = await prisma.achievement.findFirst({
+      where: { title: ach.title },
+    });
+
+    if (!existing) {
+      await prisma.achievement.create({
+        data: ach,
+      });
+    } else {
+      await prisma.achievement.update({
+        where: { id: existing.id },
+        data: ach,
+      });
+    }
+  }
   // Genres
   const genresData = [
     { label: 'Science Fiction', value: 'sci-fi' },

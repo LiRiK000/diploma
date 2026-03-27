@@ -8,6 +8,7 @@ interface SuggestionItem {
   author: string | null;
   type: 'book' | 'author';
   sim: number;
+  image: string | null;
 }
 @Injectable()
 export class SearchService {
@@ -17,7 +18,6 @@ export class SearchService {
     const { q: query, take } = dto;
     const searchTerms = `%${query}%`;
 
-    // 1. Пытаемся найти точные совпадения
     const exactMatches = await this.prisma.$queryRaw<any[]>`
       SELECT b.id, b.title, b.description, b."coverImage", b."availableQuantity", b."authorId",
              (a."firstName" || ' ' || a."lastName") AS author,
@@ -34,7 +34,6 @@ export class SearchService {
       return { status: 'success', matchType: 'exact', data: exactMatches };
     }
 
-    // 2. Рекомендации (ILIKE)
     const recommendations = await this.prisma.$queryRaw<any[]>`
       SELECT b.id, b.title, b.description, b."coverImage", b."availableQuantity", b."authorId",
              (a."firstName" || ' ' || a."lastName") AS author,
@@ -61,20 +60,33 @@ export class SearchService {
     const searchTerms = `%${query}%`;
 
     const suggestions = await this.prisma.$queryRaw<SuggestionItem[]>`
-      SELECT id, ("firstName" || ' ' || "lastName") AS title, NULL AS author, 'author' AS type,
-             similarity(("firstName" || ' ' || "lastName"), ${query}::text) AS sim
-      FROM "authors"
-      WHERE similarity(("firstName" || ' ' || "lastName"), ${query}::text) > 0.3 
-         OR ("firstName" || ' ' || "lastName") ILIKE ${searchTerms}::text
-      UNION ALL
-      SELECT b.id, b.title, (a."firstName" || ' ' || a."lastName") AS author, 'book' AS type,
-             similarity(b.title, ${query}::text) AS sim
-      FROM "books" b
-      LEFT JOIN "authors" a ON b."authorId" = a.id
-      WHERE similarity(b.title, ${query}::text) > 0.3 
-         OR b.title ILIKE ${searchTerms}::text
-      ORDER BY sim DESC LIMIT ${take}::int;
-    `;
+    SELECT 
+      id, 
+      ("firstName" || ' ' || "lastName") AS title, 
+      NULL AS author, 
+      'author' AS type,
+      "photoUrl" AS image, 
+      similarity(("firstName" || ' ' || "lastName"), ${query}::text) AS sim
+    FROM "authors"
+    WHERE similarity(("firstName" || ' ' || "lastName"), ${query}::text) > 0.3 
+       OR ("firstName" || ' ' || "lastName") ILIKE ${searchTerms}::text
+    
+    UNION ALL
+    
+    SELECT 
+      b.id, 
+      b.title, 
+      (a."firstName" || ' ' || a."lastName") AS author, 
+      'book' AS type,
+      b."coverImage" AS image,
+      similarity(b.title, ${query}::text) AS sim
+    FROM "books" b
+    LEFT JOIN "authors" a ON b."authorId" = a.id
+    WHERE similarity(b.title, ${query}::text) > 0.3 
+       OR b.title ILIKE ${searchTerms}::text
+    
+    ORDER BY sim DESC LIMIT ${take}::int;
+  `;
 
     return {
       status: 'success',
@@ -84,6 +96,7 @@ export class SearchService {
         title: s.title,
         author: s.author,
         type: s.type,
+        image: s.image,
       })),
     };
   }

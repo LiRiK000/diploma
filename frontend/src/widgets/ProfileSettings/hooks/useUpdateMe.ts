@@ -8,15 +8,16 @@ export const useUpdateMe = () => {
 
   return useMutation({
     mutationFn: async (payload: UpdateMePayload) => {
-      const response = await userService.updateMe(payload)
-      return response.data.user
+      const data = await userService.updateMe(payload)
+      return data
     },
     onSuccess: async () => {
       openNotification('Данные профиля обновлены', 'success')
       await queryClient.invalidateQueries({ queryKey: ['user-me'] })
       await queryClient.invalidateQueries({ queryKey: ['me'] })
     },
-    onError: () => {
+    onError: (error: unknown) => {
+      console.error('Update profile error:', error)
       openNotification('Не удалось обновить данные профиля', 'error')
     },
   })

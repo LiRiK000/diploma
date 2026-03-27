@@ -22,14 +22,13 @@ export interface GetMeResponse {
     user: UserProfile
   }
 }
-
 export interface UpdateMePayload {
   name?: string
   surname?: string
   displayName?: string
   phone?: string
-  gender?: Gender
-  birthDate?: string
+  gender?: Gender | null
+  birthDate?: string | null
   avatarUrl?: string
 }
 

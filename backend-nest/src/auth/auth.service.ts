@@ -2,6 +2,8 @@ import {
   Injectable,
   BadRequestException,
   UnauthorizedException,
+  forwardRef,
+  Inject,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -11,17 +13,22 @@ import { LoginDto } from './dto/login.dto';
 import type { User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UpdateMeDto } from './dto/update-me.dto';
+import { UserService } from '../user/user.service';
+
 export interface JwtPayload {
   id: string;
   role: string;
   iat?: number;
   exp?: number;
 }
+
 @Injectable()
 export class AuthService {
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
+    @Inject(forwardRef(() => UserService))
+    private userService: UserService,
   ) {}
 
   async register(dto: RegisterDto, res: Response) {
@@ -73,14 +80,10 @@ export class AuthService {
   }
 
   async getUserFullProfile(userId: string) {
-    const user = await this.prisma.user.findUnique({
-      where: { id: userId },
-    });
-
+    const user = await this.userService.getProfile(userId);
     if (!user) throw new UnauthorizedException('Пользователь не найден');
 
-    const { password, refreshToken, ...publicUser } = user;
-    return publicUser;
+    return user;
   }
 
   async updateMe(userId: string, dto: UpdateMeDto) {
@@ -96,27 +99,9 @@ export class AuthService {
       }
     }
 
-    const user = await this.prisma.user.update({
-      where: { id: userId },
-      data: {
-        ...(dto.name !== undefined ? { name: dto.name.trim() } : {}),
-        ...(dto.surname !== undefined ? { surname: dto.surname.trim() } : {}),
-        ...(dto.displayName !== undefined
-          ? { displayName: dto.displayName.trim() || null }
-          : {}),
-        ...(dto.phone !== undefined ? { phone: dto.phone.trim() || null } : {}),
-        ...(dto.birthDate !== undefined
-          ? { birthDate: dto.birthDate ? new Date(dto.birthDate) : null }
-          : {}),
-        ...(dto.gender !== undefined ? { gender: dto.gender } : {}),
-        ...(dto.avatarUrl !== undefined
-          ? { avatarUrl: dto.avatarUrl.trim() || null }
-          : {}),
-      },
-    });
+    const updatedUser = await this.userService.updateProfile(userId, dto);
 
-    const { password, refreshToken, ...publicUser } = user;
-    return publicUser;
+    return updatedUser;
   }
 
   async refresh(refreshToken: string, res: Response) {
@@ -144,6 +129,7 @@ export class AuthService {
 
     return this.createSendTokens(user, res);
   }
+
   async logout(userId: string, res: Response) {
     await this.prisma.user.update({
       where: { id: userId },

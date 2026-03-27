@@ -11,7 +11,6 @@ import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import * as express from 'express';
 import { JwtAuthGuard } from './guards/jwt.guard';
-import type { User } from '@prisma/client';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { Cookie } from 'src/common/decorators/get-cookies.decorator';
 import { LoginDto } from './dto/login.dto';
@@ -40,7 +39,6 @@ export class AuthController {
   @Get('me')
   @UseGuards(JwtAuthGuard)
   async getMe(@CurrentUser('id') userId: string) {
-    // Вызываем сервис, чтобы получить свежие данные из БД
     const user = await this.authService.getUserFullProfile(userId);
     return {
       status: 'success',
