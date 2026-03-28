@@ -37,7 +37,7 @@ export const ProgressBar: FC<ProgressBarProps> = ({
           '100%': '#7dcb07',
         }}
         trailColor="var(--glass-border)"
-        strokeWidth={12}
+        size={{ height: 12 }}
         className={styles.antdProgress}
       />
 

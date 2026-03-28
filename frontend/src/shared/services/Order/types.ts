@@ -15,7 +15,7 @@ export interface OrderItem {
     id: string
     title: string
     author: string
-    coverUrl?: string
+    coverImage?: string
   }
 }
 
@@ -26,7 +26,7 @@ export interface OrderResponse {
   pickupCode: string | null
   orderDate: string
   dueDate: string
-  coverUrl?: string
+  coverImage?: string
   items: OrderItem[]
 }
 

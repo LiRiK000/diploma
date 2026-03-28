@@ -100,7 +100,7 @@ export const OrderList = () => {
                             }}
                           >
                             <img
-                              src={item.book.coverImage}
+                              src={item.book.coverImage || 'book.png'}
                               alt={item.book.title}
                             />
                           </div>
