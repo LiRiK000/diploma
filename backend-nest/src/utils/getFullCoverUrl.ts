@@ -1,14 +1,11 @@
-export function getFullUrl(path: string | null): string {
+export function getFullUrl(path: string | null | undefined): string | null {
   if (!path) return null;
-
-  if (path.startsWith('http')) {
+  if (path.startsWith('http') || path.startsWith('data:')) {
     return path;
   }
-
-  const baseUrl = process.env.S3_PUBLIC_URL || '';
-
-  const cleanBase = baseUrl.replace(/\/$/, '');
-  const cleanPath = path.replace(/^\//, '');
+  const baseUrl = (process.env.S3_PUBLIC_URL || 'http://localhost:3000').trim();
+  const cleanBase = baseUrl.replace(/\/+$/, '');
+  const cleanPath = path.replace(/^\/+/, '');
 
   return `${cleanBase}/${cleanPath}`;
 }

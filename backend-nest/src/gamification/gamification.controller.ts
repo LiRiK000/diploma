@@ -27,4 +27,28 @@ export class GamificationController {
 
     return this.gamificationService.getUserStats(user);
   }
+
+  @Get('achievements')
+  async getAchievements(@CurrentUser('id') userId: string) {
+    const allAchievements = await this.prisma.achievement.findMany({
+      include: {
+        users: {
+          where: { userId },
+        },
+      },
+    });
+
+    return allAchievements.map((ach) => ({
+      id: ach.id,
+      title: ach.title,
+      description: ach.description,
+      icon: ach.icon,
+      category: ach.category,
+      targetValue: ach.targetValue,
+      currentValue: ach.users[0]?.currentValue ?? 0,
+      isCompleted: ach.users[0]?.isCompleted ?? false,
+      rewardExp: ach.rewardExp,
+      completedAt: ach.users[0]?.completedAt ?? null,
+    }));
+  }
 }
