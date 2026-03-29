@@ -1,9 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { AchievementCategory, Prisma } from '@prisma/client';
 import { GAMIFICATION_CONFIG, RANKS } from './gamification.constants';
+
+type PrismaTransaction = Prisma.TransactionClient;
 
 @Injectable()
 export class GamificationService {
-  getThresholdForLevel(level: number): number {
+  private readonly logger = new Logger(GamificationService.name);
+
+  constructor(private readonly prisma: PrismaService) {}
+
+  private getThresholdForLevel(level: number): number {
     if (level <= 0) return GAMIFICATION_CONFIG.BASE_EXP;
     return Math.floor(
       GAMIFICATION_CONFIG.BASE_EXP *
@@ -16,46 +24,120 @@ export class GamificationService {
     return rank ? rank.title : 'Путешественник';
   }
 
-  calculateProgress(
-    currentExp: number,
-    currentLevel: number,
-    booksCount: number,
+  async handleUserActivity(
+    userId: string,
+    payload: {
+      expToAdd: number;
+      category?: AchievementCategory;
+      incrementValue?: number;
+    },
   ) {
-    const gainedExp = booksCount * GAMIFICATION_CONFIG.EXP_PER_BOOK;
-    let newExp = currentExp + gainedExp;
-    let newLevel = currentLevel;
+    return this.prisma.$transaction(async (tx) => {
+      const user = await tx.user.findUnique({
+        where: { id: userId },
+        select: { experience: true, level: true },
+      });
 
-    while (newExp >= this.getThresholdForLevel(newLevel)) {
-      newExp -= this.getThresholdForLevel(newLevel);
-      newLevel++;
-    }
+      if (!user) return;
 
-    return {
-      experience: newExp,
-      level: newLevel,
-      gainedExp,
-      isLevelUp: newLevel > currentLevel,
-    };
+      let newExp = user.experience + payload.expToAdd;
+      let newLevel = user.level;
+
+      while (newExp >= this.getThresholdForLevel(newLevel)) {
+        newExp -= this.getThresholdForLevel(newLevel);
+        newLevel++;
+      }
+
+      const isLevelUp = newLevel > user.level;
+
+      await tx.user.update({
+        where: { id: userId },
+        data: { experience: newExp, level: newLevel },
+      });
+
+      if (payload.category && payload.incrementValue) {
+        await this.processAchievements(
+          tx,
+          userId,
+          payload.category,
+          payload.incrementValue,
+        );
+      }
+
+      if (isLevelUp) {
+        await tx.notification.create({
+          data: {
+            userId,
+            message: `🎉 Уровень повышен! Теперь вы ${newLevel} уровня (${this.getRankTitle(newLevel)}).`,
+          },
+        });
+      }
+
+      return { newLevel, newExp, isLevelUp };
+    });
   }
 
-  // Метод для отдачи данных на фронт
-  async getUserStats(user: {
-    experience: number;
-    level: number;
-    _count?: { readBooks: number };
-  }) {
-    const nextLevelThreshold = this.getThresholdForLevel(user.level);
-    const progressPercent = Math.round(
-      (user.experience / nextLevelThreshold) * 100,
-    );
+  private async processAchievements(
+    tx: PrismaTransaction,
+    userId: string,
+    category: AchievementCategory,
+    _increment: number,
+  ) {
+    const userStats = await tx.user.findUnique({
+      where: { id: userId },
+      select: {
+        _count: {
+          select: {
+            readBooks: true,
+            reviews: true,
+          },
+        },
+      },
+    });
 
-    return {
-      level: user.level,
-      currentExp: user.experience,
-      nextLevelExp: nextLevelThreshold,
-      progressPercent,
-      rank: this.getRankTitle(user.level),
-      totalReadBooks: user._count?.readBooks ?? 0,
-    };
+    if (!userStats) return;
+
+    let actualValue = 0;
+    if (category === AchievementCategory.READING) {
+      actualValue = userStats._count.readBooks;
+    } else if (category === AchievementCategory.SOCIAL) {
+      actualValue = userStats._count.reviews;
+    }
+
+    const pendingAchievements = await tx.achievement.findMany({
+      where: {
+        category,
+        users: {
+          none: { userId, isCompleted: true },
+        },
+      },
+    });
+
+    for (const ach of pendingAchievements) {
+      const userAch = await tx.userAchievement.upsert({
+        where: { userId_achievementId: { userId, achievementId: ach.id } },
+        update: { currentValue: actualValue },
+        create: { userId, achievementId: ach.id, currentValue: actualValue },
+      });
+
+      if (userAch.currentValue >= ach.targetValue) {
+        await tx.userAchievement.update({
+          where: { id: userAch.id },
+          data: { isCompleted: true, completedAt: new Date() },
+        });
+
+        await tx.user.update({
+          where: { id: userId },
+          data: { experience: { increment: ach.rewardExp } },
+        });
+
+        await tx.notification.create({
+          data: {
+            userId,
+            message: `🏅 Достижение получено: "${ach.title}"! +${ach.rewardExp} XP`,
+          },
+        });
+      }
+    }
   }
 }

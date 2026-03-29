@@ -2,6 +2,19 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateAuthorDto, UpdateAuthorDto } from './dto/author.dto';
 import { FileService } from 'src/common/file/file.service';
+import { getFullUrl } from 'src/utils/getFullCoverUrl';
+import { Author, Book, Genre } from '@prisma/client';
+
+type AuthorWithRelations = Author & {
+  books?: (Book & {
+    author: Author;
+    genre: Genre;
+  })[];
+  _count?: {
+    books?: number;
+    followers?: number;
+  };
+};
 
 @Injectable()
 export class AuthorsService {
@@ -10,29 +23,40 @@ export class AuthorsService {
     private readonly fileService: FileService,
   ) {}
 
+  private formatAuthor(author: AuthorWithRelations) {
+    return {
+      ...author,
+      fullName: `${author.firstName} ${author.lastName}`,
+      dateOfBirth: author.dateOfBirth.toISOString(),
+      dateOfDeath: author.dateOfDeath ? author.dateOfDeath.toISOString() : null,
+      createdAt: author.createdAt.toISOString(),
+      updatedAt: author.updatedAt.toISOString(),
+
+      photoUrl: getFullUrl(author.photoUrl),
+
+      topBooks: author.books?.map((b) => ({
+        ...b,
+        author: `${b.author.firstName} ${b.author.lastName}`,
+        genre: b.genre.label,
+        coverUrl: getFullUrl(b.coverImage),
+      })),
+    };
+  }
+
   async findAll(excludeIds: string[] = [], limit?: number) {
     const authors = await this.prisma.author.findMany({
       where: {
         id: { notIn: excludeIds },
       },
       take: limit,
-      select: {
-        id: true,
-        firstName: true,
-        lastName: true,
-        dateOfBirth: true,
-        dateOfDeath: true,
-        photoUrl: true,
+      include: {
         _count: { select: { books: true } },
       },
     });
 
     return {
       status: 'success',
-      data: authors.map((a) => ({
-        ...a,
-        fullName: `${a.firstName} ${a.lastName}`,
-      })),
+      data: authors.map((a) => this.formatAuthor(a as AuthorWithRelations)),
     };
   }
 
@@ -56,19 +80,14 @@ export class AuthorsService {
         })
       : null;
 
+    const formatted = this.formatAuthor(author as AuthorWithRelations);
+
     return {
       status: 'success',
       data: {
-        ...author,
-        fullName: `${author.firstName} ${author.lastName}`,
+        ...formatted,
         followersCount: author._count.followers,
         isFollowing: !!isFollowing,
-        topBooks: author.books.map((b) => ({
-          ...b,
-          author: `${b.author.firstName} ${b.author.lastName}`,
-          genre: b.genre.label,
-          coverUrl: b.coverImage,
-        })),
       },
     };
   }
@@ -88,40 +107,40 @@ export class AuthorsService {
         'authors',
         author.id,
       );
-      return this.prisma.author.update({
+      const updated = await this.prisma.author.update({
         where: { id: author.id },
         data: { photoUrl: path },
       });
+      return this.formatAuthor(updated as AuthorWithRelations);
     }
 
-    return author;
+    return this.formatAuthor(author as AuthorWithRelations);
   }
 
   async update(id: string, dto: UpdateAuthorDto, file?: Express.Multer.File) {
     const existing = await this.prisma.author.findUnique({ where: { id } });
     if (!existing) throw new NotFoundException('Автор не найден');
-
-    const {
-      photoUrl: _,
-      dateOfBirth,
-      dateOfDeath,
-      ...cleanDto
-    } = dto as UpdateAuthorDto & { photoUrl?: string };
+    const { dateOfBirth, dateOfDeath, ...cleanDto } = dto;
 
     let newPhotoPath: string | undefined;
     if (file) {
       newPhotoPath = await this.fileService.uploadImage(file, 'authors', id);
     }
-
-    return this.prisma.author.update({
+    const updated = await this.prisma.author.update({
       where: { id },
       data: {
         ...cleanDto,
         dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : undefined,
-        dateOfDeath: dateOfDeath ? new Date(dateOfDeath) : undefined,
+        dateOfDeath: dateOfDeath
+          ? new Date(dateOfDeath)
+          : dateOfDeath === null
+            ? null
+            : undefined,
         photoUrl: newPhotoPath ?? undefined,
       },
     });
+
+    return this.formatAuthor(updated as AuthorWithRelations);
   }
 
   async delete(id: string) {

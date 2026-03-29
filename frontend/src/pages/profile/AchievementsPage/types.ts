@@ -5,24 +5,19 @@ export interface Achievement {
   title: string
   description: string
   icon: string
-  category: AchievementCategory
-  targetValue: number
   currentValue: number
+  targetValue: number
   isCompleted: boolean
   rewardExp: number
+  category: AchievementCategory
   completedAt?: string | null
 }
 
-export interface UserStats {
+export interface UserGamificationStats {
   level: number
   rank: string
   currentExp: number
   nextLevelExp: number
   progressPercent: number
   totalReadBooks: number
-}
-
-export interface GamificationData {
-  stats: UserStats
-  achievements: Achievement[]
 }

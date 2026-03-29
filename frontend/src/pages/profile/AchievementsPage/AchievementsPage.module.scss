@@ -20,6 +20,21 @@
   width: 100%;
 }
 
+.titleInfo {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+
+  .rankBadge {
+    padding: 4px 12px;
+    background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+    color: white;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 0 4px 10px rgba(24, 144, 255, 0.3);
+  }
+}
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));

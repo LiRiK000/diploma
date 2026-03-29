@@ -1,20 +1,20 @@
 import { FC } from 'react'
 import { Progress, Typography } from 'antd'
 import styles from './ProgressBar.module.scss'
+import { ProgressBarProps } from './types'
 
 const { Text } = Typography
 
-interface ProgressBarProps {
-  percent?: number
-  currentLevel?: number
-  totalAchievements?: string
-}
-
 export const ProgressBar: FC<ProgressBarProps> = ({
-  percent = 45,
-  currentLevel = 5,
-  totalAchievements = '12 / 30',
+  percent = 0,
+  currentLevel = 1,
+  totalAchievements = '0 / 0',
+  currentExp,
+  nextLevelExp,
 }) => {
+  const remainingExp =
+    nextLevelExp && currentExp ? nextLevelExp - currentExp : null
+
   return (
     <div className={styles.container}>
       <div className={styles.info}>
@@ -24,27 +24,36 @@ export const ProgressBar: FC<ProgressBarProps> = ({
         </div>
 
         <div className={styles.stats}>
-          <Text className={styles.statsTitle}>Общий прогресс</Text>
+          <Text className={styles.statsTitle}>Достижения</Text>
           <Text className={styles.statsValue}>{totalAchievements}</Text>
         </div>
       </div>
 
-      <Progress
-        percent={percent}
-        showInfo={false}
-        strokeColor={{
-          '0%': '#1890ff',
-          '100%': '#7dcb07',
-        }}
-        trailColor="var(--glass-border)"
-        size={{ height: 12 }}
-        className={styles.antdProgress}
-      />
+      <div className={styles.progressWrapper}>
+        <Progress
+          percent={percent}
+          showInfo={false}
+          strokeColor={{
+            '0%': '#1890ff',
+            '100%': '#7dcb07',
+          }}
+          trailColor="rgba(255, 255, 255, 0.05)"
+          size={{ height: 12 }}
+          className={styles.antdProgress}
+        />
+      </div>
 
       <div className={styles.footer}>
         <Text className={styles.hint}>
-          До следующего уровня осталось {100 - percent}% опыта
+          {remainingExp
+            ? `До следующего уровня: ${remainingExp} XP`
+            : `Прогресс уровня: ${percent}%`}
         </Text>
+        {currentExp && nextLevelExp && (
+          <Text className={styles.expCount}>
+            {currentExp} / {nextLevelExp}
+          </Text>
+        )}
       </div>
     </div>
   )

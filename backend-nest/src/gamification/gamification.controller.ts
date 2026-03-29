@@ -19,13 +19,25 @@ export class GamificationController {
       select: {
         experience: true,
         level: true,
-        _count: {
-          select: { readBooks: true },
-        },
+        _count: { select: { readBooks: true } },
       },
     });
 
-    return this.gamificationService.getUserStats(user);
+    const nextLevelThreshold = this.gamificationService['getThresholdForLevel'](
+      user.level,
+    );
+
+    return {
+      level: user.level,
+      rank: this.gamificationService.getRankTitle(user.level),
+      currentExp: user.experience,
+      nextLevelExp: nextLevelThreshold,
+      progressPercent: Math.min(
+        Math.round((user.experience / nextLevelThreshold) * 100),
+        100,
+      ),
+      totalReadBooks: user._count.readBooks,
+    };
   }
 
   @Get('achievements')

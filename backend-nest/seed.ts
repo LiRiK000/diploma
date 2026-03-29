@@ -10,13 +10,12 @@ const prisma = new PrismaClient({
 });
 
 async function main() {
-  // Добавь это в main() в файле seed.ts
   const achievementsData = [
     {
       title: 'Первые шаги',
       description: 'Верните свою первую книгу в библиотеку',
       icon: '📚',
-      category: AchievementCategory.READING, // Используем Enum вместо строки
+      category: AchievementCategory.READING,
       targetValue: 1,
       rewardExp: 100,
     },
@@ -28,12 +27,69 @@ async function main() {
       targetValue: 10,
       rewardExp: 500,
     },
-    // ... остальные ачивки с AchievementCategory.READING или AchievementCategory.SOCIAL
+    {
+      title: 'Библиофил',
+      description: 'Прочитайте 50 книг',
+      icon: '🏰',
+      category: AchievementCategory.READING,
+      targetValue: 50,
+      rewardExp: 2000,
+    },
+    {
+      title: 'Легендарный чтец',
+      description: 'Прочитайте 100 книг',
+      icon: '👑',
+      category: AchievementCategory.READING,
+      targetValue: 100,
+      rewardExp: 5000,
+    },
+
+    // --- КАТЕГОРИЯ: СОЦИАЛЬНЫЕ (SOCIAL) ---
+    {
+      title: 'Критический взгляд',
+      description: 'Оставьте свой первый отзыв на книгу',
+      icon: '✍️',
+      category: AchievementCategory.SOCIAL,
+      targetValue: 1,
+      rewardExp: 150,
+    },
+    {
+      title: 'Лидер мнений',
+      description: 'Напишите 10 содержательных отзывов',
+      icon: '🔥',
+      category: AchievementCategory.SOCIAL,
+      targetValue: 10,
+      rewardExp: 750,
+    },
+    {
+      title: 'Преданный фанат',
+      description: 'Подпишитесь на 5 авторов',
+      icon: '❤️',
+      category: AchievementCategory.SOCIAL,
+      targetValue: 5,
+      rewardExp: 300,
+    },
+
+    // --- КАТЕГОРИЯ: СИСТЕМНЫЕ (SYSTEM) ---
+    {
+      title: 'Персональный подход',
+      description: 'Полностью заполните информацию в своем профиле',
+      icon: '👤',
+      category: AchievementCategory.SYSTEM,
+      targetValue: 1,
+      rewardExp: 200,
+    },
+    {
+      title: 'Постоянный клиент',
+      description: 'Сделайте 5 заказов в библиотеке',
+      icon: '🎫',
+      category: AchievementCategory.SYSTEM,
+      targetValue: 5,
+      rewardExp: 400,
+    },
   ];
 
   for (const ach of achievementsData) {
-    // Так как в схеме title не unique, используем findFirst + create
-    // Или, если хочешь именно upsert, нужно добавить @unique к title в schema.prisma
     const existing = await prisma.achievement.findFirst({
       where: { title: ach.title },
     });

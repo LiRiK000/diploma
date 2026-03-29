@@ -4,8 +4,16 @@ import {
   ForbiddenException,
   NotFoundException,
 } from '@nestjs/common';
-import { OrderStatus, Order, OrderItem, Book, User } from '@prisma/client';
+import {
+  OrderStatus,
+  Order,
+  OrderItem,
+  Book,
+  User,
+  AchievementCategory,
+} from '@prisma/client';
 import * as crypto from 'crypto';
+import { GAMIFICATION_CONFIG } from 'src/gamification/gamification.constants';
 import { GamificationService } from 'src/gamification/gamification.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { getFullUrl } from 'src/utils/getFullCoverUrl';
@@ -173,46 +181,27 @@ export class OrdersService {
           data: { availableQuantity: { increment: item.quantity } },
         });
       }
-
-      const user = await tx.user.findUnique({
-        where: { id: order.userId },
-        select: { experience: true, level: true },
+      await tx.order.update({
+        where: { id: order.id },
+        data: { status: OrderStatus.RETURNED, returnDate: new Date() },
       });
-
-      if (!user) throw new NotFoundException('Пользователь не найден');
-
-      const progress = this.gamificationService.calculateProgress(
-        user.experience,
-        user.level,
-        order.items.length,
-      );
-
       await tx.user.update({
         where: { id: order.userId },
         data: {
-          experience: progress.experience,
-          level: progress.level,
           readBooks: {
             connect: order.items.map((item) => ({ id: item.bookId })),
           },
         },
       });
 
-      const updatedOrder = await tx.order.update({
-        where: { id: order.id },
-        data: { status: OrderStatus.RETURNED, returnDate: new Date() },
-        include: { items: { include: { book: true } } },
+      const booksCount = order.items.length;
+      await this.gamificationService.handleUserActivity(order.userId, {
+        expToAdd: booksCount * GAMIFICATION_CONFIG.EXP_PER_BOOK,
+        category: AchievementCategory.READING,
+        incrementValue: booksCount,
       });
 
-      const message = progress.isLevelUp
-        ? `Поздравляем! Ваш уровень повышен до ${progress.level}!`
-        : `Книги возвращены. +${progress.gainedExp} XP!`;
-
-      await tx.notification.create({
-        data: { userId: order.userId, message },
-      });
-
-      return this.formatOrder(updatedOrder as OrderWithRelations);
+      return { status: 'success' };
     });
   }
 
