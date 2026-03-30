@@ -90,19 +90,14 @@ export class GamificationService {
           select: {
             readBooks: true,
             reviews: true,
+            followedAuthors: true,
+            orders: true,
           },
         },
       },
     });
 
     if (!userStats) return;
-
-    let actualValue = 0;
-    if (category === AchievementCategory.READING) {
-      actualValue = userStats._count.readBooks;
-    } else if (category === AchievementCategory.SOCIAL) {
-      actualValue = userStats._count.reviews;
-    }
 
     const pendingAchievements = await tx.achievement.findMany({
       where: {
@@ -114,13 +109,34 @@ export class GamificationService {
     });
 
     for (const ach of pendingAchievements) {
+      let actualValue = 0;
+
+      switch (category) {
+        case AchievementCategory.READING:
+          actualValue = userStats._count.readBooks;
+          break;
+
+        case AchievementCategory.SOCIAL:
+          const isFollowAch =
+            ach.title.toLowerCase().includes('автор') ||
+            ach.description.toLowerCase().includes('подпиш');
+          actualValue = isFollowAch
+            ? userStats._count.followedAuthors
+            : userStats._count.reviews;
+          break;
+
+        case AchievementCategory.SYSTEM:
+          actualValue = userStats._count.orders;
+          break;
+      }
+
       const userAch = await tx.userAchievement.upsert({
         where: { userId_achievementId: { userId, achievementId: ach.id } },
         update: { currentValue: actualValue },
         create: { userId, achievementId: ach.id, currentValue: actualValue },
       });
 
-      if (userAch.currentValue >= ach.targetValue) {
+      if (userAch.currentValue >= ach.targetValue && !userAch.isCompleted) {
         await tx.userAchievement.update({
           where: { id: userAch.id },
           data: { isCompleted: true, completedAt: new Date() },

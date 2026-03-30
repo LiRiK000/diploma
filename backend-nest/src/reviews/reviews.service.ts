@@ -7,10 +7,15 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
+import { GamificationService } from 'src/gamification/gamification.service';
+import { AchievementCategory } from '@prisma/client';
 
 @Injectable()
 export class ReviewService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private gamificationService: GamificationService,
+  ) {}
 
   async create(userId: string, dto: CreateReviewDto) {
     const { bookId, description } = dto;
@@ -26,13 +31,25 @@ export class ReviewService {
       throw new ConflictException('Вы уже оставили отзыв на эту книгу');
     }
 
-    return this.prisma.review.create({
+    const review = await this.prisma.review.create({
       data: {
         userId,
         bookId,
         description,
       },
     });
+
+    try {
+      await this.gamificationService.handleUserActivity(userId, {
+        expToAdd: 160,
+        category: AchievementCategory.SOCIAL,
+        incrementValue: 1,
+      });
+    } catch (error) {
+      console.error('Ошибка начисления опыта:', error);
+    }
+
+    return review;
   }
 
   async findByBook(bookId: string) {

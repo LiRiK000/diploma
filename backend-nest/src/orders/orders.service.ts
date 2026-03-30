@@ -81,6 +81,12 @@ export class OrdersService {
       });
 
       await tx.cartItem.deleteMany({ where: { cartId: cart.id } });
+      await this.gamificationService.handleUserActivity(userId, {
+        expToAdd: 50,
+        category: AchievementCategory.SYSTEM,
+        incrementValue: 1,
+      });
+
       return order;
     });
   }

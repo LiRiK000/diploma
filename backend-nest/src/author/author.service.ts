@@ -3,7 +3,8 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateAuthorDto, UpdateAuthorDto } from './dto/author.dto';
 import { FileService } from 'src/common/file/file.service';
 import { getFullUrl } from 'src/utils/getFullCoverUrl';
-import { Author, Book, Genre } from '@prisma/client';
+import { AchievementCategory, Author, Book, Genre } from '@prisma/client';
+import { GamificationService } from 'src/gamification/gamification.service';
 
 type AuthorWithRelations = Author & {
   books?: (Book & {
@@ -21,6 +22,7 @@ export class AuthorsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly fileService: FileService,
+    private readonly gamificationService: GamificationService,
   ) {}
 
   private formatAuthor(author: AuthorWithRelations) {
@@ -152,29 +154,47 @@ export class AuthorsService {
   }
 
   async toggleFollow(authorId: string, userId: string) {
-    const user = await this.prisma.user.findUnique({
-      where: { id: userId },
-      select: { followedAuthors: { where: { id: authorId } } },
+    return this.prisma.$transaction(async (tx) => {
+      const user = await tx.user.findUnique({
+        where: { id: userId },
+        select: { followedAuthors: { where: { id: authorId } } },
+      });
+
+      const isAlreadyFollowing = (user?.followedAuthors.length ?? 0) > 0;
+
+      await tx.user.update({
+        where: { id: userId },
+        data: {
+          followedAuthors: isAlreadyFollowing
+            ? { disconnect: { id: authorId } }
+            : { connect: { id: authorId } },
+        },
+      });
+
+      if (!isAlreadyFollowing) {
+        await this.gamificationService.handleUserActivity(userId, {
+          expToAdd: 25,
+          category: AchievementCategory.SOCIAL,
+          incrementValue: 1,
+        });
+      }
+
+      return { status: 'success', isFollowing: !isAlreadyFollowing };
     });
-
-    const isAlreadyFollowing = (user?.followedAuthors.length ?? 0) > 0;
-
-    await this.prisma.user.update({
-      where: { id: userId },
-      data: {
-        followedAuthors: isAlreadyFollowing
-          ? { disconnect: { id: authorId } }
-          : { connect: { id: authorId } },
-      },
-    });
-
-    return { status: 'success', isFollowing: !isAlreadyFollowing };
   }
 
   async bulkFollow(userId: string, authorIds: string[]) {
-    return this.prisma.user.update({
+    const result = await this.prisma.user.update({
       where: { id: userId },
       data: { followedAuthors: { connect: authorIds.map((id) => ({ id })) } },
     });
+
+    await this.gamificationService.handleUserActivity(userId, {
+      expToAdd: authorIds.length * 10,
+      category: AchievementCategory.SOCIAL,
+      incrementValue: authorIds.length,
+    });
+
+    return result;
   }
 }
