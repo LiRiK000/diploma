@@ -3,13 +3,19 @@ import { DeleteOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
 import 'dayjs/locale/ru'
 import styles from './ReviewCard.module.scss'
-import { IReviewCardProps } from '@entities/review/hooks/model/types'
+import { IReview } from '../types'
 
 const { Text, Paragraph } = Typography
 
+interface IReviewCardProps {
+  review: IReview
+  isOwn: boolean
+  onDelete?: (id: string) => void
+}
+
 export const ReviewCard = ({ review, isOwn, onDelete }: IReviewCardProps) => {
-  const userName = review.user?.name || 'Анонимный пользователь'
-  const firstLetter = userName[0].toUpperCase()
+  const displayUserName = review.userName || 'Читатель'
+  const firstLetter = displayUserName[0].toUpperCase()
 
   return (
     <div className={styles.card}>
@@ -17,18 +23,22 @@ export const ReviewCard = ({ review, isOwn, onDelete }: IReviewCardProps) => {
         <Space size={12}>
           <Avatar
             size="large"
+            src={review.userAvatar}
             style={{
-              backgroundColor: isOwn ? '#87d068' : '#1890ff',
+              backgroundColor: isOwn
+                ? 'var(--ant-success-color)'
+                : 'var(--ant-primary-color)',
               verticalAlign: 'middle',
+              flexShrink: 0,
             }}
           >
-            {firstLetter}
+            {!review.userAvatar && firstLetter}
           </Avatar>
 
           <div className={styles.userInfo}>
-            <Space>
+            <Space align="center" size={8} wrap>
               <Text strong className={styles.userName}>
-                {userName}
+                {displayUserName}
               </Text>
               {isOwn && <span className={styles.badge}>Вы</span>}
             </Space>
@@ -38,18 +48,16 @@ export const ReviewCard = ({ review, isOwn, onDelete }: IReviewCardProps) => {
           </div>
         </Space>
 
-        {isOwn && (
-          <Space>
-            <Tooltip title="Удалить">
-              <Button
-                type="text"
-                size="small"
-                danger
-                icon={<DeleteOutlined />}
-                onClick={() => onDelete?.(review.id)}
-              />
-            </Tooltip>
-          </Space>
+        {isOwn && onDelete && (
+          <Tooltip title="Удалить отзыв">
+            <Button
+              type="text"
+              size="small"
+              danger
+              icon={<DeleteOutlined />}
+              onClick={() => onDelete(review.id)}
+            />
+          </Tooltip>
         )}
       </div>
 

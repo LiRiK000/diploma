@@ -1,4 +1,4 @@
-import { Typography, Divider, Spin } from 'antd'
+import { Typography, Divider, Spin, Empty } from 'antd'
 import { ReviewForm } from '@features/review'
 import styles from './ReviewSection.module.scss'
 import { ReviewSectionProps } from './types'
@@ -9,69 +9,71 @@ import { useGetMe } from '@app/providers/AuthProvider/hooks/useGetMe'
 const { Title, Text } = Typography
 
 export const ReviewSection = ({ bookId, tags }: ReviewSectionProps) => {
-  const { reviews, isLoading, createReview } = useBookReviews(bookId)
+  const { reviews, isLoading, createReview, deleteReview } =
+    useBookReviews(bookId)
   const { data: meData } = useGetMe()
 
-  const userId = meData?.data?.user?.id
-  const myReview = reviews?.find(review => review.userId === userId)
+  const currentUserId = meData?.data?.user?.id
+  const hasAlreadyReviewed = reviews?.some(r => r.userId === currentUserId)
 
   return (
     <section className={styles.section}>
       <header className={styles.header}>
-        <Title level={2} style={{ margin: 0 }}>
-          Рецензии
-        </Title>
+        <Title level={2}>Рецензии</Title>
       </header>
 
-      {!userId ? (
-        <div className={styles.authNotice}>
-          <Text className={styles.noticeText}>
-            Чтобы оставить рецензию, пожалуйста, войдите в систему.
-          </Text>
-        </div>
-      ) : myReview ? (
-        <div className={styles.successNotice}>
-          <Text className={styles.noticeText}>
-            Спасибо! Вы уже поделились своим мнением о книге.
-          </Text>
-        </div>
-      ) : (
-        <ReviewForm onSubmit={(text: string) => createReview(text)} />
-      )}
+      <div className={styles.formContainer}>
+        {!currentUserId ? (
+          <div className={styles.authNotice}>
+            <Text className={styles.noticeText}>
+              Чтобы оставить рецензию, пожалуйста, войдите в систему.
+            </Text>
+          </div>
+        ) : hasAlreadyReviewed ? (
+          <div className={styles.successNotice}>
+            <Text className={styles.noticeText}>
+              Спасибо! Вы уже поделились своим мнением о книге.
+            </Text>
+          </div>
+        ) : (
+          <ReviewForm onSubmit={createReview} />
+        )}
+      </div>
 
-      <Divider style={{ borderColor: 'var(--glass-border)' }} />
+      <Divider className={styles.divider} />
 
-      <div className={styles.reviews}>
-        <Title level={3}>Рецензии читателей</Title>
+      <div className={styles.reviewsList}>
+        <Title level={3} className={styles.listTitle}>
+          Рецензии читателей
+        </Title>
 
         {isLoading ? (
-          <div style={{ textAlign: 'center', padding: '20px' }}>
-            <Spin />
+          <div className={styles.loader}>
+            <Spin size="large" />
           </div>
-        ) : reviews && reviews.length > 0 ? (
-          <div
-            style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
-          >
+        ) : reviews?.length ? (
+          <div className={styles.cardsStack}>
             {reviews.map(review => (
               <ReviewCard
                 key={review.id}
                 review={review}
-                isOwn={review.userId === userId}
+                isOwn={review.userId === currentUserId}
+                onDelete={deleteReview}
               />
             ))}
           </div>
         ) : (
-          <div className={styles.emptyState}>
-            <Text type="secondary">
-              У этой книги пока нет рецензий. Будьте первым!
-            </Text>
-          </div>
+          <Empty
+            description="У этой книги пока нет рецензий. Будьте первым!"
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+            className={styles.empty}
+          />
         )}
       </div>
 
-      {tags && tags.length > 0 && (
+      {tags?.length > 0 && (
         <div className={styles.tagsSection}>
-          <Divider style={{ borderColor: 'var(--glass-border)' }} />
+          <Divider className={styles.divider} />
           <Title level={4}>Теги</Title>
           <div className={styles.tags}>
             {tags.map((tag, i) => (

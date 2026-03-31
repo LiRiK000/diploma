@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { AddToCartDto } from './dto/add-to-cart.dto';
+import { getFullUrl } from 'src/utils/getFullCoverUrl';
 
 @Injectable()
 export class CartService {
@@ -12,11 +13,7 @@ export class CartService {
 
   constructor(private prisma: PrismaService) {}
   private readonly s3PublicUrl = process.env.S3_PUBLIC_URL;
-  private getFullCoverUrl(path: string | null): string {
-    if (!path) return null;
-    if (path.startsWith('http')) return path;
-    return `${this.s3PublicUrl}/${path}`;
-  }
+
   async getCart(userId: string) {
     const cart = await this.prisma.cart.findUnique({
       where: { userId },
@@ -43,7 +40,7 @@ export class CartService {
       bookId: item.book.id,
       title: item.book.title,
       author: `${item.book.author.firstName} ${item.book.author.lastName}`,
-      coverUrl: this.getFullCoverUrl(item.book.coverImage),
+      coverUrl: getFullUrl(item.book.coverImage),
       genre: item.book.genre.label,
       quantity: item.quantity,
       available: item.book.availableQuantity,

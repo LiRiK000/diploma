@@ -97,4 +97,8 @@ export class BookService {
     })
     return response.data.data
   }
+  async deleteReview(reviewId: string) {
+    const response = await api.delete(`/reviews/${reviewId}`)
+    return response.data.data
+  }
 }

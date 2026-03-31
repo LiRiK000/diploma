@@ -10,7 +10,7 @@ import { useBook } from './model/useBook'
 
 export const BookPage = () => {
   const { book, isLoading, isError, showStickyHeader } = useBook()
-  console.log(book)
+  console.log(book, 'bookwefwpmfwf')
   if (isLoading) return <HeroSectionSkeleton />
   if (isError) return <div>Ошибка загрузки</div>
   if (!book) return null

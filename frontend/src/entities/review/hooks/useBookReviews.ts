@@ -20,10 +20,22 @@ export const useBookReviews = (bookId: string) => {
     },
   })
 
+  const { mutate: deleteReview, isPending: isDeleting } = useMutation({
+    mutationFn: (id: string) => bookService.deleteReview(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['reviews', bookId] })
+    },
+    onError: error => {
+      console.error(error)
+    },
+  })
+
   return {
     reviews,
     isLoading,
     createReview,
     isCreating,
+    deleteReview,
+    isDeleting,
   }
 }

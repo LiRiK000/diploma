@@ -39,7 +39,6 @@ export class BookService {
       nextCursor: hasNextPage ? items[items.length - 1].id : null,
     };
   }
-
   async getBookById(id: string) {
     const book = await this.prisma.book.findUnique({
       where: { id },
@@ -67,6 +66,11 @@ export class BookService {
       author: `${book.author.firstName} ${book.author.lastName}`,
       authorId: book.author.id,
       coverUrl: book.coverImage,
+      createdAt: book.createdAt.toISOString(),
+      updatedAt: book.updatedAt.toISOString(),
+      publishedDate: book.publishedDate
+        ? book.publishedDate.toISOString()
+        : null,
       publishYear: book.publishedDate
         ? new Date(book.publishedDate).getFullYear()
         : null,
@@ -83,16 +87,16 @@ export class BookService {
         author: `${r.author.firstName} ${r.author.lastName}`,
         coverUrl: r.coverImage,
       })),
+      // ИСПРАВЛЕНИЕ ТУТ: явно приводим дату каждого отзыва к строке
       reviews: book.reviews.map((r) => ({
         id: r.id,
         text: r.description,
-        createdAt: r.createdAt,
+        createdAt: r.createdAt.toISOString(), // <-- Добавлено .toISOString()
         userName: `${r.user.name} ${r.user.surname}`,
         userId: r.user.id,
       })),
     };
   }
-
   async createBook(dto: CreateBookDto) {
     if (!dto.title || !dto.authorId || !dto.genreId) {
       throw new BadRequestException(

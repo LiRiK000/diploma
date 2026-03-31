@@ -10,5 +10,7 @@ export interface IReviewCard {
   bookId: string
   description: string
   createdAt: string
+  updatedAt: string
   user: { name: string; surname: string }
+  deleteReview?: (id: string) => void
 }
