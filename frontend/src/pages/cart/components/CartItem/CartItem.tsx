@@ -1,5 +1,5 @@
 import { Button, Card, Typography, Tooltip } from 'antd'
-import { DeleteOutlined, HeartOutlined } from '@ant-design/icons'
+import { DeleteOutlined } from '@ant-design/icons'
 import styles from './CartItem.module.scss'
 import { useRemoveFromCart } from '@features/remove-from-cart/model'
 import { CartItemProps } from '@shared/services/Cart/types'
@@ -32,13 +32,13 @@ export const CartItem = ({ item }: CartItemProps) => {
           </div>
 
           <div className={styles.itemActionsBottom}>
-            <Tooltip title="В избранное">
-              <Button
-                type="text"
-                icon={<HeartOutlined />}
-                className={`${styles.actionButton} ${styles.favorite}`}
+            {/* <Tooltip title="В избранное">
+              <AddToWishlistButton
+                title={item.title}
+                variant="icon"
+                id={item.id}
               />
-            </Tooltip>
+            </Tooltip> */}
 
             <Tooltip title="Удалить из корзины">
               <Button

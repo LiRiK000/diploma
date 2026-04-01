@@ -12,7 +12,6 @@ interface IReviewCardProps {
   isOwn: boolean
   onDelete?: (id: string) => void
 }
-
 export const ReviewCard = ({ review, isOwn, onDelete }: IReviewCardProps) => {
   const displayUserName = review.userName || 'Читатель'
   const firstLetter = displayUserName[0].toUpperCase()
@@ -20,7 +19,7 @@ export const ReviewCard = ({ review, isOwn, onDelete }: IReviewCardProps) => {
   return (
     <div className={styles.card}>
       <div className={styles.header}>
-        <Space size={12}>
+        <Space size={12} align="start">
           <Avatar
             size="large"
             src={review.userAvatar}
@@ -28,8 +27,8 @@ export const ReviewCard = ({ review, isOwn, onDelete }: IReviewCardProps) => {
               backgroundColor: isOwn
                 ? 'var(--ant-success-color)'
                 : 'var(--ant-primary-color)',
-              verticalAlign: 'middle',
               flexShrink: 0,
+              marginTop: '4px',
             }}
           >
             {!review.userAvatar && firstLetter}
@@ -41,20 +40,28 @@ export const ReviewCard = ({ review, isOwn, onDelete }: IReviewCardProps) => {
                 {displayUserName}
               </Text>
               {isOwn && <span className={styles.badge}>Вы</span>}
+              {review.userLevelTitle && (
+                <span className={styles.rankBadge}>
+                  {review.userLevelTitle}
+                </span>
+              )}
             </Space>
-            <Text className={styles.date}>
-              {dayjs(review.createdAt).locale('ru').format('DD MMMM YYYY')}
-            </Text>
+
+            <div className={styles.metaInfo}>
+              <Text className={styles.date}>
+                {dayjs(review.createdAt).locale('ru').format('D MMMM YYYY')}
+              </Text>
+            </div>
           </div>
         </Space>
 
         {isOwn && onDelete && (
-          <Tooltip title="Удалить отзыв">
+          <Tooltip title="Удалить отзыв" color="#ff4d4f">
             <Button
               type="text"
-              size="small"
               danger
-              icon={<DeleteOutlined />}
+              className={styles.deleteBtn}
+              icon={<DeleteOutlined className={styles.deleteIcon} />}
               onClick={() => onDelete(review.id)}
             />
           </Tooltip>

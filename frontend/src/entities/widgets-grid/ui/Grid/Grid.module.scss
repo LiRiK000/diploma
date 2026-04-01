@@ -48,21 +48,22 @@
       border-radius: 12px;
       transition: all 200ms ease;
     }
+  }
+}
 
-    .widget-fullscreen {
-      position: fixed !important;
-      top: 0 !important;
-      left: 0 !important;
-      width: 100vw !important;
-      height: 100vh !important;
-      z-index: 9999 !important;
-      transform: none !important;
-      transition: all 0.3s ease-in-out !important;
+.widgetFullscreen {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 9999 !important;
+  transform: none !important;
+  transition: all 0.3s ease-in-out !important;
+  margin: 0 !important;
 
-      .react-resizable-handle {
-        display: none !important;
-      }
-    }
+  :global(.react-resizable-handle) {
+    display: none !important;
   }
 }
 

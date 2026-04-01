@@ -3,135 +3,109 @@
 .section {
   display: flex;
   flex-direction: column;
-  gap: $spacing-lg;
+  gap: 32px;
   background: var(--bg-content);
   border-radius: $border-radius-lg;
   padding: 40px;
-  box-shadow: $shadow-light;
   border: 1px solid var(--glass-border);
-  transition: $transition-liquid;
+  backdrop-filter: blur(10px);
+  box-shadow: $shadow-light;
 
   @media (max-width: $breakpoint-md) {
     padding: 24px 16px;
-    gap: 24px;
   }
 }
 
-.header {
-  margin-bottom: $spacing-xs;
-
-  h2 {
-    color: var(--text-primary);
-    font-weight: 700;
-    letter-spacing: -0.5px;
-  }
-}
-
-.formContainer {
-  width: 100%;
-}
-
-.authNotice,
-.successNotice {
-  padding: 16px 20px;
-  border-radius: $border-radius-md;
-  border: 1px solid;
-  backdrop-filter: blur(8px);
+.topHeader {
   display: flex;
-  align-items: center;
-  animation: fadeIn 0.4s ease-out;
+  justify-content: space-between;
+  align-items: baseline;
+  border-bottom: 1px solid var(--glass-border);
+  padding-bottom: 16px;
 
-  .noticeText {
+  .mainTitle {
+    margin: 0 !important;
+    letter-spacing: -1px;
+  }
+
+  .countText {
+    color: var(--text-secondary);
     font-size: 14px;
     font-weight: 500;
   }
 }
 
-.authNotice {
-  background: rgba(250, 173, 20, 0.08);
-  border-color: rgba(250, 173, 20, 0.2);
-  .noticeText {
-    color: #d48806;
-  }
+.contentGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
 }
 
-.successNotice {
-  background: rgba(82, 196, 26, 0.08);
-  border-color: rgba(82, 196, 26, 0.2);
-  .noticeText {
+.statusCard {
+  padding: 24px;
+  border-radius: $border-radius-md;
+  text-align: center;
+  border: 1px solid;
+  backdrop-filter: blur(8px);
+  animation: fadeIn 0.5s ease-out;
+
+  &.auth {
+    background: rgba(24, 144, 255, 0.05);
+    border-color: rgba(24, 144, 255, 0.2);
+    color: var(--ant-primary-color);
+  }
+
+  &.thankYou {
+    background: rgba(82, 196, 26, 0.05);
+    border-color: rgba(82, 196, 26, 0.2);
     color: #389e0d;
   }
 }
 
-.divider {
-  margin: 8px 0 !important;
-  border-color: var(--glass-border) !important;
-}
+.formWrapper {
+  background: var(--glass-bg);
+  padding: 24px;
+  border-radius: $border-radius-md;
+  border: 1px solid var(--glass-border);
 
-.reviewsList {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-
-  .listTitle {
-    color: var(--text-primary);
-    font-size: 20px !important;
-    margin-bottom: 8px !important;
+  h4 {
+    margin-bottom: 20px !important;
+    font-weight: 600;
   }
 }
 
 .cardsStack {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-}
-
-.loader {
-  display: flex;
-  justify-content: center;
-  padding: 40px 0;
-}
-
-.empty {
-  padding: 40px 0;
-  background: var(--glass-bg);
-  border-radius: $border-radius-md;
-  border: 1px dashed var(--glass-border);
+  gap: 20px;
 }
 
 .tagsSection {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-
-  h4 {
-    color: var(--text-primary);
-    margin: 0;
-  }
+  margin-top: 16px;
+  padding-top: 24px;
+  border-top: 1px solid var(--glass-border);
 }
 
 .tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 10px;
 }
 
 .tag {
   background: var(--glass-bg);
-  color: var(--ant-primary-color);
-  padding: 6px 14px;
-  border-radius: 20px;
+  color: var(--text-secondary);
+  padding: 6px 16px;
+  border-radius: 100px; // Полные капсулы
   font-size: 13px;
-  font-weight: 500;
   border: 1px solid var(--glass-border);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: pointer;
+  transition: all 0.3s ease;
+  cursor: default;
 
   &:hover {
-    background: var(--ant-primary-1);
     border-color: var(--ant-primary-color);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(24, 144, 255, 0.15);
+    color: var(--ant-primary-color);
+    background: var(--bg-content);
   }
 }
 

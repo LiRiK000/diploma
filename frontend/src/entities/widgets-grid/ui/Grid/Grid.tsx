@@ -1,6 +1,8 @@
 import { CSSProperties, FC, useLayoutEffect, useState } from 'react'
 import { Responsive as ResponsiveGridLayout, Layouts } from 'react-grid-layout'
-import classes from './Grid.module.scss'
+import { useFullscreenStore } from '@entities/widgets-grid/model/store'
+import { GRID_ID } from '@entities/widgets-grid/constants'
+import { loadLayoutsFromStorage } from '@widgets/LibrarianDashboardTab/utils'
 import { GridItem } from '../GridItem/GridItem'
 import {
   GRID_BREAKPOINTS,
@@ -10,12 +12,10 @@ import {
   GRID_ROW_HEIGHT,
   DRAGGABLE_HANDLE,
 } from './model/constants'
-import { loadLayoutsFromStorage } from '@widgets/LibrarianDashboardTab/utils'
 import { useGridWidth } from './hooks/useGridWidth'
 import { useLayoutPersistence } from './hooks/useLayoutPersistence'
+import classes from './Grid.module.scss'
 import { GridProps } from './types'
-import { useFullscreenStore } from '@entities/widgets-grid/model/store' // Импорт стора
-import { GRID_ID } from '@entities/widgets-grid/constants'
 
 export const Grid: FC<GridProps> = ({
   items,
@@ -26,7 +26,7 @@ export const Grid: FC<GridProps> = ({
   hideOverflowY,
 }) => {
   const { containerRef, width } = useGridWidth()
-  const [currentLayouts, setCurrentLayouts] = useState<Layouts>(layouts)
+  const [currentLayouts, setCurrentLayouts] = useState<Layouts>(layouts || {})
   const [isDragging, setIsDragging] = useState(false)
   const [isResizing, setIsResizing] = useState(false)
   const handleLayoutChange = useLayoutPersistence()
@@ -42,7 +42,7 @@ export const Grid: FC<GridProps> = ({
     const stored = loadLayoutsFromStorage()
     if (stored) {
       setCurrentLayouts(stored)
-    } else {
+    } else if (layouts) {
       setCurrentLayouts(layouts)
     }
   }, [layouts])
@@ -50,7 +50,7 @@ export const Grid: FC<GridProps> = ({
   return (
     <div
       ref={containerRef}
-      className={`${classes.grid} ${isFullScreenActive ? 'fullscreen-active' : ''}`}
+      className={`${classes.grid} ${isFullScreenActive ? classes.fullscreenActive : ''}`}
       style={
         {
           overflowX: hideOverflowX ? 'hidden' : 'auto',
@@ -68,7 +68,7 @@ export const Grid: FC<GridProps> = ({
         containerPadding={GRID_CONTAINER_PADDING}
         preventCollision={false}
         compactType="vertical"
-        draggableHandle={DRAGGABLE_HANDLE}
+        draggableHandle={`${DRAGGABLE_HANDLE}`}
         isDraggable={isDraggable}
         isResizable={isResizable}
         resizeHandles={['se']}
@@ -90,14 +90,20 @@ export const Grid: FC<GridProps> = ({
           return (
             <div
               key={item.id}
-              className={isThisWidgetFull ? 'widget-fullscreen' : ''}
+              className={isThisWidgetFull ? classes.widgetFullscreen : ''}
+              data-grid={item.gridParams}
             >
               <GridItem
                 isDragging={isDragging}
                 isResizing={isResizing}
                 isEditing={isDraggable}
               >
-                {item.content}
+                {item.content({
+                  id: item.id,
+                  isDragging,
+                  isResizing,
+                  isEditing: isDraggable,
+                })}
               </GridItem>
             </div>
           )

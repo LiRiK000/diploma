@@ -1,0 +1,40 @@
+@use '@shared/styles/variables' as *;
+
+.drawer {
+  :global(.ant-drawer-content) {
+    background: var(--bg-content) !important;
+    backdrop-filter: blur(20px);
+  }
+}
+
+.previewCard {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: $border-radius-lg;
+  padding: 20px;
+  box-shadow: $liquid-glass-shadow-light;
+}
+
+.previewTitle {
+  display: block;
+  margin-bottom: 16px;
+  font-size: 16px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+}

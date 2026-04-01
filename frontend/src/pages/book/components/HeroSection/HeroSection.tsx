@@ -3,6 +3,7 @@ import { HeroSectionProps } from './types'
 import { AddToCartButton } from '@features/add-to-cart/components'
 import { AddToWishlistButton } from '@features/add-to-wishlist/components'
 import { ToShareButton } from '@features/to-share/components'
+import { pluralizeReviews, pluralizePieces } from '@shared/utils/pluralize'
 
 export const HeroSection = ({
   id,
@@ -30,11 +31,14 @@ export const HeroSection = ({
             </p>
           </div>
 
-          <div style={{ display: 'flex', gap: '8px' }}>
+          <div className={styles.badges}>
             <span className={styles.badge}>
-              {ratingsCount.toLocaleString()} отзывов
+              {ratingsCount.toLocaleString()} {pluralizeReviews(ratingsCount)}
             </span>
-            <span className={styles.badge}>В наличии: {availableQuantity}</span>
+            <span className={styles.badge}>
+              В наличии: {availableQuantity}{' '}
+              {pluralizePieces(availableQuantity)}
+            </span>
           </div>
 
           <div className={styles.actions}>

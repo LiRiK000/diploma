@@ -22,6 +22,9 @@ import {
 import { VerifyCodeModal } from '@features/manage-orders/ui/VerifyCodeModal'
 import { ReturnBookModal } from '@features/manage-orders/ui/ReturnBookModal'
 import { ThemeToggle } from '@features/theme-toggle/ui/ThemeToggle'
+import { useWidgetBuilderStore } from '@features/widget-builder/model/useWidgetBuilderStore'
+import { WidgetBuilderTrigger } from '@features/widget-builder'
+import { WidgetBuilderDrawer } from '@features/widget-builder/ui/WidgetBuilderDrawer/WidgetBuilderDrawer'
 
 const { Content, Sider, Header } = Layout
 
@@ -32,6 +35,7 @@ export const LibrarianLayout = () => {
 
   const [isVerifyModalOpen, setIsVerifyModalOpen] = useState(false)
   const [isReturnModalOpen, setIsReturnModalOpen] = useState(false)
+  const setWidgetBuilderOpen = useWidgetBuilderStore(state => state.setOpen)
 
   const { isEditing, toggleEditing } = useLibrarianSettingsStore(
     useShallow(store => ({
@@ -47,10 +51,6 @@ export const LibrarianLayout = () => {
   const handleMenuClick = (key: string) => {
     setSelectedKey(key)
     localStorage.setItem('librarianSelectedKey', key)
-  }
-
-  const handleSave = () => {
-    toggleEditing()
   }
 
   return (
@@ -73,11 +73,16 @@ export const LibrarianLayout = () => {
           <div className={styles.headerActions}>
             {isEditing ? (
               <>
+                <WidgetBuilderTrigger
+                  onClick={() => setWidgetBuilderOpen(true)}
+                />
+
                 <Button
                   type="primary"
                   icon={<CheckCircleOutlined style={{ fontSize: 18 }} />}
-                  onClick={handleSave}
+                  onClick={toggleEditing}
                 />
+
                 {hasLayoutsChanged[GRID_ID] && (
                   <ResetLayoutButton fontSize={18} />
                 )}
@@ -123,6 +128,7 @@ export const LibrarianLayout = () => {
         open={isReturnModalOpen}
         onClose={() => setIsReturnModalOpen(false)}
       />
+      <WidgetBuilderDrawer />
     </Layout>
   )
 }

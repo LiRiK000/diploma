@@ -1,11 +1,11 @@
-import { Typography, Divider, Spin, Empty } from 'antd'
+import { Typography, Spin, Empty } from 'antd'
 import { ReviewForm } from '@features/review'
-import styles from './ReviewSection.module.scss'
-import { ReviewSectionProps } from './types'
 import { ReviewCard } from './components/ReviewCard'
 import { useBookReviews } from '@entities/review/hooks/useBookReviews'
 import { useGetMe } from '@app/providers/AuthProvider/hooks/useGetMe'
-
+import styles from './ReviewSection.module.scss'
+import { ReviewSectionProps } from './types'
+import { pluralizeReviews } from '@shared/utils/pluralize'
 const { Title, Text } = Typography
 
 export const ReviewSection = ({ bookId, tags }: ReviewSectionProps) => {
@@ -18,67 +18,66 @@ export const ReviewSection = ({ bookId, tags }: ReviewSectionProps) => {
 
   return (
     <section className={styles.section}>
-      <header className={styles.header}>
-        <Title level={2}>Рецензии</Title>
-      </header>
-
-      <div className={styles.formContainer}>
-        {!currentUserId ? (
-          <div className={styles.authNotice}>
-            <Text className={styles.noticeText}>
-              Чтобы оставить рецензию, пожалуйста, войдите в систему.
-            </Text>
-          </div>
-        ) : hasAlreadyReviewed ? (
-          <div className={styles.successNotice}>
-            <Text className={styles.noticeText}>
-              Спасибо! Вы уже поделились своим мнением о книге.
-            </Text>
-          </div>
-        ) : (
-          <ReviewForm onSubmit={createReview} />
-        )}
-      </div>
-
-      <Divider className={styles.divider} />
-
-      <div className={styles.reviewsList}>
-        <Title level={3} className={styles.listTitle}>
-          Рецензии читателей
+      <div className={styles.topHeader}>
+        <Title level={2} className={styles.mainTitle}>
+          Рецензии
         </Title>
-
-        {isLoading ? (
-          <div className={styles.loader}>
-            <Spin size="large" />
-          </div>
-        ) : reviews?.length ? (
-          <div className={styles.cardsStack}>
-            {reviews.map(review => (
-              <ReviewCard
-                key={review.id}
-                review={review}
-                isOwn={review.userId === currentUserId}
-                onDelete={deleteReview}
-              />
-            ))}
-          </div>
-        ) : (
-          <Empty
-            description="У этой книги пока нет рецензий. Будьте первым!"
-            image={Empty.PRESENTED_IMAGE_SIMPLE}
-            className={styles.empty}
-          />
-        )}
+        <Text className={styles.countText}>
+          {reviews?.length || 0} {pluralizeReviews(reviews?.length || 0)}
+        </Text>
       </div>
 
-      {tags?.length > 0 && (
+      <div className={styles.contentGrid}>
+        <div className={styles.interactionArea}>
+          {!currentUserId ? (
+            <div className={`${styles.statusCard} ${styles.auth}`}>
+              <Text strong>Войдите в систему, чтобы оставить мнение</Text>
+            </div>
+          ) : hasAlreadyReviewed ? (
+            <div className={`${styles.statusCard} ${styles.thankYou}`}>
+              <Text strong>Ваш отзыв принят. Благодарим за мнение!</Text>
+            </div>
+          ) : (
+            <div className={styles.formWrapper}>
+              <Title level={4}>Написать отзыв</Title>
+              <ReviewForm onSubmit={createReview} />
+            </div>
+          )}
+        </div>
+
+        <div className={styles.reviewsList}>
+          {isLoading ? (
+            <div className={styles.loader}>
+              <Spin size="large" tip="Загрузка мнений..." />
+            </div>
+          ) : reviews?.length ? (
+            <div className={styles.cardsStack}>
+              {reviews.map(review => (
+                <ReviewCard
+                  key={review.id}
+                  review={review}
+                  isOwn={review.userId === currentUserId}
+                  onDelete={deleteReview}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className={styles.empty}>
+              <Empty
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                description="Станьте первым, кто напишет отзыв"
+              />
+            </div>
+          )}
+        </div>
+      </div>
+
+      {tags && tags.length > 0 && (
         <div className={styles.tagsSection}>
-          <Divider className={styles.divider} />
-          <Title level={4}>Теги</Title>
           <div className={styles.tags}>
             {tags.map((tag, i) => (
               <span key={i} className={styles.tag}>
-                # {tag}
+                #{tag}
               </span>
             ))}
           </div>

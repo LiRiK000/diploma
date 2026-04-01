@@ -1,0 +1,23 @@
+@use '@shared/styles/variables' as *;
+
+.loader {
+  animation: simpleFade 0.5s ease-in-out infinite;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  width: 100%;
+  height: 100%;
+}
+@keyframes simpleFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+:global(.ant-skeleton.ant-skeleton-active .ant-skeleton-button) {
+  background: var(--glass-bg) !important;
+  border: 1px solid var(--glass-border) !important;
+}

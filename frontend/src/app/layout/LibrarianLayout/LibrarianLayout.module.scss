@@ -83,3 +83,41 @@
     margin-left: 0;
   }
 }
+.drawer {
+  :global(.ant-drawer-content) {
+    background: var(--bg-content) !important;
+    backdrop-filter: blur(20px);
+  }
+
+  :global(.ant-drawer-header) {
+    background: transparent !important;
+    border-bottom: 1px solid var(--glass-border) !important;
+    padding: 24px !important;
+  }
+}
+
+.builderContent {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.headerActions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+
+  & > * {
+    animation: slideInRight 0.3s ease-out forwards;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}

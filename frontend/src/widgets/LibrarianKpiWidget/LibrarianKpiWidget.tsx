@@ -1,3 +1,4 @@
+import { FC } from 'react'
 import { Space } from 'antd'
 import { FullScreenButton } from '@entities/widgets-grid'
 import { WidgetWrapper } from '@shared/components/WidgetWrapper'
@@ -6,15 +7,29 @@ import { useFetchData } from './hooks/useFetchData'
 
 export const LIBRARIAN_KPI_WIDGET_ID = '1' as const
 
-export const LibrarianKpiWidget = () => {
+interface LibrarianKpiWidgetProps {
+  isEditing?: boolean
+  isDragging?: boolean
+  isResizing?: boolean
+}
+
+export const LibrarianKpiWidget: FC<LibrarianKpiWidgetProps> = ({
+  isEditing,
+  isDragging,
+  isResizing,
+}) => {
   const { data, isLoading } = useFetchData()
 
   return (
     <WidgetWrapper
+      id={LIBRARIAN_KPI_WIDGET_ID}
       title="Сводка по смене"
       isLoading={isLoading}
       isEmpty={!data}
       emptyMessage="Нет данных"
+      isEditing={isEditing}
+      isDragging={isDragging}
+      isResizing={isResizing}
       headerContent={
         <Space>
           <FullScreenButton widgetId={LIBRARIAN_KPI_WIDGET_ID} />

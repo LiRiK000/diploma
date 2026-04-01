@@ -13,10 +13,13 @@ import { CartItem } from './components/CartItem/CartItem'
 import { CartItemResponse } from '@shared/services/Cart/types'
 import { Loader } from '@shared/components/Loader'
 import { useCart } from '@features/get-cart'
-import { calculateTotalItems, pluralizeItems } from '@shared/utils'
+import {
+  calculateTotalItems,
+  pluralizeBooks,
+  pluralizePieces,
+} from '@shared/utils/pluralize'
 import { useCreateOrder } from '@features/create-order/hooks/useCreateOrder'
 import styles from './CartPage.module.scss'
-
 const { Title, Text } = Typography
 
 export const CartPage = () => {
@@ -56,7 +59,6 @@ export const CartPage = () => {
 
   const isCartEmpty = !cart || cart.items.length === 0
   const totalItems = isCartEmpty ? 0 : calculateTotalItems(cart.items)
-  const itemsLabel = pluralizeItems(totalItems)
 
   if (isCartEmpty) {
     return (
@@ -82,14 +84,13 @@ export const CartPage = () => {
   return (
     <div className={styles.container}>
       <Row gutter={[24, 24]} align="top">
-        {/* Список товаров */}
         <Col xs={24} lg={16} className={styles.cartCol}>
           <section className={styles.cartSection}>
             <Title level={2} className={styles.sectionTitle}>
               Корзина
             </Title>
             <Text className={styles.itemsCount}>
-              {totalItems} {itemsLabel}
+              {totalItems} {pluralizeBooks(totalItems)}
             </Text>
 
             <div className={styles.itemsList}>
@@ -114,7 +115,7 @@ export const CartPage = () => {
               <div className={styles.summaryRow}>
                 <Text type="secondary">Выбрано книг:</Text>
                 <Text strong style={{ color: 'var(--text-primary)' }}>
-                  {totalItems} шт.
+                  {totalItems} {pluralizePieces(totalItems)}
                 </Text>
               </div>
 

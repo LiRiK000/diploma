@@ -1,22 +1,30 @@
 import { ReactNode } from 'react'
-import { ResponsiveProps, Layouts } from 'react-grid-layout'
+import { Layouts } from 'react-grid-layout'
 
-export interface GridItem {
+export interface WidgetGridProps {
   id: string
-  content: ReactNode
+  isDragging?: boolean
+  isResizing?: boolean
+  isEditing?: boolean
 }
 
+export interface GridItemConfig {
+  id: string
+  content: (props: WidgetGridProps) => ReactNode
+  gridParams?: {
+    x: number
+    y: number
+    w: number
+    h: number
+    minW?: number
+    minH?: number
+  }
+}
 export interface GridProps {
-  items: GridItem[]
-  className?: string
+  items: GridItemConfig[]
   layouts?: Layouts
-  compactType?: 'vertical' | 'horizontal' | null | undefined
   isDraggable?: boolean
   isResizable?: boolean
-  useCSSTransforms?: boolean
   hideOverflowX?: boolean
   hideOverflowY?: boolean
-  config?: ResponsiveProps
 }
-
-export type Breakpoint = 'lg' | 'md' | 'sm' | 'xs'

@@ -18,6 +18,7 @@ export interface ReviewResponse extends Omit<
   updatedAt: string;
   userName?: string;
   userAvatar?: string | null;
+  userLevelTitle?: string;
 }
 
 type ReviewWithUser = Prisma.ReviewGetPayload<{
@@ -27,6 +28,7 @@ type ReviewWithUser = Prisma.ReviewGetPayload<{
         name: true;
         surname: true;
         avatarUrl: true;
+        level: true;
       };
     };
   };
@@ -39,7 +41,13 @@ export class ReviewService {
     private readonly gamificationService: GamificationService,
   ) {}
 
-  private mapReview(review: ReviewWithUser): ReviewResponse {
+  /**
+   * Маппинг данных отзыва для фронтенда
+   */
+  private mapReview(
+    review: ReviewWithUser,
+    levelTitle?: string,
+  ): ReviewResponse {
     const { user, ...reviewData } = review;
     return {
       ...reviewData,
@@ -47,7 +55,15 @@ export class ReviewService {
       updatedAt: review.updatedAt.toISOString(),
       userName: user ? `${user.name} ${user.surname}` : undefined,
       userAvatar: user?.avatarUrl || null,
+      userLevelTitle: levelTitle || 'Новичок',
     };
+  }
+
+  private async getLevelTitle(level: number): Promise<string> {
+    const config = await this.prisma.levelConfig.findUnique({
+      where: { level },
+    });
+    return config?.title || 'Новичок';
   }
 
   async create(userId: string, dto: CreateReviewDto): Promise<ReviewResponse> {
@@ -67,9 +83,13 @@ export class ReviewService {
     const review = await this.prisma.review.create({
       data: { userId, bookId, description },
       include: {
-        user: { select: { name: true, surname: true, avatarUrl: true } },
+        user: {
+          select: { name: true, surname: true, avatarUrl: true, level: true },
+        },
       },
     });
+
+    const levelTitle = await this.getLevelTitle(review.user.level);
 
     try {
       await this.gamificationService.handleUserActivity(userId, {
@@ -81,19 +101,29 @@ export class ReviewService {
       console.error('Gamification error:', error);
     }
 
-    return this.mapReview(review);
+    return this.mapReview(review, levelTitle);
   }
 
   async findByBook(bookId: string): Promise<ReviewResponse[]> {
     const reviews = await this.prisma.review.findMany({
       where: { bookId },
       include: {
-        user: { select: { name: true, surname: true, avatarUrl: true } },
+        user: {
+          select: { name: true, surname: true, avatarUrl: true, level: true },
+        },
       },
       orderBy: { createdAt: 'desc' },
     });
 
-    return reviews.map((r) => this.mapReview(r));
+    if (reviews.length === 0) return [];
+    const uniqueLevels = [...new Set(reviews.map((r) => r.user.level))];
+    const configs = await this.prisma.levelConfig.findMany({
+      where: { level: { in: uniqueLevels } },
+    });
+
+    const levelMap = Object.fromEntries(configs.map((c) => [c.level, c.title]));
+
+    return reviews.map((r) => this.mapReview(r, levelMap[r.user.level]));
   }
 
   async remove(userId: string, reviewId: string): Promise<{ message: string }> {
@@ -124,10 +154,13 @@ export class ReviewService {
       where: { id },
       data: { description: dto.description },
       include: {
-        user: { select: { name: true, surname: true, avatarUrl: true } },
+        user: {
+          select: { name: true, surname: true, avatarUrl: true, level: true },
+        },
       },
     });
 
-    return this.mapReview(updated);
+    const levelTitle = await this.getLevelTitle(updated.user.level);
+    return this.mapReview(updated, levelTitle);
   }
 }

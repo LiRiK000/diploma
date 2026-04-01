@@ -10,36 +10,92 @@
   overflow: hidden;
 
   &:hover {
-    border-color: var(--ant-primary-3);
     background: rgba(255, 255, 255, 0.02);
     box-shadow: $shadow-light;
+
+    .deleteBtn {
+      opacity: 1;
+      transform: scale(1) translateX(0);
+    }
   }
 }
 
 .header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   margin-bottom: 16px;
 }
 
 .userInfo {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
 
   .userName {
     font-size: 15px;
     font-weight: 600;
     color: var(--text-primary);
     letter-spacing: -0.2px;
+    line-height: 1.2;
   }
+}
+
+.rankBadge {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--ant-primary-color);
+  background: rgba(24, 144, 255, 0.08);
+  padding: 2px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(24, 144, 255, 0.15);
+  backdrop-filter: blur(4px);
+  text-transform: capitalize;
+}
+
+.metaInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 
   .date {
     font-size: 12px;
     color: var(--text-secondary);
-    opacity: 0.8;
+    opacity: 0.7;
   }
+}
+
+.deleteBtn {
+  opacity: 0;
+  transform: scale(0.9) translateX(10px);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  width: 38px !important;
+  height: 38px !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(255, 77, 79, 0.06) !important;
+  border: 1px solid rgba(255, 77, 79, 0.1) !important;
+  border-radius: 12px !important;
+  padding: 0 !important;
+  color: rgba(255, 77, 79, 0.6) !important;
+
+  &:hover {
+    background: rgba(255, 77, 79, 0.15) !important;
+    border-color: rgba(255, 77, 79, 0.4) !important;
+    transform: scale(1.05) !important;
+    color: #ff4d4f !important;
+  }
+
+  &:active {
+    transform: scale(0.95) !important;
+  }
+}
+
+.deleteIcon {
+  font-size: 18px;
 }
 
 .badge {
@@ -68,12 +124,11 @@
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
 
-.card :global(.ant-btn-text-danger) {
-  opacity: 0.5;
-  transition: opacity 0.2s;
-
-  &:hover {
+@media (max-width: $breakpoint-md) {
+  .deleteBtn {
     opacity: 1;
-    background: rgba(255, 77, 79, 0.1) !important;
+    transform: scale(1) translateX(0);
+    width: 34px !important;
+    height: 34px !important;
   }
 }

@@ -19,4 +19,5 @@ export interface IReview {
   updatedAt: string
   userName?: string
   userAvatar?: string | null
+  userLevelTitle?: string
 }
