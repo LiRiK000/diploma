@@ -125,6 +125,10 @@
   transform: translateY(-2px);
   background: var(--glass-border);
 }
+.badges {
+  display: flex;
+  gap: 12px;
+}
 
 .actions {
   display: flex;

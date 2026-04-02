@@ -1,9 +1,10 @@
 import { useState, useMemo } from 'react'
-import { Button, Col, Input, Row, Spin } from 'antd'
+import { Button, Col, Input, Row } from 'antd'
 import { SearchOutlined } from '@ant-design/icons'
 import { ArtistItem } from '@features/update-preferences/ui/AuthorItem'
 import styles from './PreferenceSelector.module.scss'
 import { usePreferenceAuthors } from './hooks/usePreferences'
+import { Loader } from '@shared/components/Loader'
 
 export const PreferenceSelector = () => {
   const { displayAuthors, popFromPool, isLoading, isSubmitting, submit } =
@@ -36,7 +37,7 @@ export const PreferenceSelector = () => {
   if (isLoading) {
     return (
       <div className={styles.loaderWrapper}>
-        <Spin size="large" tip="Загрузка авторов..." />
+        <Loader />
       </div>
     )
   }
