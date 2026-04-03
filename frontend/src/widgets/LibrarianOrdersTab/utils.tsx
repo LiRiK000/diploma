@@ -1,119 +1,154 @@
-import { Button, TableProps, Tooltip, Tag, Space } from 'antd'
-import { CheckOutlined, CloseOutlined } from '@ant-design/icons'
+import { Button, TableProps, Tag, Space, Popover } from 'antd'
+import { CheckOutlined, CloseOutlined, BookOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
-
-// 1. Приводим интерфейс в соответствие с ответом бэкенда
-export interface OrderItem {
-  id: string
-  quantity: number
-  book: {
-    title: string
-  }
-}
-
-export interface Order {
-  id: string
-  status: string
-  orderDate: string
-  user: {
-    name: string
-    surname: string
-  }
-  items: OrderItem[]
-}
+import { STATUS_CONFIG } from '@entities/order/consts/statusConfig'
+import classes from './OrderTable.module.scss'
+import { OrderItem, OrderResponse } from './types'
 
 export const getTableColumns = (
   onApprove: (id: string) => void,
   onReject: (id: string) => void,
-): TableProps<Order>['columns'] => {
+): TableProps<OrderResponse>['columns'] => {
   return [
     {
       title: 'ID',
       dataIndex: 'id',
+      width: 90,
       render: (id: string) => (
-        <span style={{ fontSize: '12px', color: '#999' }}>
-          {id.slice(0, 8)}
+        <span
+          style={{ fontSize: '11px', color: '#999', fontFamily: 'monospace' }}
+        >
+          #{id.slice(0, 6).toUpperCase()}
         </span>
       ),
     },
     {
-      title: 'ФИО',
+      title: 'Пользователь',
       key: 'user',
-      width: 250,
-      // Достаем имя и фамилию из вложенного объекта user
-      render: (_, record) =>
-        `${record.user?.name || ''} ${record.user?.surname || ''}`,
+      width: 180,
+      render: (_, record) => (
+        <div style={{ fontWeight: 500, fontSize: '13px' }}>
+          {record.user ? `${record.user.name} ${record.user.surname}` : '—'}
+        </div>
+      ),
     },
     {
-      title: 'Книги в заказе',
-      dataIndex: 'items', // Используем ключ items вместо books
-      width: 400,
+      title: 'Состав заказа',
+      dataIndex: 'items',
+      width: 320,
       render: (items: OrderItem[]) => (
-        <Space direction="vertical" style={{ width: '100%' }}>
-          {items?.map(item => (
-            <Tag
-              key={item.id}
-              color="blue"
-              style={{ whiteSpace: 'normal', height: 'auto' }}
-            >
-              {item.book?.title} <b>x{item.quantity}</b>
-            </Tag>
-          ))}
+        <Space wrap size={[4, 4]}>
+          {items?.map(item => {
+            const popoverContent = (
+              <div className={classes.popoverCard}>
+                <div className={classes.popoverHeader}>
+                  <span className={classes.popoverBookTitle}>
+                    {item.book?.title}
+                  </span>
+                </div>
+                <div className={classes.popoverMetaRow}>
+                  <span>Инвентарный №:</span>
+                  <span style={{ color: '#555' }}>{item.id}</span>
+                </div>
+                <div className={classes.popoverMetaRow}>
+                  <span>Автор:</span>
+                  <span style={{ color: '#555' }}>
+                    {item.book?.author || 'Не указан'}
+                  </span>
+                </div>
+                <div className={classes.popoverFooter}>
+                  Количество в заказе:{' '}
+                  <span style={{ color: '#1890ff' }}>{item.quantity} шт.</span>
+                </div>
+              </div>
+            )
+
+            return (
+              <Popover
+                key={item.id}
+                content={popoverContent}
+                title="Детали книги"
+                trigger="hover"
+                placement="top"
+              >
+                <div className={classes.bookCardMini}>
+                  <BookOutlined className={classes.miniIcon} />
+                  <span className={classes.miniTitle}>{item.book?.title}</span>
+                  <span className={classes.miniQty}>x{item.quantity}</span>
+                </div>
+              </Popover>
+            )
+          })}
         </Space>
       ),
     },
     {
       title: 'Дата',
       dataIndex: 'orderDate',
-      width: 150,
-      render: (date: string) => dayjs(date).format('DD.MM.YYYY HH:mm'),
+      width: 140,
+      render: (date: string) => (
+        <div style={{ lineHeight: '1.2' }}>
+          <div style={{ fontSize: '13px' }}>
+            {dayjs(date).format('DD.MM.YYYY')}
+          </div>
+          <div style={{ color: '#bfbfbf', fontSize: '11px' }}>
+            {dayjs(date).format('HH:mm')}
+          </div>
+        </div>
+      ),
     },
     {
       title: 'Статус',
       dataIndex: 'status',
-      width: 120,
+      width: 140,
       render: (status: string) => {
-        const colors: Record<string, string> = {
-          PENDING: 'orange',
-          APPROVED: 'cyan',
-          ON_HAND: 'green',
-          CANCELLED: 'red',
+        const config = STATUS_CONFIG[status] || {
+          label: status,
+          color: 'default',
         }
-        return <Tag color={colors[status] || 'default'}>{status}</Tag>
+        return (
+          <Tag color={config.color} style={{ borderRadius: '4px', margin: 0 }}>
+            {config.label}
+          </Tag>
+        )
       },
     },
     {
       title: 'Действия',
       key: 'actions',
-      width: 120,
+      fixed: 'right',
+      width: 110,
       render: (_, record) => (
-        <div style={{ display: 'flex', gap: 10 }}>
+        <Space size="small">
           {record.status === 'PENDING' && (
             <>
-              <Tooltip title="Одобрить">
-                <Button
-                  type="primary"
-                  onClick={() => onApprove(record.id)}
-                  icon={<CheckOutlined />}
-                />
-              </Tooltip>
-              <Tooltip title="Отклонить">
-                <Button
-                  danger
-                  onClick={() => onReject(record.id)}
-                  icon={<CloseOutlined />}
-                />
-              </Tooltip>
+              <Button
+                type="primary"
+                shape="circle"
+                size="small"
+                onClick={() => onApprove(record.id)}
+                icon={<CheckOutlined />}
+                style={{ backgroundColor: '#52c41a', borderColor: '#52c41a' }}
+              />
+              <Button
+                danger
+                shape="circle"
+                size="small"
+                onClick={() => onReject(record.id)}
+                icon={<CloseOutlined />}
+              />
             </>
           )}
-        </div>
+        </Space>
       ),
     },
   ]
 }
 
 export const getPagination = (
-  data: Order[],
-): TableProps<Order>['pagination'] => {
-  return data?.length > 10 ? { pageSize: 10, position: ['bottomLeft'] } : false
+  data: OrderResponse[],
+): TableProps<OrderResponse>['pagination'] => {
+  return data?.length > 10
+    ? { pageSize: 10, position: ['bottomLeft'], showSizeChanger: false }
+    : false
 }

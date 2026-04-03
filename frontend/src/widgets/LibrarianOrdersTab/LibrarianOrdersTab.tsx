@@ -3,15 +3,13 @@ import { useMemo } from 'react'
 import { getTableColumns, getPagination } from './utils'
 import { useLibrarianOrders } from '@features/manage-orders/hooks/use-librarian-orders'
 import { useOrderActions } from '@features/manage-orders/hooks/use-orders-management'
+import { OrderResponse } from './types'
 
 export const LibrarianOrdersTab = () => {
-  // 1. Получаем данные через TanStack Query
   const { data: orders = [], isLoading, isFetching } = useLibrarianOrders()
 
-  // 2. Получаем методы для кнопок (approve/reject)
   const { approve, reject } = useOrderActions()
 
-  // 3. Мемоизируем колонки, передавая в них реальные функции
   const columns = useMemo(
     () =>
       getTableColumns(
@@ -21,17 +19,15 @@ export const LibrarianOrdersTab = () => {
     [approve, reject],
   )
 
-  // 4. Пагинация на основе реальных данных
   const pagination = useMemo(() => getPagination(orders), [orders])
 
   return (
-    <Table
-      // Показываем спиннер при первичной загрузке или обновлении
+    <Table<OrderResponse>
       loading={isLoading || isFetching}
       dataSource={orders}
       columns={columns}
       rowKey="id"
-      scroll={{ x: 'max-content' }}
+      scroll={{ x: 1000 }}
       pagination={pagination}
     />
   )
