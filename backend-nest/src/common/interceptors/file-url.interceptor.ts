@@ -6,11 +6,11 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { getPublicFileBaseUrl } from '../file/file-storage.config';
 
 @Injectable()
 export class FileUrlInterceptor implements NestInterceptor {
-  private readonly s3PublicUrl = process.env.S3_PUBLIC_URL?.replace(/\/$/, '');
-  private readonly bucket = process.env.S3_BUCKET || 'covers';
+  private readonly baseUrl = getPublicFileBaseUrl();
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     return next.handle().pipe(map((data) => this.transform(data)));
@@ -33,15 +33,11 @@ export class FileUrlInterceptor implements NestInterceptor {
           isUrlKey &&
           typeof value === 'string' &&
           value &&
-          !value.startsWith('http')
+          !value.startsWith('http') &&
+          !value.startsWith('data:')
         ) {
-          const cleanPath = value.replace(/^\//, '');
-
-          if (cleanPath.startsWith(`${this.bucket}/`)) {
-            result[key] = `${this.s3PublicUrl}/${cleanPath}`;
-          } else {
-            result[key] = `${this.s3PublicUrl}/${this.bucket}/${cleanPath}`;
-          }
+          const cleanPath = value.replace(/^\/+/, '').replace(/^covers\//, '');
+          result[key] = `${this.baseUrl}/${cleanPath}`;
         } else if (value !== null && typeof value === 'object') {
           result[key] = this.transform(value);
         }

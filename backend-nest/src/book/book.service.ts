@@ -6,7 +6,7 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
-import { FileService } from 'src/common/file/file.service';
+import { FileService } from '../common/file/file.service';
 
 @Injectable()
 export class BookService {
@@ -87,11 +87,10 @@ export class BookService {
         author: `${r.author.firstName} ${r.author.lastName}`,
         coverUrl: r.coverImage,
       })),
-      // ИСПРАВЛЕНИЕ ТУТ: явно приводим дату каждого отзыва к строке
       reviews: book.reviews.map((r) => ({
         id: r.id,
         text: r.description,
-        createdAt: r.createdAt.toISOString(), // <-- Добавлено .toISOString()
+        createdAt: r.createdAt.toISOString(),
         userName: `${r.user.name} ${r.user.surname}`,
         userId: r.user.id,
       })),

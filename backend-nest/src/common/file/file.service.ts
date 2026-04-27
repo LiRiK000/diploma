@@ -1,41 +1,17 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 import {
   Injectable,
   InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
-import {
-  S3Client,
-  PutObjectCommand,
-  PutObjectCommandInput,
-} from '@aws-sdk/client-s3';
-import * as sharp from 'sharp';
+import sharp from 'sharp';
+import { writeFileSync, mkdirSync, existsSync } from 'fs';
+import { join } from 'path';
 
 @Injectable()
 export class FileService {
-  private readonly s3Client: S3Client;
   private readonly logger = new Logger(FileService.name);
-
-  constructor() {
-    // 1. Извлекаем переменные и гарантируем, что они строки (или пустые строки)
-    const endpoint = process.env.S3_ENDPOINT ?? '';
-    const port = process.env.S3_PORT ?? '';
-    const accessKey = process.env.S3_ACCESS_KEY ?? '';
-    const secretKey = process.env.S3_SECRET_KEY ?? '';
-
-    // 2. Создаем клиент, явно указывая конфигурацию
-    this.s3Client = new S3Client({
-      endpoint: `http://${endpoint}:${port}`,
-      region: 'us-east-1',
-      credentials: {
-        accessKeyId: accessKey,
-        secretAccessKey: secretKey,
-      },
-      forcePathStyle: true,
-    });
-  }
+  // Определяем путь к папке uploads в корне проекта
+  private readonly uploadRoot = join(process.cwd(), 'uploads');
 
   async uploadImage(
     file: Express.Multer.File,
@@ -43,37 +19,32 @@ export class FileService {
     fileName: string,
   ): Promise<string> {
     try {
-      // 3. Обработка через sharp. Чтобы линтер не ругался на цепочку вызовов,
-      // можно типизировать результат вызова sharp(file.buffer)
-      const imageProcessor: sharp.Sharp = sharp(file.buffer);
-
-      const optimizedBuffer: Buffer = await imageProcessor
+      const optimizedBuffer: Buffer = await sharp(file.buffer)
         .resize(800, 800, { fit: 'inside', withoutEnlargement: true })
         .webp({ quality: 80 })
         .toBuffer();
 
+      const targetDir = join(this.uploadRoot, folder);
       const finalKey = `${folder}/${fileName}.webp`;
-      const bucketName = process.env.S3_BUCKET ?? 'covers';
+      const fullPath = join(this.uploadRoot, finalKey);
 
-      // 4. Подготавливаем параметры для команды (явная типизация для линтера)
-      const uploadParams: PutObjectCommandInput = {
-        Bucket: bucketName,
-        Key: finalKey,
-        Body: optimizedBuffer,
-        ContentType: 'image/webp',
-      };
+      if (!existsSync(targetDir)) {
+        mkdirSync(targetDir, { recursive: true });
+      }
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      await this.s3Client.send(new PutObjectCommand(uploadParams));
+      writeFileSync(fullPath, optimizedBuffer);
+
+      this.logger.log(`File saved locally: ${fullPath}`);
 
       return finalKey;
     } catch (error: unknown) {
-      // 5. Безопасно обрабатываем ошибку для ESLint
       const message = error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error(`S3 Upload Failed: ${message}`);
+      this.logger.error(`Local Upload Failed:
+         ${message}`);
+      ы;
 
       throw new InternalServerErrorException(
-        'Ошибка при загрузке файла в хранилище',
+        'Ошибка при сохранении файла на диск',
       );
     }
   }

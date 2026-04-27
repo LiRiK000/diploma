@@ -1,13 +1,23 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
-import * as cookieParser from 'cookie-parser';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { join } from 'path';
+import cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 import { FileUrlInterceptor } from './common/interceptors/file-url.interceptor';
+import { shouldServeLocalUploads } from './common/file/file-storage.config';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   app.setGlobalPrefix('api');
+
+  if (shouldServeLocalUploads()) {
+    app.useStaticAssets(join(process.cwd(), 'uploads'), {
+      prefix: '/uploads/',
+    });
+  }
+
   app.useGlobalInterceptors(new FileUrlInterceptor());
   app.use(cookieParser());
 
@@ -28,6 +38,10 @@ async function bootstrap() {
   await app.listen(port);
 
   console.log(`🚀 Nest server is running on port ${port}`);
-  console.log(`🔗 API URL: http://localhost:${port}/api`);
+  if (shouldServeLocalUploads()) {
+    console.log(
+      `📂 Static files available at: http://localhost:${port}/uploads/`,
+    );
+  }
 }
-bootstrap();
+void bootstrap();
