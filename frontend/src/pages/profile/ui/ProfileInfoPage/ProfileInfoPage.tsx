@@ -212,7 +212,12 @@ export const ProfileInfoPage = () => {
             </Row>
 
             <div
-              style={{ display: 'flex', justifyContent: 'flex-end', gap: 12 }}
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                gap: 12,
+                margin: '12px 0',
+              }}
             >
               <Button htmlType="submit" type="primary" loading={isUpdating}>
                 Сохранить изменения

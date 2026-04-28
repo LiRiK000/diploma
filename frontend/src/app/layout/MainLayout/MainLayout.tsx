@@ -5,8 +5,9 @@ import { CartIcon } from '@entities/cart/components'
 import { routes } from '@shared/constants'
 import { MobileNavigation } from '@widgets/MobileNavigation'
 import { Search } from '@features/search'
-import styles from './MainLayout.module.scss'
 import { ThemeToggle } from '@features/theme-toggle/ui/ThemeToggle'
+import styles from './MainLayout.module.scss'
+import { PullAnchor } from '@shared/components/PullAnchor'
 
 const { Header, Content } = Layout
 
@@ -15,7 +16,9 @@ export const MainLayout = () => {
     <Layout style={{ minHeight: '100vh' }}>
       <Header className={styles.header}>
         <div className={styles.backgroundWrapper}>
-          <div className={styles.blob} />
+          <div className={`${styles.blob} ${styles.blobOne}`} />
+          <div className={`${styles.blob} ${styles.blobTwo}`} />
+          <div className={`${styles.blob} ${styles.blobThree}`} />
         </div>
 
         <div className={styles.headerLeft}>
@@ -53,6 +56,8 @@ export const MainLayout = () => {
       </Content>
 
       <MobileNavigation />
+
+      <PullAnchor />
     </Layout>
   )
 }

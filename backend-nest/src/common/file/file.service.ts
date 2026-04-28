@@ -41,8 +41,6 @@ export class FileService {
       const message = error instanceof Error ? error.message : 'Unknown error';
       this.logger.error(`Local Upload Failed:
          ${message}`);
-      ы;
-
       throw new InternalServerErrorException(
         'Ошибка при сохранении файла на диск',
       );

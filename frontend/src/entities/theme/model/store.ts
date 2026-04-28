@@ -5,12 +5,23 @@ interface ThemeState {
   isDark: boolean
   toggleTheme: () => void
 }
-
 export const useThemeStore = create<ThemeState>()(
   persist(
     set => ({
-      isDark: window.matchMedia('(prefers-color-scheme: dark)').matches,
-      toggleTheme: () => set(state => ({ isDark: !state.isDark })),
+      isDark: document.body.classList.contains('dark'), // Берем реальное состояние
+      toggleTheme: () =>
+        set(state => {
+          const nextDark = !state.isDark
+
+          // Мгновенно меняем класс на body без ожидания React
+          if (nextDark) {
+            document.body.classList.add('dark')
+          } else {
+            document.body.classList.remove('dark')
+          }
+
+          return { isDark: nextDark }
+        }),
     }),
     { name: 'theme-storage' },
   ),

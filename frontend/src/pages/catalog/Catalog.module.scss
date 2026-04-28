@@ -1,3 +1,5 @@
+@use '@shared/styles/variables' as *;
+
 .catalogWrapper {
   padding: 40px 20px;
   max-width: 1400px;
@@ -13,23 +15,29 @@
     gap: 20px;
 
     h1 {
-      font-size: 2.5rem;
-      font-weight: 800;
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-display);
       margin: 0;
-      background: linear-gradient(45deg, #1677ff, #003eb3);
+      line-height: var(--line-height-tight);
+      letter-spacing: -0.02em;
+      background: linear-gradient(
+        45deg,
+        var(--header-link-hover),
+        color-mix(in srgb, var(--header-link-hover) 58%, #001b40)
+      );
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
   }
 
   .filterBar {
-    background: rgba(255, 255, 255, 0.7);
+    background: var(--glass-bg);
     backdrop-filter: blur(10px);
     padding: 20px;
     border-radius: 16px;
-    border: 1px solid rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--glass-border);
     margin-bottom: 30px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    box-shadow: $shadow-light;
   }
 
   .bookCard {
@@ -37,11 +45,12 @@
     border-radius: 20px;
     overflow: hidden;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    border: 1px solid #f0f0f0;
+    border: 1px solid var(--glass-border);
+    background: var(--bg-content);
 
     &:hover {
       transform: translateY(-8px);
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+      box-shadow: $shadow-medium;
 
       .coverImage img {
         transform: scale(1.05);
@@ -51,7 +60,7 @@
     .coverImage {
       height: 320px;
       overflow: hidden;
-      background: #f5f5f5;
+      background: color-mix(in srgb, var(--text-primary) 6%, transparent);
       position: relative;
 
       img {
@@ -65,11 +74,11 @@
         position: absolute;
         top: 12px;
         left: 12px;
-        background: rgba(255, 255, 255, 0.9);
+        background: color-mix(in srgb, var(--bg-content) 92%, transparent);
         padding: 4px 12px;
         border-radius: 8px;
-        font-size: 12px;
-        font-weight: 600;
+        font-size: var(--font-size-xs);
+        font-weight: var(--font-weight-semibold);
         backdrop-filter: blur(4px);
       }
     }
@@ -78,8 +87,8 @@
       padding: 16px;
 
       .title {
-        font-size: 18px;
-        font-weight: 700;
+        font-size: var(--font-size-lg);
+        font-weight: var(--font-weight-bold);
         margin-bottom: 4px;
         display: -webkit-box;
         -webkit-line-clamp: 1;
@@ -88,7 +97,7 @@
       }
 
       .author {
-        color: #8c8c8c;
+        color: var(--text-secondary);
         margin-bottom: 12px;
       }
 
@@ -99,13 +108,13 @@
         margin-top: 15px;
 
         .quantity {
-          font-size: 13px;
-          color: #52c41a;
+          font-size: var(--font-size-sm);
+          color: #34c759;
           &.low {
-            color: #faad14;
+            color: #ff9f0a;
           }
           &.empty {
-            color: #f5222d;
+            color: #ff3b30;
           }
         }
       }

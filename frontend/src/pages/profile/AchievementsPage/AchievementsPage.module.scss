@@ -28,11 +28,11 @@
   .rankBadge {
     padding: 4px 12px;
     background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
-    color: white;
+    color: #fff;
     border-radius: 20px;
-    font-size: 14px;
-    font-weight: 600;
-    box-shadow: 0 4px 10px rgba(24, 144, 255, 0.3);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    box-shadow: 0 4px 10px color-mix(in srgb, var(--header-link-hover) 30%, transparent);
   }
 }
 .grid {
@@ -51,6 +51,6 @@
     color: var(--text-secondary);
   }
   :global(.ant-tabs-tab-active .ant-tabs-tab-btn) {
-    color: #1890ff !important;
+    color: var(--header-link-hover) !important;
   }
 }

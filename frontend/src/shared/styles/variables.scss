@@ -1,69 +1,126 @@
 // =============================================================================
-// 1. CSS VARIABLES (Динамическая темизация через :root)
+// 1. CSS VARIABLES (Динамическая темизация)
 // =============================================================================
 :root {
   color-scheme: light dark;
+  --font-family-base:
+    -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display',
+    'Segoe UI', Roboto, Inter, 'Helvetica Neue', Arial, sans-serif;
+  --line-height-body: 1.5;
+  --line-height-tight: 1.25;
 
-  // Хедер
-  --header-bg: rgba(125, 123, 123, 0.6);
-  --header-bg-sticky: #ffffff; // В светлой теме — чистый белый
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-display: 800;
+
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-md: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 22px;
+  --font-size-2xl: clamp(28px, 4vw, 40px);
+
+  // Хедер (Светлая тема - Apple Style)
+  --header-bg: rgba(255, 255, 255, 0.4);
+  --header-bg-sticky: rgba(255, 255, 255, 0.85);
   --header-blur: blur(20px) saturate(180%);
-  --header-border: rgba(255, 255, 255, 0.08);
-  --header-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.37), inset 0 1px rgba(255, 255, 255, 0.05);
+  --header-border: rgba(0, 0, 0, 0.05);
+  --header-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
 
-  --header-link-color: #ffffff;
-  --header-link-hover: #1890ff;
-  --header-logo-color: #ffffff;
+  --header-link-color: #1d1d1f;
+  --header-link-hover: #0071e3;
+  --header-logo-color: #1d1d1f;
 
-  // Текст в хедере
-  --header-text-primary: #111111;
-  --header-text-secondary: #555555;
+  --header-text-primary: #1d1d1f;
+  --header-text-secondary: #86868b;
 
-  // PAGE
-  --bg-page: #f2f2f7;
+  // PAGE & CONTENT
+  --bg-gradient: radial-gradient(
+    1200px 600px at 20% -10%,
+    rgba(0, 113, 227, 0.08),
+    transparent 60%
+  );
+  --bg-page: #fbfbfd;
   --bg-content: #ffffff;
-
-  --text-primary: #111111;
-  --text-secondary: #555555;
+  --text-primary: #1d1d1f;
+  --text-secondary: #6e6e73;
 
   --border-radius-primary: 24px;
   --transition-speed: 0.3s;
 
-  // GLASS
-  --glass-border: rgba(255, 255, 255, 0.28);
-  --glass-bg: rgba(255, 255, 255, 0.18);
-
-  // Hero сияние
-  --hero-glow-color: rgba(255, 255, 255, 0.6);
+  // GLASS SYSTEM (Light)
+  --glass-border: rgba(255, 255, 255, 0.7);
+  --glass-bg: rgba(255, 255, 255, 0.4);
+  --hero-glow-color: rgba(0, 113, 227, 0.08);
 }
 
 body:global(.dark) {
+  // Твою темную тему оставляем без изменений, только чуть причесал структуру
   --bg-page: #080808;
   --bg-content: #121212;
+  --bg-gradient: radial-gradient(
+    1200px 600px at 20% -10%,
+    rgba(24, 144, 255, 0.16),
+    transparent 60%
+  );
   --text-primary: #f2f2f2;
   --text-secondary: rgba(255, 255, 255, 0.6);
 
   --glass-border: rgba(255, 255, 255, 0.08);
   --glass-bg: rgba(255, 255, 255, 0.03);
 
-  // Хедер в темной теме
-  --header-bg-sticky: rgba(5, 5, 5, 0.6); // В темной теме — как есть
   --header-bg: rgba(15, 15, 15, 0.7);
+  --header-bg-sticky: rgba(5, 5, 5, 0.6);
   --header-text-primary: #f2f2f2;
   --header-text-secondary: rgba(255, 255, 255, 0.6);
+
+  --header-link-color: #ffffff;
+  --header-link-hover: #1890ff;
+  --header-logo-color: #ffffff;
+
   --hero-glow-color: rgba(24, 144, 255, 0.15);
 }
 
 // =============================================================================
-// 2. BREAKPOINTS & MIXINS (Сетка)
+// 2. SASS VARIABLES (Привязка к CSS Variables)
 // =============================================================================
+
+// Текстовые стили
+$text-primary: var(--text-primary);
+$text-secondary: var(--text-secondary);
+$text-primary-light: var(--text-primary);
+$text-secondary-light: var(--text-secondary);
+$text-disabled: #8e8e93;
+$text-error: #ff3b30;
+$text-success: #34c759;
+$text-white: #ffffff;
+$text-black: #000000;
+
+$font-size-small: 14px;
+$font-size-medium: 16px;
+$font-size-large: 18px;
+$font-size-heading: 22px;
+$font-size-title: 40px;
+$font-weight: 600;
+$font-weight-small: 200;
+$font-weight-regular: 400;
+$font-weight-medium: 500;
+$font-weight-bold: 700;
+
+// Background aliases for compatibility
+$background-white: #ffffff;
+$background-light-page: var(--bg-page);
+
+// Сетка и Брейкпоинты
 $breakpoint-xs: 480px;
 $breakpoint-sm: 576px;
 $breakpoint-md: 768px;
 $breakpoint-lg: 992px;
 $breakpoint-xl: 1200px;
 
+// Миксины для адаптива
 @mixin mobile {
   @media (max-width: #{$breakpoint-md}) {
     @content;
@@ -74,85 +131,61 @@ $breakpoint-xl: 1200px;
     @content;
   }
 }
+
 @mixin small-mobile {
   @media (max-width: #{$breakpoint-xs}) {
     @content;
   }
 }
 
-// =============================================================================
-// 3. TEXT STYLES (SASS Colors & Sizes)
-// =============================================================================
-$text-primary: #111;
-$text-secondary: #555;
-$text-disabled: #888;
-$text-error: #ff4d4f;
-$text-success: #52c41a;
-$text-white: #fff;
-$text-black: #000;
-$text-heading: #7dcb07;
-$text-primary-light: #000000;
-$text-secondary-light: rgba(0, 0, 0, 0.5);
-
-$font-size-small: 14px;
-$font-size-medium: 16px;
-$font-size-large: 18px;
-$font-size-heading: 22px;
-$font-size-title: 40px;
-$font-weight: 600;
-$font-weight-small: 200;
-
-// =============================================================================
-// 4. BACKGROUNDS & SHADOWS
-// =============================================================================
-$background-primary: #0c0c0c;
-$background-secondary: #282828;
-$background-foreground: #262626;
-$background-white: #ffffff;
-$background-gray: #f5f5f5;
-$background-light-page: #f2f2f7;
-
-$shadow-light: 0 2px 8px rgba(0, 0, 0, 0.05);
-$shadow-medium: 0 12px 32px rgba(0, 0, 0, 0.08);
-$shadow-strong: 0 16px 32px rgba(0, 0, 0, 0.25);
-$shadow-cover: 0 10px 24px rgba(0, 0, 0, 0.2);
-
-// =============================================================================
-// 5. SIZES, SPACING & RADIUS
-// =============================================================================
-$border-size-primary: 24px;
-$border-size-secondary: 12px;
-$border-radius-lg: 24px;
-$border-radius-md: 12px;
-$border-radius-sm: 6px;
-
-$padding-xl: 16px;
+// Spacing tokens
 $spacing-xs: 4px;
 $spacing-sm: 8px;
 $spacing-md: 12px;
 $spacing-lg: 16px;
+$padding-xl: 16px;
 
-// =============================================================================
-// 6. HERO SECTION & GRADIENTS
-// =============================================================================
-$gradient-hero: linear-gradient(135deg, #c0d3f8, $background-white);
-$font-size-hero-title: 44px;
-$font-size-hero-author: 18px;
-$font-size-hero-rating: 14px;
+// Тени (Динамические)
+$shadow-light: 0 2px 8px rgba(0, 0, 0, 0.04);
+$shadow-medium: var(--header-shadow);
+$shadow-strong: 0 16px 32px rgba(0, 0, 0, 0.2);
+$shadow-cover: 0 10px 24px rgba(0, 0, 0, 0.15);
 
-// =============================================================================
-// 7. LIQUID GLASS SYSTEM
-// =============================================================================
+// Радиусы
+$border-radius-lg: 24px;
+$border-radius-md: 12px;
+$border-radius-sm: 6px;
+
+// Liquid glass aliases for compatibility
 $transition-liquid: all 0.28s cubic-bezier(0.25, 0.1, 0.25, 1);
-
-$liquid-glass-bg: rgba(255, 255, 255, 0.18);
-$liquid-glass-border: rgba(255, 255, 255, 0.28);
-$liquid-glass-blur: blur(20px) saturate(160%);
-$liquid-glass-glow: 0 0 0 3px rgba(10, 132, 255, 0.24);
-$liquid-glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.22);
+$liquid-glass-bg: var(--glass-bg);
+$liquid-glass-border: var(--glass-border);
+$liquid-glass-blur: var(--header-blur);
+$liquid-glass-glow: 0 0 0 3px rgba(0, 113, 227, 0.2);
+$liquid-glass-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
 $liquid-glass-active-scale: scale(1.04);
+$liquid-glass-shadow-light: 0 10px 32px rgba(0, 0, 0, 0.08);
 
-$liquid-glass-bg-light: rgba(255, 255, 255, 0.45);
-$liquid-glass-border-light: rgba(255, 255, 255, 0.5);
-$liquid-glass-blur-light: blur(25px) saturate(200%);
-$liquid-glass-shadow-light: 0 10px 40px rgba(0, 0, 0, 0.06);
+// =============================================================================
+// 3. LIQUID GLASS SYSTEM (Миксин для удобства)
+// =============================================================================
+@mixin liquid-glass {
+  background: var(--glass-bg);
+  backdrop-filter: var(--header-blur);
+  border: 1px solid var(--glass-border);
+  transition: all 0.28s cubic-bezier(0.25, 0.1, 0.25, 1);
+
+  &:hover {
+    transform: scale(1.02);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  }
+}
+
+$gradient-hero: linear-gradient(135deg, #f5f5f7, #ffffff);
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.4s;
+  animation-timing-function: ease-in-out;
+}
+

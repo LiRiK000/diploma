@@ -5,6 +5,11 @@ import reactRefresh from 'eslint-plugin-react-refresh'
 import tseslint from 'typescript-eslint'
 import prettier from 'eslint-plugin-prettier'
 import prettierConfig from 'eslint-config-prettier'
+import path from 'path'
+import { fileURLToPath } from 'url'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 export default tseslint.config(
   {
@@ -14,7 +19,7 @@ export default tseslint.config(
     files: ['**/*.{ts,tsx,js,jsx}'],
     extends: [
       js.configs.recommended,
-      ...tseslint.configs.recommended,
+      ...tseslint.configs.recommendedTypeChecked,
       prettierConfig,
     ],
     plugins: {
@@ -25,6 +30,10 @@ export default tseslint.config(
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser,
+      parserOptions: {
+        project: ['./tsconfig.json', './tsconfig.app.json'],
+        tsconfigRootDir: __dirname,
+      },
     },
     rules: {
       ...reactHooks.configs.recommended.rules,

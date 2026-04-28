@@ -7,7 +7,7 @@ body,
   width: 100%;
   margin: 0;
   padding: 0;
-  font-family: 'Manrope', sans-serif !important;
+  font-family: var(--font-family-base) !important;
   scroll-behavior: smooth;
 
   background: var(--bg-page);
@@ -15,4 +15,80 @@ body,
   transition:
     background 0.3s ease,
     color 0.3s ease;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body);
+  letter-spacing: -0.01em;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+  color: var(--text-primary);
+  line-height: var(--line-height-tight);
+  letter-spacing: -0.02em;
+}
+
+h1 {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-display);
+}
+
+h2 {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+}
+
+h3 {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+}
+
+h4,
+h5,
+h6 {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+}
+
+p {
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: var(--line-height-body);
+}
+
+small {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+a,
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  font-weight: var(--font-weight-medium);
+}
+
+:global(.ant-typography) {
+  line-height: var(--line-height-body);
+}
+
+:global(.ant-btn) {
+  font-weight: var(--font-weight-medium);
+  letter-spacing: -0.01em;
 }

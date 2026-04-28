@@ -13,7 +13,7 @@ export const BookCard = ({ book }: BookCardProps) => {
   const handleAuthorClick = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    navigate(`/author/${book.authorId}`)
+    void navigate(`/author/${book.authorId}`)
   }
 
   let quantityClass = styles.quantity
@@ -33,7 +33,8 @@ export const BookCard = ({ book }: BookCardProps) => {
           <div className={styles.bookWrapper}>
             <img
               src={book.coverUrl || '/book.png'}
-              alt={book.title}
+              fetchPriority="high"
+              loading="eager"
               className={styles.coverImage}
             />
 

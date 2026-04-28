@@ -27,7 +27,9 @@ export const HeroSection = ({
           <div className={styles.header}>
             <h1 className={styles.title}>{title}</h1>
             <p className={styles.author}>
-              {author}, {publishYear}
+              <span className={styles.authorName}>{author}</span>
+              <span className={styles.metaDot}>•</span>
+              <span className={styles.publishYear}>{publishYear}</span>
             </p>
           </div>
 

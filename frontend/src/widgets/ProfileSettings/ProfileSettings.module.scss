@@ -49,7 +49,7 @@
   background: var(--glass-border);
 
   &:global(.ant-switch-checked) {
-    background: #1890ff;
+    background: var(--header-link-hover);
   }
 }
 
@@ -62,7 +62,7 @@
   transition: $transition-liquid;
 
   &:hover {
-    border-color: rgba(24, 144, 255, 0.3) !important;
+    border-color: color-mix(in srgb, var(--header-link-hover) 35%, transparent) !important;
     box-shadow: $shadow-medium;
   }
 

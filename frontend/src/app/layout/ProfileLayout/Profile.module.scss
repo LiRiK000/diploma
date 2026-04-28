@@ -22,14 +22,14 @@
       transition: $transition-liquid;
 
       &:hover {
-        background: rgba(255, 255, 255, 0.05) !important;
+        background: var(--glass-bg) !important;
         color: var(--text-primary) !important;
       }
     }
 
     :global(.ant-menu-item-selected) {
       background: var(--glass-bg) !important;
-      color: #1890ff !important;
+      color: var(--header-link-hover) !important;
       border: 1px solid var(--glass-border);
       box-shadow: $shadow-light;
     }

@@ -15,13 +15,13 @@
 
   &:hover {
     transform: translateY(-4px);
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(24, 144, 255, 0.4);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+    background: color-mix(in srgb, var(--bg-content) 72%, transparent);
+    border-color: color-mix(in srgb, var(--header-link-hover) 35%, transparent);
+    box-shadow: 0 12px 24px rgba(15, 23, 42, 0.14);
   }
 
   &.completed {
-    border-color: rgba(82, 196, 26, 0.3);
+    border-color: color-mix(in srgb, #34c759 35%, transparent);
     &::before {
       content: '';
       position: absolute;
@@ -60,10 +60,10 @@
 }
 
 .expBadge {
-  font-size: 12px;
-  font-weight: 700;
-  color: #1890ff;
-  background: rgba(24, 144, 255, 0.1);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  color: var(--header-link-hover);
+  background: color-mix(in srgb, var(--header-link-hover) 12%, transparent);
   padding: 2px 8px;
   border-radius: $border-radius-sm;
 }
@@ -72,14 +72,14 @@
   display: flex;
   flex-direction: column;
   .title {
-    font-weight: 700;
-    font-size: $font-size-medium;
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-md);
     color: var(--text-primary);
   }
   .description {
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     color: var(--text-secondary);
-    line-height: 1.4;
+    line-height: var(--line-height-body);
   }
 }
 
@@ -89,7 +89,7 @@
   margin-top: $spacing-xs;
   .values,
   .percent {
-    font-size: 11px;
+    font-size: var(--font-size-xs);
     color: var(--text-secondary);
   }
 }

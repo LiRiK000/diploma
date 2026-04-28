@@ -1,4 +1,4 @@
-import { getPublicFileBaseUrl } from 'src/common/file/file-storage.config';
+import { getPublicFileBaseUrl } from '../common/file/file-storage.config';
 
 export function getFullUrl(path: string | null | undefined): string | null {
   if (!path) return null;

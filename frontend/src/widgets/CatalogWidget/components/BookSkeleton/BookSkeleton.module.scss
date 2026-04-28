@@ -10,7 +10,7 @@
 .coverPulse {
   width: 100%;
   aspect-ratio: 2 / 3;
-  background: rgba(255, 255, 255, 0.05);
+  background: color-mix(in srgb, var(--text-primary) 6%, transparent);
   border-radius: 12px;
   position: relative;
   overflow: hidden;
@@ -23,7 +23,7 @@
     background: linear-gradient(
       90deg,
       transparent,
-      rgba(255, 255, 255, 0.05),
+      color-mix(in srgb, var(--text-primary) 10%, transparent),
       transparent
     );
     animation: shimmer 1.5s infinite;
@@ -39,14 +39,14 @@
 .titlePulse {
   height: 20px;
   width: 80%;
-  background: rgba(255, 255, 255, 0.05);
+  background: color-mix(in srgb, var(--text-primary) 8%, transparent);
   border-radius: 4px;
 }
 
 .authorPulse {
   height: 14px;
   width: 50%;
-  background: rgba(255, 255, 255, 0.03);
+  background: color-mix(in srgb, var(--text-primary) 5%, transparent);
   border-radius: 4px;
 }
 

@@ -94,9 +94,9 @@
 
 @media (max-width: $breakpoint-md) {
   .content {
-    padding: 0 $spacing-md;
-    height: 60px;
-    gap: $spacing-md;
+    padding: 0 $spacing-sm;
+    height: 56px;
+    gap: $spacing-sm;
   }
 
   .author {
@@ -105,7 +105,17 @@
 
   .title {
     font-size: 14px;
-    max-width: 150px;
+    max-width: 42vw;
+  }
+
+  .buttonContainer {
+    gap: 8px;
+
+    :global(button) {
+      padding: 4px 10px;
+      height: 32px;
+      font-size: 12px;
+    }
   }
 
   .secondaryAction {
@@ -114,7 +124,28 @@
 }
 
 @media (max-width: 480px) {
+  .content {
+    height: 52px;
+    padding: 0 6px;
+  }
+
   .cover {
     display: none;
+  }
+
+  .bookInfo {
+    min-width: 0;
+  }
+
+  .title {
+    max-width: 46vw;
+    font-size: 13px;
+  }
+
+  .buttonContainer {
+    :global(button) {
+      padding: 0 8px;
+      min-width: 0;
+    }
   }
 }

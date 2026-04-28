@@ -2,18 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { GetCatalogDto } from './dto/get-catalog.dto';
 import type { Prisma } from '@prisma/client';
+import { getFullUrl } from '../utils/getFullCoverUrl';
 
 @Injectable()
 export class CatalogService {
   private readonly s3PublicUrl = process.env.S3_PUBLIC_URL;
 
   constructor(private readonly prisma: PrismaService) {}
-
-  private getFullCoverUrl(path: string | null): string {
-    if (!path) return null;
-    if (path.startsWith('http')) return path;
-    return `${this.s3PublicUrl}/${path}`;
-  }
 
   async getCatalog(dto: GetCatalogDto) {
     const {
@@ -104,8 +99,7 @@ export class CatalogService {
         genre: book.genre.label,
         genreId: book.genre.id,
 
-        coverUrl: this.getFullCoverUrl(book.coverImage),
-
+        coverUrl: getFullUrl(book.coverImage),
         availableQuantity: book.availableQuantity,
         description: book.description,
       })),
