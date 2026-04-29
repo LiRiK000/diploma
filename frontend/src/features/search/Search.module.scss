@@ -3,12 +3,15 @@
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.15);
   backdrop-filter: blur(12px);
   opacity: 0;
   visibility: hidden;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 99;
+  :global(.dark) .overlay {
+    background: rgba(0, 0, 0, 0.4);
+  }
 }
 
 .overlayVisible {
@@ -33,7 +36,7 @@
   display: flex;
   position: relative;
   width: 100%;
-  max-width: 600px;
+  max-width: 500px;
   margin: 0 auto;
 }
 
@@ -42,10 +45,13 @@
 
   :global {
     .ant-input-group {
-      background: rgba(255, 255, 255, 0.1);
+      background: var(--glass-bg);
+      border: 1px solid var(--header-border);
+      backdrop-filter: var(--header-blur);
       border-radius: 12px;
       overflow: hidden;
-      transition: all 0.3s ease;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: var(--header-shadow);
     }
 
     .ant-input-affix-wrapper {
@@ -59,18 +65,20 @@
         font-size: 16px;
         font-weight: 400;
         letter-spacing: -0.01em;
-        color: #fff;
+        color: var(--text-primary);
 
         &::placeholder {
-          color: rgba(255, 255, 255, 0.45);
+          color: var(--text-secondary);
+          opacity: 0.6;
         }
       }
 
       &-focused,
       &:hover {
-        background: #fff !important;
+        background: var(--bg-content) !important;
+        border-color: var(--header-link-hover) !important;
         input {
-          color: #000 !important;
+          color: var(--text-primary) !important;
         }
       }
     }
@@ -83,11 +91,10 @@
         height: 44px;
         border: none !important;
         background: transparent !important;
-        color: rgba(255, 255, 255, 0.6) !important;
+        color: var(--text-secondary) !important;
         box-shadow: none !important;
-
         &:hover {
-          color: #fff !important;
+          color: var(--header-link-hover) !important;
         }
       }
     }
@@ -98,10 +105,11 @@
   position: absolute;
   top: calc(100% + 8px);
   width: 100%;
-  background: rgba(255, 255, 255, 0.95);
+  background: var(--bg-content);
+  border: 1px solid var(--header-border);
   backdrop-filter: blur(20px);
   border-radius: 16px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   padding: 8px 0;
   animation: dropdownFade 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -110,11 +118,11 @@
 @keyframes dropdownFade {
   from {
     opacity: 0;
-    transform: scale(0.98) translateY(-10px);
+    transform: translateY(-8px) scale(0.98);
   }
   to {
     opacity: 1;
-    transform: scale(1) translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
@@ -126,7 +134,8 @@
   cursor: pointer;
 
   &:hover {
-    background: rgba(0, 0, 0, 0.05) !important;
+    background: var(--glass-bg) !important;
+    filter: brightness(0.95);
   }
 }
 
@@ -171,7 +180,7 @@
 
   .itemTitle {
     font-size: 14px;
-    color: #1d1d1f;
+    color: var(--text-primary);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -180,7 +189,7 @@
 
 .authorName {
   font-size: 12px !important;
-  color: #86868b !important;
+  color: var(--text-secondary) !important;
   line-height: 1.2;
 }
 

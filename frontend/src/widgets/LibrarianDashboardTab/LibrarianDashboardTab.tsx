@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, FC } from 'react'
+import { Layouts } from 'react-grid-layout'
 import { useLibrarianSettingsStore } from '@features/librarian-settings'
 import { LibrarianKpiWidget } from '@widgets/LibrarianKpiWidget'
 import { OverdueTrendWidget } from '@widgets/OverdueTrendWidget'
@@ -18,6 +19,20 @@ interface UserWidget {
   id: string
   config: WidgetConfig
   gridParams: GridItemConfig['gridParams']
+}
+
+const generateDefaultLayouts = (items: GridItemConfig[]): Layouts => {
+  const lg = items.map(item => ({
+    i: item.id,
+    x: item.gridParams?.x ?? 0,
+    y: item.gridParams?.y ?? Infinity,
+    w: item.gridParams?.w ?? 6,
+    h: item.gridParams?.h ?? 6,
+    minW: item.gridParams?.minW,
+    minH: item.gridParams?.minH,
+  }))
+
+  return { lg, md: lg, sm: lg, xs: lg }
 }
 
 export const LibrarianDashboardTab: FC = () => {
@@ -76,9 +91,36 @@ export const LibrarianDashboardTab: FC = () => {
     return [...staticItems, ...dynamicItems]
   }, [userWidgets, isEditing])
 
+  const defaultLayouts = useMemo(() => generateDefaultLayouts(items), [items])
+
+  const layouts = useMemo((): Layouts => {
+    const raw = localStorage.getItem('dashboard_layout')
+    if (!raw) return defaultLayouts
+
+    try {
+      const parsed: unknown = JSON.parse(raw)
+      if (
+        typeof parsed === 'object' &&
+        parsed !== null &&
+        !Array.isArray(parsed) &&
+        Array.isArray((parsed as Record<string, unknown>).lg)
+      ) {
+        return parsed as Layouts
+      }
+    } catch {
+      // ignore
+    }
+    return defaultLayouts
+  }, [defaultLayouts])
+
   return (
     <div className={styles.fadeContainer}>
-      <Grid items={items} isDraggable={isEditing} isResizable={isEditing} />
+      <Grid
+        items={items}
+        layouts={layouts}
+        isDraggable={isEditing}
+        isResizable={isEditing}
+      />
     </div>
   )
 }

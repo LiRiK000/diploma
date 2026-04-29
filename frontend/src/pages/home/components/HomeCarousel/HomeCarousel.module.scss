@@ -1,0 +1,84 @@
+@use '@shared/styles/variables' as *;
+
+.carouselWrapper {
+  margin-bottom: 48px;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: var(--header-shadow);
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+}
+
+.slide {
+  height: 420px;
+  position: relative;
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 60px;
+  overflow: hidden;
+
+  @include mobile {
+    height: 300px;
+    padding: 0 24px;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+  }
+}
+
+.content {
+  z-index: 2;
+  max-width: 500px;
+
+  h3 {
+    color: var(--text-primary);
+    font-size: clamp(24px, 4vw, 42px);
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 16px;
+    letter-spacing: -0.03em;
+  }
+
+  p {
+    color: var(--text-secondary);
+    font-size: 18px;
+    margin-bottom: 24px;
+  }
+}
+
+.imageOverlay {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, var(--glass-bg) 0%, transparent 100%);
+  z-index: 1;
+}
+
+:global {
+  .ant-carousel {
+    .slick-dots {
+      bottom: 24px;
+
+      li {
+        width: 30px;
+        height: 4px;
+
+        button {
+          height: 4px;
+          border-radius: 2px;
+          background: var(--text-primary) !important;
+          opacity: 0.2;
+        }
+
+        &.slick-active button {
+          background: var(--header-link-hover) !important;
+          opacity: 1;
+          width: 40px;
+        }
+      }
+    }
+  }
+}

@@ -1,13 +1,22 @@
-import { Input, List, Typography, Spin, Empty } from 'antd'
+import { Input, List, Typography, Spin } from 'antd'
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { createPortal } from 'react-dom'
 import styles from './Search.module.scss'
 import { useDebounce } from './hooks/useDebounce'
 import { useBookSuggestions } from './hooks/useBookSuggestions'
+import { EmptyState } from '@shared/components/Empty/EmptyState'
 
 const { Search: AntdSearch } = Input
 const { Text } = Typography
+
+interface SuggestionItem {
+  id: string
+  type: 'author' | 'book'
+  title: string
+  author?: string
+  image?: string
+}
 
 export const Search = () => {
   const [value, setValue] = useState('')
@@ -16,9 +25,11 @@ export const Search = () => {
   const blurTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const debouncedSearch = useDebounce(value, 350)
-  const { data: suggestions = [], isLoading } =
-    useBookSuggestions(debouncedSearch)
-
+  const { data: suggestions = [] as SuggestionItem[], isLoading } =
+    useBookSuggestions(debouncedSearch) as {
+      data: SuggestionItem[]
+      isLoading: boolean
+    }
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setIsFocused(false)
@@ -27,18 +38,23 @@ export const Search = () => {
     return () => window.removeEventListener('keydown', handleEsc)
   }, [])
 
+  const handleClear = () => {
+    setValue('')
+    setIsFocused(false)
+  }
+
   const handleSearch = (query: string) => {
     const trimmed = query.trim()
     if (!trimmed) return
-    navigate(`/search?q=${encodeURIComponent(trimmed)}`)
+    void navigate(`/search?q=${encodeURIComponent(trimmed)}`)
     setIsFocused(false)
     setValue('')
   }
 
-  const navigateToItem = (item: any) => {
+  const navigateToItem = (item: { type: string; id: string }) => {
     const path =
       item.type === 'author' ? `/author/${item.id}` : `/book/${item.id}`
-    navigate(path)
+    void navigate(path)
     setValue('')
     setIsFocused(false)
   }
@@ -86,7 +102,7 @@ export const Search = () => {
               ) : suggestions.length > 0 ? (
                 <List
                   dataSource={suggestions}
-                  renderItem={(item: any) => (
+                  renderItem={(item: SuggestionItem) => (
                     <List.Item
                       className={styles.listItem}
                       onMouseDown={e => {
@@ -127,7 +143,6 @@ export const Search = () => {
                             <Text
                               className={styles.authorName}
                               type="secondary"
-                              block
                             >
                               {item.author}
                             </Text>
@@ -139,10 +154,12 @@ export const Search = () => {
                 />
               ) : (
                 <div className={styles.infoState}>
-                  <Empty
+                  {/* <Empty
                     image={Empty.PRESENTED_IMAGE_SIMPLE}
                     description="Ничего не нашли"
-                  />
+                  /> */}
+
+                  <EmptyState onAction={handleClear} />
                 </div>
               )}
             </div>

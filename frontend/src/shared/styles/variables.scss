@@ -29,8 +29,8 @@
   --header-border: rgba(0, 0, 0, 0.05);
   --header-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
 
-  --header-link-color: #1d1d1f;
-  --header-link-hover: #0071e3;
+  --header-link-color: rgba(0, 0, 0, 0.56);
+  --header-link-hover: rgba(0, 0, 0, 0.88);
   --header-logo-color: #1d1d1f;
 
   --header-text-primary: #1d1d1f;
@@ -188,4 +188,3 @@ $gradient-hero: linear-gradient(135deg, #f5f5f7, #ffffff);
   animation-duration: 0.4s;
   animation-timing-function: ease-in-out;
 }
-
