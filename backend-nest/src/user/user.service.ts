@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { FileService } from 'src/common/file/file.service';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { getFullUrl } from 'src/utils/getFullCoverUrl';
 
 @Injectable()
 export class UserService {
@@ -29,22 +30,6 @@ export class UserService {
     private readonly fileService: FileService,
   ) {}
 
-  private getFullUrl(path: string | null): string | null {
-    if (!path) return null;
-    if (path.startsWith('http')) return path;
-
-    const base = this.s3PublicUrl || '';
-    const bucket = process.env.S3_BUCKET || 'covers';
-
-    const cleanPath = path.replace(/^\//, '');
-
-    if (cleanPath.startsWith(`${bucket}/`)) {
-      return `${base}/${cleanPath}`;
-    }
-
-    return `${base}/${bucket}/${cleanPath}`;
-  }
-
   async getProfile(userId: string) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
@@ -55,7 +40,7 @@ export class UserService {
 
     return {
       ...user,
-      avatarUrl: this.getFullUrl(user.avatarUrl),
+      avatarUrl: getFullUrl(user.avatarUrl),
     };
   }
 
@@ -71,7 +56,7 @@ export class UserService {
 
     return {
       ...user,
-      avatarUrl: this.getFullUrl(user.avatarUrl),
+      avatarUrl: getFullUrl(user.avatarUrl),
     };
   }
 
@@ -86,7 +71,7 @@ export class UserService {
 
     return {
       status: 'success',
-      avatarUrl: this.getFullUrl(user.avatarUrl),
+      avatarUrl: getFullUrl(user.avatarUrl),
     };
   }
 }
