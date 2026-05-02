@@ -15,6 +15,59 @@ export class BookService {
     private readonly fileService: FileService,
   ) {}
 
+  async getMainPageSections() {
+    return this.prisma.collection.findMany({
+      where: { isActive: true },
+      orderBy: { order: 'asc' },
+      include: {
+        books: {
+          take: 10,
+          include: {
+            author: { select: { firstName: true, lastName: true } },
+            genre: { select: { label: true } },
+          },
+        },
+      },
+    });
+  }
+
+  async getSmartRecommendations(bookId: string) {
+    const book = await this.prisma.book.findUnique({
+      where: { id: bookId },
+      select: {
+        genreId: true,
+        authorId: true,
+        recommendedBooks: { select: { id: true } },
+      },
+    });
+
+    if (!book) throw new NotFoundException();
+
+    if (book.recommendedBooks.length > 0) {
+      return this.getBookByIds(book.recommendedBooks.map((b) => b.id));
+    }
+
+    return this.prisma.book.findMany({
+      where: {
+        id: { not: bookId },
+        OR: [{ genreId: book.genreId }, { authorId: book.authorId }],
+      },
+      take: 5,
+      include: {
+        author: { select: { firstName: true, lastName: true } },
+      },
+    });
+  }
+
+  private async getBookByIds(ids: string[]) {
+    return this.prisma.book.findMany({
+      where: { id: { in: ids } },
+      include: {
+        author: { select: { firstName: true, lastName: true } },
+      },
+    });
+  }
+
   async getPaginatedBooks(take = 8, cursor?: string) {
     const books = await this.prisma.book.findMany({
       take: take + 1,

@@ -28,8 +28,9 @@ export const BookCard = ({ book }: BookCardProps) => {
     <Link to={`/book/${book.id}`}>
       <div className={styles.card}>
         <div className={styles.cover}>
-          <div className={styles.genreBadge}>{book.genre}</div>
-
+          <div className={styles.genreBadge}>
+            {typeof book.genre === 'object' ? book.genre.label : book.genre}
+          </div>
           <div className={styles.bookWrapper}>
             <img
               src={book.coverUrl || '/book.png'}

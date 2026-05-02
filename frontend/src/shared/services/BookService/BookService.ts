@@ -17,6 +17,13 @@ export interface UpsertBookPayload {
   coverImage?: string | null
 }
 
+export interface BookMainSection {
+  id: string
+  title: string
+  slug: string
+  items: Book[]
+}
+
 export class BookService {
   async getPaginated(
     cursor?: string | null,
@@ -43,6 +50,13 @@ export class BookService {
     const response = await api.get('/search/search', {
       params: { q: query, take },
     })
+    return response.data.data
+  }
+
+  async getMainSections(): Promise<BookMainSection[]> {
+    await new Promise(resolve => setTimeout(resolve, 500))
+
+    const response = await api.get('/books/main-sections')
     return response.data.data
   }
 

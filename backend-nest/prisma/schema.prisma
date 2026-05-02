@@ -116,11 +116,30 @@ model Book {
   coverImage String?     
   recommendedBooks Book[] @relation("BookRecommendations")
   recommendedBy Book[] @relation("BookRecommendations")
+  collections Collection[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   @@map("books")
 }
+
+
+model Collection {
+  id          String   @id @default(uuid())
+  title       String   
+  slug        String   @unique 
+  description String?
+  order       Int      @default(0) 
+  isActive    Boolean  @default(true)
+  
+  books       Book[] 
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("collections")
+}
+
 
 model Author {
   id String @id @default(uuid())

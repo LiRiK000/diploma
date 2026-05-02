@@ -1,0 +1,124 @@
+.section {
+  margin-bottom: 56px;
+  position: relative;
+
+  &:hover {
+    .navBtn {
+      opacity: 1;
+    }
+  }
+}
+
+.viewportWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.navBtn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 20;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--glass-border);
+  background: var(--bg-content);
+  backdrop-filter: blur(8px);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  opacity: 0;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: var(--header-link-hover);
+    color: #fff;
+    transform: translateY(-50%) scale(1.1);
+  }
+
+  &.prev {
+    left: -22px;
+  }
+  &.next {
+    right: -22px;
+  }
+}
+
+.embla {
+  flex: 1;
+  overflow: hidden;
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 5%,
+    black 95%,
+    transparent
+  );
+}
+
+.container {
+  display: flex;
+  padding: 15px 0;
+}
+
+.slide {
+  flex: 0 0 260px;
+  margin-right: 24px;
+  transition: opacity 0.4s ease;
+}
+
+@media (max-width: 768px) {
+  .navBtn {
+    display: none;
+  }
+  .embla {
+    mask-image: none;
+  }
+}
+
+.catalogLink {
+  text-decoration: none;
+  height: 100%;
+  display: block;
+}
+
+.catalogCard {
+  width: 260px;
+  height: 100%;
+  min-height: 380px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 2px dashed var(--glass-border);
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  color: var(--text-secondary);
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--ant-primary-color);
+    color: var(--ant-primary-color);
+
+    .catalogIcon {
+      transform: translateX(8px);
+    }
+  }
+
+  .catalogIcon {
+    font-size: 32px;
+    transition: transform 0.3s ease;
+  }
+
+  span {
+    font-weight: 500;
+    font-size: 16px;
+  }
+}

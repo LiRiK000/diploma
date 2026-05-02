@@ -7,7 +7,6 @@ import {
   Tag,
   Button,
   Result,
-  Spin,
   Divider,
   Alert,
   Popconfirm,
@@ -27,6 +26,7 @@ import {
   STATUS_CONFIG,
   OrderStatus,
 } from '@entities/order/consts/statusConfig'
+import { Loader } from '@shared/components/Loader'
 
 const { Title, Text } = Typography
 
@@ -47,7 +47,7 @@ export const OrderPage: React.FC = () => {
     [order?.status],
   )
 
-  if (isLoading) return <Spin size="large" className={styles.loader} />
+  if (isLoading) return <Loader />
   if (isError || !order) return <Result status="404" title="Заказ не найден" />
 
   const status = order.status as OrderStatus
@@ -96,7 +96,6 @@ export const OrderPage: React.FC = () => {
         )}
 
         <main className={styles.statusContent}>
-          {/* ОТМЕНЕНО */}
           {isCancelled && (
             <Result
               status="error"
@@ -105,7 +104,6 @@ export const OrderPage: React.FC = () => {
             />
           )}
 
-          {/* В ОЖИДАНИИ */}
           {status === 'PENDING' && (
             <Result
               icon={<ClockCircleOutlined style={{ color: '#1890ff' }} />}
@@ -114,7 +112,6 @@ export const OrderPage: React.FC = () => {
             />
           )}
 
-          {/* ОДОБРЕНО (ПОЛУЧЕНИЕ) */}
           {status === 'APPROVED' && order.pickupCode && (
             <div className={styles.pickupSection}>
               <Text className={styles.instructionText}>
@@ -129,7 +126,6 @@ export const OrderPage: React.FC = () => {
             </div>
           )}
 
-          {/* ГОТОВ К ВЫДАЧЕ */}
           {status === 'READY_TO_PICKUP' && (
             <Result
               icon={
@@ -151,7 +147,6 @@ export const OrderPage: React.FC = () => {
             />
           )}
 
-          {/* НА РУКАХ / ПРОСРОЧЕНО (ВОЗВРАТ) */}
           {isOnHand && (
             <div className={styles.pickupSection}>
               <Result
@@ -181,7 +176,6 @@ export const OrderPage: React.FC = () => {
             </div>
           )}
 
-          {/* ВОЗВРАЩЕНО */}
           {isReturned && (
             <Result
               icon={<CheckCircleOutlined className={styles.successIcon} />}

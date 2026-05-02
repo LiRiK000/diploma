@@ -11,8 +11,12 @@ import {
   UseInterceptors,
   UploadedFile,
   UseGuards,
+  ParseIntPipe,
+  ParseFilePipe,
+  MaxFileSizeValidator,
+  FileTypeValidator,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { BookService } from './book.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
@@ -25,6 +29,27 @@ import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 export class BookController {
   constructor(private readonly bookService: BookService) {}
 
+  @Get('main-sections')
+  @ApiOperation({
+    summary: 'Получить динамические коллекции для главной страницы',
+  })
+  async getMainSections() {
+    const data = await this.bookService.getMainPageSections();
+    return {
+      status: 'success',
+      data: data.map((col) => ({
+        id: col.id,
+        title: col.title,
+        slug: col.slug,
+        items: col.books.map((b) => ({
+          ...b,
+          author: `${b.author.firstName} ${b.author.lastName}`,
+          coverUrl: b.coverImage,
+        })),
+      })),
+    };
+  }
+
   @Get('favorites')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Получить список избранных книг пользователя' })
@@ -36,13 +61,10 @@ export class BookController {
   @Get()
   @ApiOperation({ summary: 'Получить список книг с пагинацией' })
   async getBooks(
-    @Query('take') take?: string,
+    @Query('take', new ParseIntPipe({ optional: true })) take: number = 8,
     @Query('cursor') cursor?: string,
   ) {
-    const data = await this.bookService.getPaginatedBooks(
-      Number(take) || 8,
-      cursor,
-    );
+    const data = await this.bookService.getPaginatedBooks(take, cursor);
     return { status: 'success', data };
   }
 
@@ -71,7 +93,7 @@ export class BookController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: 'Создать новую книгу (Admin/Librarian)' })
+  @ApiOperation({ summary: 'Создать новую книгу' })
   async createBook(@Body() dto: CreateBookDto) {
     const data = await this.bookService.createBook(dto);
     return { status: 'success', data };
@@ -96,10 +118,29 @@ export class BookController {
   @Post(':id/cover')
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('file'))
+  @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: 'Загрузить обложку книги' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: { file: { type: 'string', format: 'binary' } },
+    },
+  })
+  @Get('main-sections')
+  @ApiOperation({
+    summary: 'Получить динамические коллекции для главной страницы',
+  })
   async uploadCover(
     @Param('id') id: string,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 5 }),
+          new FileTypeValidator({ fileType: '.(png|jpeg|jpg)' }),
+        ],
+      }),
+    )
+    file: Express.Multer.File,
   ) {
     return this.bookService.uploadBookCover(id, file);
   }
