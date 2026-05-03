@@ -11,4 +11,9 @@ export const librarianLayoutItems: MenuProps['items'] = [
   { key: 'orders', label: 'Открытые заявки', icon: <ShoppingOutlined /> },
   { key: 'books', label: 'Книги', icon: <BookOutlined /> },
   { key: 'authors', label: 'Авторы', icon: <TeamOutlined /> },
+  {
+    key: 'recommendations',
+    label: 'Рекомендации',
+    icon: <UnorderedListOutlined />,
+  },
 ]

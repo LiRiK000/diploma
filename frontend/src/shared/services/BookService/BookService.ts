@@ -24,6 +24,28 @@ export interface BookMainSection {
   items: Book[]
 }
 
+export interface Collection {
+  id: string
+  title: string
+  slug: string
+  description?: string
+  order: number
+  isActive: boolean
+  books?: Book[]
+  _count?: {
+    books: number
+  }
+}
+
+export interface UpsertCollectionPayload {
+  title: string
+  slug: string
+  description?: string
+  order?: number
+  isActive?: boolean
+  bookIds?: string[] // ID книг для связывания
+}
+
 export class BookService {
   async getPaginated(
     cursor?: string | null,
@@ -114,5 +136,38 @@ export class BookService {
   async deleteReview(reviewId: string) {
     const response = await api.delete(`/reviews/${reviewId}`)
     return response.data.data
+  }
+
+  async getAllCollections(): Promise<Collection[]> {
+    const response = await api.get('/collections')
+    return response.data
+  }
+
+  /** Получить одну коллекцию со списком книг (для редактирования) */
+  async getCollectionById(id: string): Promise<Collection> {
+    const response = await api.get(`/collections/${id}`)
+    return response.data
+  }
+
+  /** Создать новую коллекцию */
+  async createCollection(
+    payload: UpsertCollectionPayload,
+  ): Promise<Collection> {
+    const response = await api.post('/collections', payload)
+    return response.data
+  }
+
+  /** Обновить существующую коллекцию и её состав книг */
+  async updateCollection(
+    id: string,
+    payload: UpsertCollectionPayload,
+  ): Promise<Collection> {
+    const response = await api.put(`/collections/${id}`, payload)
+    return response.data
+  }
+
+  /** Удалить коллекцию */
+  async deleteCollection(id: string): Promise<void> {
+    await api.delete(`/collections/${id}`)
   }
 }

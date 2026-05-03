@@ -7,7 +7,7 @@ export interface OverdueTrendPoint {
 
 // TODO: Replace with real API service.
 const overdueTrendService = {
-  getTrend: async (): Promise<OverdueTrendPoint[]> => {
+  getTrend: (): OverdueTrendPoint[] => {
     return [
       { name: 'Пн', value: 2 },
       { name: 'Вт', value: 3 },
