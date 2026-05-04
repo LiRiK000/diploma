@@ -13,10 +13,11 @@ import { CollectionService } from './collection.service';
 import { CreateCollectionDto } from './dto/create-collection.dto';
 import { UpdateCollectionDto } from './dto/update-collection.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
+import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 
 @ApiTags('Collections (Admin)')
 @Controller('collections')
-@UseGuards(JwtAuthGuard) // Защищаем эндпоинты
+@UseGuards(JwtAuthGuard)
 export class CollectionController {
   constructor(private readonly collectionService: CollectionService) {}
 
@@ -24,6 +25,11 @@ export class CollectionController {
   @ApiOperation({ summary: 'Создать новую подборку' })
   create(@Body() createCollectionDto: CreateCollectionDto) {
     return this.collectionService.create(createCollectionDto);
+  }
+  @Get('personalized')
+  @ApiOperation({ summary: 'Получить персональную подборку' })
+  getPersonal(@CurrentUser() user: any) {
+    return this.collectionService.getPersonalized(user.id);
   }
 
   @Get()

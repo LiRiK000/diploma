@@ -1,117 +1,149 @@
-import { useState } from 'react'
-import {
-  Button,
-  Table,
-  Modal,
-  Input,
-  Select,
-  Space,
-  Tag,
-  Switch,
-  Form,
-  Popconfirm,
-  Spin,
-} from 'antd'
+import { useState, useEffect, useCallback } from 'react'
+import { Button, Table, Modal, Tag, Space, Popconfirm, Form, App } from 'antd'
+import type { ColumnsType } from 'antd/es/table'
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons'
 import { useCollections } from './hooks/useCollections'
+import { bookService } from '@shared/services/BookService'
+import { CollectionRecord, BookOption, CollectionFormValues } from './types'
 import styles from './LibrarianRecommendationsTab.module.scss'
+import { RecommendationForm } from './ui/RecommendationForm/RecommendationForm'
 
 export const LibrarianRecommendationsTab = () => {
-  const [form] = Form.useForm()
+  const [form] = Form.useForm<CollectionFormValues>()
+  const { message } = App.useApp()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
+  const [selectOptions, setSelectOptions] = useState<BookOption[]>([])
 
   const {
+    contextHolder: collectionMessageHolder,
     collections,
+    foundBooks,
+    isSearching,
     isLoading,
     createCollection,
     updateCollection,
     deleteCollection,
     isProcessing,
-  } = useCollections()
+    genres,
+  } = useCollections(searchQuery)
 
-  const handleEdit = (record: any) => {
-    setEditingId(record.id)
-    form.setFieldsValue({
-      title: record.title,
-      slug: record.slug,
-      isActive: record.isActive,
-      bookIds: record.books?.map((b: any) => b.id) || [],
-    })
-    setIsModalOpen(true)
+  useEffect(() => {
+    if (foundBooks && foundBooks.length > 0) {
+      setSelectOptions(prev => {
+        const combined = [...prev, ...foundBooks]
+        const uniqueMap = new Map<string, BookOption>()
+        combined.forEach(item => uniqueMap.set(item.value, item))
+        return Array.from(uniqueMap.values())
+      })
+    }
+  }, [foundBooks])
+
+  const handleEdit = useCallback(
+    (record: CollectionRecord) => {
+      setEditingId(record.id)
+      const options: BookOption[] =
+        record.books?.map(b => ({
+          label: `${b.title} — ${b.author?.firstName ?? ''} ${b.author?.lastName ?? ''}`,
+          value: b.id,
+        })) || []
+
+      setSelectOptions(options)
+      form.setFieldsValue({
+        title: record.title,
+        slug: record.slug,
+        isActive: record.isActive,
+        bookIds: record.books?.map(b => b.id) || [],
+      })
+      setIsModalOpen(true)
+    },
+    [form],
+  )
+
+  const handleBulkAdd = async (genreId: string) => {
+    try {
+      const books = await bookService.getBooksForAdmin({ genreId })
+
+      if (!Array.isArray(books)) {
+        console.error('Books is not an array:', books)
+        return
+      }
+
+      setSelectOptions(prev => {
+        const newOptions = [...prev, ...books]
+        return Array.from(new Map(newOptions.map(o => [o.value, o])).values())
+      })
+
+      const currentIds = form.getFieldValue('bookIds') || []
+      const newIds = books.map(b => b.value)
+
+      form.setFieldsValue({
+        bookIds: Array.from(new Set([...currentIds, ...newIds])),
+      })
+
+      message.success(`Добавлено книг: ${books.length}`)
+    } catch (error) {
+      console.error('Bulk add error:', error)
+      message.error('Не удалось загрузить книги по жанру')
+    }
   }
 
   const handleClose = () => {
     setIsModalOpen(false)
     setEditingId(null)
+    setSelectOptions([])
     form.resetFields()
   }
 
-  const onFinish = async (values: any) => {
-    const payload = {
-      title: values.title,
-      slug: values.slug,
-      isActive: !!values.isActive,
-      bookIds: values.bookIds || [],
-    }
-
+  const onFinish = async () => {
     try {
+      const values = await form.validateFields()
       if (editingId) {
-        await updateCollection({ id: editingId, payload })
+        await updateCollection({ id: editingId, payload: values })
       } else {
-        await createCollection(payload)
+        await createCollection(values)
       }
       handleClose()
-    } catch (e) {
-      console.error('Ошибка API:', e)
-    }
+    } catch (e) {}
   }
-  const columns = [
-    {
-      title: 'Название',
-      dataIndex: 'title',
-      key: 'title',
-      render: (text: string) => <strong>{text}</strong>,
-    },
+
+  const columns: ColumnsType<CollectionRecord> = [
+    { title: 'Название', dataIndex: 'title', key: 'title' },
     {
       title: 'Slug',
       dataIndex: 'slug',
       key: 'slug',
-      render: (text: string) => <Tag>{text}</Tag>,
+      render: s => <Tag color="blue">{s}</Tag>,
     },
     {
       title: 'Статус',
       dataIndex: 'isActive',
-      render: (active: boolean) => (
-        <Tag
-          color={active ? 'processing' : 'default'}
-          style={{ borderRadius: '10px' }}
-        >
-          {active ? 'Активна' : 'Скрыта'}
-        </Tag>
+      render: a => (
+        <Tag color={a ? 'green' : 'default'}>{a ? 'Активна' : 'Скрыта'}</Tag>
       ),
     },
     {
       title: 'Книг',
-      dataIndex: ['_count', 'books'], // берем из Prisma count
-      key: 'booksCount',
+      key: 'count',
+      align: 'center',
+      render: (_, r) => r._count?.books ?? r.books?.length ?? 0,
     },
     {
       title: 'Действия',
-      align: 'right' as const,
-      render: (_: any, record: any) => (
+      align: 'right',
+      render: (_, r) => (
         <Space>
           <Button
             icon={<EditOutlined />}
             type="text"
-            onClick={() => handleEdit(record)}
+            onClick={() => handleEdit(r)}
           />
           <Popconfirm
-            title="Удалить коллекцию?"
-            onConfirm={() => void deleteCollection(record.id)}
-            okText="Да"
-            cancelText="Нет"
+            title="Удалить?"
+            onConfirm={() => {
+              void deleteCollection(r.id)
+            }}
           >
             <Button icon={<DeleteOutlined />} type="text" danger />
           </Popconfirm>
@@ -122,80 +154,45 @@ export const LibrarianRecommendationsTab = () => {
 
   return (
     <div className={styles.container}>
+      {/* Удалили несуществующие {contextHolder} */}
+      {collectionMessageHolder}
+
       <header className={styles.header}>
-        <div className={styles.titleBlock}>
-          <h2>Управление рекомендациями</h2>
-          <p>Настройка витрины главной страницы</p>
-        </div>
+        <h2>Витрина рекомендаций</h2>
         <Button
           type="primary"
           icon={<PlusOutlined />}
-          className={styles.appleButton}
           onClick={() => setIsModalOpen(true)}
         >
-          Создать подборку
+          Создать коллекцию
         </Button>
       </header>
 
-      <div className={styles.tableCard}>
-        <Table
-          dataSource={collections}
-          columns={columns}
-          loading={isLoading}
-          pagination={{ pageSize: 10 }}
-          rowKey="id"
-        />
-      </div>
+      <Table
+        dataSource={collections}
+        columns={columns}
+        rowKey="id"
+        loading={isLoading}
+      />
 
       <Modal
-        title={editingId ? 'Редактировать' : 'Новая коллекция'}
+        title={editingId ? 'Редактирование' : 'Новая коллекция'}
         open={isModalOpen}
         onCancel={handleClose}
+        onOk={() => {
+          void onFinish()
+        }}
         confirmLoading={isProcessing}
-        onOk={() => form.submit()}
-        className={styles.appleModal}
-        okText="Сохранить"
-        cancelText="Отмена"
+        destroyOnHidden
       >
-        <Form
+        <RecommendationForm
           form={form}
-          layout="vertical"
-          onFinish={onFinish}
-          initialValues={{ isActive: true }}
-        >
-          <Form.Item name="title" label="Название" rules={[{ required: true }]}>
-            <Input placeholder="Например: Золотой фонд" />
-          </Form.Item>
-
-          <Form.Item
-            name="slug"
-            label="Slug (URL)"
-            rules={[{ required: true }]}
-          >
-            <Input placeholder="golden-fund" />
-          </Form.Item>
-
-          <Form.Item
-            name="isActive"
-            label="Отображать на главной"
-            valuePropName="checked"
-          >
-            <Switch />
-          </Form.Item>
-
-          <Form.Item name="bookIds" label="Книги в подборке">
-            <Select
-              mode="multiple"
-              placeholder="Поиск книг..."
-              filterOption={false}
-              onSearch={value => setSearchQuery(value)}
-              options={[]}
-              notFoundContent={
-                isLoading ? <Spin size="small" /> : 'Книги не найдены'
-              }
-            />
-          </Form.Item>
-        </Form>
+          isSearching={isSearching}
+          selectOptions={selectOptions}
+          onSearch={setSearchQuery}
+          onBulkAdd={handleBulkAdd}
+          genres={genres}
+        />
       </Modal>
     </div>
   )

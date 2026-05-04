@@ -112,43 +112,34 @@ async function main() {
       title: 'Подобрали для вас',
       slug: 'recommended',
       description: 'Персональные рекомендации на основе ваших интересов',
-      // Берем книги по программированию для этой секции
-      bookTitles: [
-        'Clean Code',
-        'Refactoring: Improving the Design of Existing Code',
-        'Domain‑Driven Design: Tackling Complexity in the Heart of Software',
-      ],
+      // Условие: например, все книги из жанра "Программирование"
+      searchCondition: { genre: { value: 'programming' } },
+      take: 20, // Сколько книг максимально взять
     },
     {
       title: 'Популярное',
       slug: 'popular',
       description: 'Книги, которые чаще всего берут наши читатели',
-      // Берем классику и фэнтези
-      bookTitles: [
-        'The Lord of the Rings',
-        '1984',
-        'Преступление и наказание',
-        'Foundation',
-      ],
+      // Условие: берем просто случайные 15 книг
+      searchCondition: {},
+      take: 15,
     },
     {
       title: 'Новинки',
       slug: 'new',
       description: 'Свежие поступления в нашей библиотеке',
-      bookTitles: [
-        'Test‑Driven Development: By Example',
-        'Хоббит, или Туда и обратно',
-        'A Brief History of Time',
-      ],
+      // Условие: последние добавленные
+      orderBy: { createdAt: 'desc' as const },
+      take: 10,
     },
   ];
 
   for (const coll of collectionsData) {
-    // Находим ID книг по их названиям
+    // Находим книги динамически
     const books = await prisma.book.findMany({
-      where: {
-        title: { in: coll.bookTitles },
-      },
+      where: coll.searchCondition || {},
+      orderBy: coll.orderBy || undefined,
+      take: coll.take || 10,
     });
 
     await prisma.collection.upsert({
@@ -157,8 +148,7 @@ async function main() {
         title: coll.title,
         description: coll.description,
         books: {
-          set: [], // Очищаем старые связи, если они были
-          connect: books.map((book) => ({ id: book.id })),
+          set: books.map((book) => ({ id: book.id })), // Перезаписываем список
         },
       },
       create: {
@@ -171,11 +161,6 @@ async function main() {
       },
     });
   }
-
-  console.log(
-    'Seeding finished: Achievements, Genres, Authors, Books and Collections created.',
-  );
-
   // Genres
   const genresData = [
     { label: 'Science Fiction', value: 'sci-fi' },

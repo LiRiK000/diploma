@@ -1,21 +1,26 @@
-import { IsString, IsBoolean, IsArray, IsOptional } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import {
+  IsString,
+  IsBoolean,
+  IsArray,
+  IsOptional,
+  IsInt,
+} from 'class-validator';
 
 export class CreateCollectionDto {
-  @ApiProperty()
   @IsString()
-  title: string;
+  title: string | undefined;
 
-  @ApiProperty()
   @IsString()
-  slug: string;
+  slug: string | undefined;
 
-  @ApiProperty()
   @IsBoolean()
   @IsOptional()
   isActive?: boolean;
 
-  @ApiProperty({ type: [String] })
+  @IsInt()
+  @IsOptional()
+  order?: number;
+
   @IsArray()
   @IsString({ each: true })
   @IsOptional()

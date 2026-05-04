@@ -166,8 +166,25 @@ export class BookService {
     return response.data
   }
 
-  /** Удалить коллекцию */
   async deleteCollection(id: string): Promise<void> {
     await api.delete(`/collections/${id}`)
+  }
+
+  async getBooksForAdmin(params: { genreId?: string; search?: string }) {
+    const response = await api.get('/catalog', {
+      params: {
+        page: 1,
+        limit: 100,
+        ...(params.genreId ? { genreId: params.genreId } : {}),
+        ...(params.search ? { search: params.search } : {}),
+      },
+    })
+
+    const items = response.data.items || []
+
+    return items.map((book: any) => ({
+      label: `${book.title} (${book.author})`,
+      value: book.id,
+    }))
   }
 }

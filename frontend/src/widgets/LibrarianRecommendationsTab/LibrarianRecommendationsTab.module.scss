@@ -1,126 +1,144 @@
+// LibrarianRecommendationsTab.module.scss
 @use '@shared/styles/variables' as *;
 
 .container {
-  padding: 40px 24px;
+  padding: 60px 32px;
   background: var(--bg-page);
+  background-image: var(--bg-gradient);
   min-height: 100vh;
-  transition: background var(--transition-speed) ease;
+  max-width: 1400px;
+  margin: 0 auto;
+  transition: all var(--transition-speed) ease;
 
   @include mobile {
-    padding: 24px 16px;
+    padding: 32px 16px;
   }
 }
 
 .header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 40px;
+  align-items: flex-end;
+  margin-bottom: 48px;
 
   @include small-mobile {
     flex-direction: column;
-    gap: $spacing-lg;
+    align-items: flex-start;
+    gap: 20px;
   }
 
   .titleBlock {
     h2 {
-      color: $text-primary;
-      font-size: var(--font-size-2xl);
-      font-weight: var(--font-weight-bold);
-      letter-spacing: -0.5px;
+      color: var(--text-primary);
+      font-size: 34px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
       margin: 0;
     }
 
     p {
-      color: $text-secondary;
-      font-size: var(--font-size-md);
-      margin-top: $spacing-xs;
+      color: var(--text-secondary);
+      font-size: 16px;
+      margin-top: 8px;
+      font-weight: 500;
     }
   }
 }
 
 .tableCard {
-  @include liquid-glass; // Твой фирменный миксин
-  border-radius: $border-radius-lg;
-  padding: $spacing-md;
-  box-shadow: $shadow-medium;
+  @include liquid-glass;
+  border-radius: 28px;
   overflow: hidden;
+  background: var(--glass-bg);
+  box-shadow: $liquid-glass-shadow-light;
 
-  // Тонкая настройка Ant Design под твою систему
   :global {
     .ant-table {
       background: transparent !important;
-      color: $text-primary;
     }
 
     .ant-table-thead > tr > th {
-      background: transparent !important;
-      color: $text-secondary;
-      border-bottom: 1px solid var(--header-border);
-      font-weight: var(--font-weight-semibold);
-      font-size: var(--font-size-sm);
+      background: rgba(255, 255, 255, 0.3) !important;
+      backdrop-filter: blur(10px);
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--glass-border);
+
+      &::before {
+        display: none !important;
+      }
     }
 
     .ant-table-tbody > tr > td {
-      border-bottom: 1px solid var(--header-border);
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--glass-border);
+      color: var(--text-primary);
+      font-weight: 500;
     }
 
-    .ant-table-row:hover > td {
-      background: rgba(120, 120, 128, 0.05) !important;
-    }
-
-    .ant-pagination-item-active {
-      border-color: var(--accent-blue, #0071e3);
-      border-radius: $border-radius-sm;
+    .ant-table-row {
+      transition: all 0.2s ease;
+      &:hover > td {
+        background: rgba(255, 255, 255, 0.5) !important;
+      }
     }
   }
 }
 
-.appleButton {
-  border-radius: $border-radius-md;
-  height: 44px;
+.createButton {
+  height: 46px;
   padding: 0 24px;
-  font-weight: var(--font-weight-semibold);
-  background: #0071e3; // Apple Blue
-  color: $text-white;
+  border-radius: 14px;
+  font-weight: 600;
+  font-size: 15px;
+  background: #0071e3;
   border: none;
-  transition: $transition-liquid;
-  display: inline-flex;
+  box-shadow: 0 8px 20px rgba(0, 113, 227, 0.25);
+  display: flex;
   align-items: center;
-  gap: $spacing-sm;
+  gap: 8px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
   &:hover {
-    transform: $liquid-glass-active-scale;
-    box-shadow: 0 5px 15px rgba(0, 113, 227, 0.35);
-    filter: brightness(1.05);
-  }
-
-  &:active {
-    transform: scale(0.98);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(0, 113, 227, 0.35);
+    background: #0077ed;
   }
 }
 
 .appleModal {
-  :global(.ant-modal-content) {
-    @include liquid-glass;
-    border-radius: $border-radius-lg;
-    padding: $spacing-lg;
-    background: var(--card-bg); // Дополнительный слой для читаемости в формах
+  :global {
+    .ant-modal-content {
+      background: rgba(255, 255, 255, 0.8) !important;
+      backdrop-filter: blur(40px) saturate(190%) !important;
+      border-radius: 32px;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      box-shadow: 0 40px 80px rgba(0, 0, 0, 0.15);
+    }
+    .ant-modal-header {
+      background: transparent;
+      border-bottom: none;
+    }
+    .ant-modal-title {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+    .ant-modal-footer {
+      border-top: none;
+      padding-top: 20px;
+    }
   }
+}
 
-  :global(.ant-modal-header) {
-    background: transparent;
-    border-bottom: none;
-  }
-
-  :global(.ant-modal-title) {
-    color: $text-primary;
-    font-size: var(--font-size-xl);
-    font-weight: var(--font-weight-bold);
-  }
-
-  :global(.ant-modal-footer) {
-    border-top: none;
-    padding-top: $spacing-lg;
-  }
+.formSection {
+  background: rgba(120, 120, 128, 0.04);
+  border-radius: 20px;
+  padding: 20px;
+  border: 1px solid rgba(120, 120, 128, 0.08);
+  margin-bottom: 24px;
 }

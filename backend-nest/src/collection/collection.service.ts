@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateCollectionDto } from './dto/create-collection.dto';
 import { UpdateCollectionDto } from './dto/update-collection.dto';
@@ -9,16 +13,22 @@ export class CollectionService {
 
   async create(dto: CreateCollectionDto) {
     const { bookIds, ...data } = dto;
-    return this.prisma.collection.create({
-      data: {
-        ...data,
-        books: {
-          // Если переданы ID книг, создаем связи
-          connect: bookIds?.map((id) => ({ id })) || [],
+    try {
+      return await this.prisma.collection.create({
+        data: {
+          ...data,
+          books: {
+            connect: bookIds?.map((id) => ({ id })) || [],
+          },
         },
-      },
-      include: { books: true },
-    });
+        include: { books: true },
+      });
+    } catch (error: any) {
+      if (error.code === 'P2002') {
+        throw new ConflictException('Коллекция с таким Slug уже существует');
+      }
+      throw error;
+    }
   }
 
   async findAll() {
@@ -26,7 +36,7 @@ export class CollectionService {
       orderBy: { order: 'asc' },
       include: {
         _count: {
-          select: { books: true }, // Чтобы в таблице админки видеть кол-во книг
+          select: { books: true },
         },
       },
     });
@@ -38,7 +48,7 @@ export class CollectionService {
       include: {
         books: {
           include: {
-            author: true, // Подтягиваем авторов для списка в модалке
+            author: true,
           },
         },
       },
@@ -50,24 +60,62 @@ export class CollectionService {
 
   async update(id: string, dto: UpdateCollectionDto) {
     const { bookIds, ...data } = dto;
-
-    return this.prisma.collection.update({
-      where: { id },
-      data: {
-        ...data,
-        // Используем set только если bookIds вообще пришли в запросе
-        ...(bookIds && {
+    try {
+      return await this.prisma.collection.update({
+        where: { id },
+        data: {
+          ...data,
           books: {
-            set: bookIds.map((bookId) => ({ id: bookId })),
+            set: bookIds?.map((id) => ({ id })) || [],
           },
-        }),
-      },
-      include: { books: true },
-    });
+        },
+        include: { books: true },
+      });
+    } catch (error: any) {
+      if (error.code === 'P2002') {
+        throw new ConflictException('Этот Slug уже занят другой коллекцией');
+      }
+      throw error;
+    }
   }
 
   async remove(id: string) {
-    await this.findOne(id); // Проверка на существование
+    await this.findOne(id);
     return this.prisma.collection.delete({ where: { id } });
+  }
+
+  async getPersonalized(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        favoriteBooks: {
+          select: { genreId: true },
+        },
+      },
+    });
+
+    if (!user || user.favoriteBooks.length === 0) {
+      const popularBooks = await this.prisma.book.findMany({
+        take: 10,
+        include: { author: true },
+      });
+      return { title: 'Рекомендации', books: popularBooks };
+    }
+
+    const genreIds = Array.from(
+      new Set(user.favoriteBooks.map((b) => b.genreId)),
+    );
+
+    const recommendations = await this.prisma.book.findMany({
+      where: { genreId: { in: genreIds } },
+      take: 20,
+      include: { author: true },
+    });
+
+    return {
+      title: 'На основе вашего избранного',
+      description: 'Вам могут понравиться эти книги',
+      books: recommendations,
+    };
   }
 }
