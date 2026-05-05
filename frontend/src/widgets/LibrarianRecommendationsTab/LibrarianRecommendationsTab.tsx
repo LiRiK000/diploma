@@ -1,23 +1,21 @@
 import { useState, useEffect, useCallback } from 'react'
-import { Button, Table, Modal, Tag, Space, Popconfirm, Form, App } from 'antd'
-import type { ColumnsType } from 'antd/es/table'
-import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons'
+import { Button, Modal, Form, Row, Col, App } from 'antd'
+import { PlusOutlined } from '@ant-design/icons'
 import { useCollections } from './hooks/useCollections'
 import { bookService } from '@shared/services/BookService'
-import { CollectionRecord, BookOption, CollectionFormValues } from './types'
-import styles from './LibrarianRecommendationsTab.module.scss'
+import { CollectionCard } from './ui/CollectionCard/CollectionCard'
 import { RecommendationForm } from './ui/RecommendationForm/RecommendationForm'
 
 export const LibrarianRecommendationsTab = () => {
-  const [form] = Form.useForm<CollectionFormValues>()
+  const [form] = Form.useForm()
   const { message } = App.useApp()
+
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editingId, setEditingId] = useState(null)
   const [searchQuery, setSearchQuery] = useState('')
-  const [selectOptions, setSelectOptions] = useState<BookOption[]>([])
+  const [selectOptions, setSelectOptions] = useState([])
 
   const {
-    contextHolder: collectionMessageHolder,
     collections,
     foundBooks,
     isSearching,
@@ -30,168 +28,120 @@ export const LibrarianRecommendationsTab = () => {
   } = useCollections(searchQuery)
 
   useEffect(() => {
-    if (foundBooks && foundBooks.length > 0) {
+    if (foundBooks?.length) {
       setSelectOptions(prev => {
-        const combined = [...prev, ...foundBooks]
-        const uniqueMap = new Map<string, BookOption>()
-        combined.forEach(item => uniqueMap.set(item.value, item))
-        return Array.from(uniqueMap.values())
+        const map = new Map()
+        ;[...prev, ...foundBooks].forEach(item => map.set(item.value, item))
+        return Array.from(map.values())
       })
     }
   }, [foundBooks])
 
-  const handleEdit = useCallback(
-    (record: CollectionRecord) => {
-      setEditingId(record.id)
-      const options: BookOption[] =
-        record.books?.map(b => ({
-          label: `${b.title} — ${b.author?.firstName ?? ''} ${b.author?.lastName ?? ''}`,
-          value: b.id,
-        })) || []
+  const handleEdit = useCallback(col => {
+    setEditingId(col.id)
 
-      setSelectOptions(options)
-      form.setFieldsValue({
-        title: record.title,
-        slug: record.slug,
-        isActive: record.isActive,
-        bookIds: record.books?.map(b => b.id) || [],
-      })
-      setIsModalOpen(true)
-    },
-    [form],
-  )
+    const options =
+      col.books?.map(b => ({
+        label: `${b.title}`,
+        value: b.id,
+        cover: b.coverImage,
+      })) || []
 
-  const handleBulkAdd = async (genreId: string) => {
-    try {
-      const books = await bookService.getBooksForAdmin({ genreId })
+    setSelectOptions(options)
 
-      if (!Array.isArray(books)) {
-        console.error('Books is not an array:', books)
-        return
-      }
+    form.setFieldsValue({
+      title: col.title,
+      slug: col.slug,
+      isActive: col.isActive,
+      bookIds: col.books?.map(b => b.id) || [],
+    })
 
-      setSelectOptions(prev => {
-        const newOptions = [...prev, ...books]
-        return Array.from(new Map(newOptions.map(o => [o.value, o])).values())
-      })
+    setIsModalOpen(true)
+  }, [])
 
-      const currentIds = form.getFieldValue('bookIds') || []
-      const newIds = books.map(b => b.value)
+  const handleBulkAdd = async genreId => {
+    const books = await bookService.getBooksForAdmin({ genreId })
 
-      form.setFieldsValue({
-        bookIds: Array.from(new Set([...currentIds, ...newIds])),
-      })
+    setSelectOptions(prev => {
+      const map = new Map()
+      ;[...prev, ...books].forEach(item => map.set(item.value, item))
+      return Array.from(map.values())
+    })
 
-      message.success(`Добавлено книг: ${books.length}`)
-    } catch (error) {
-      console.error('Bulk add error:', error)
-      message.error('Не удалось загрузить книги по жанру')
-    }
+    const current = form.getFieldValue('bookIds') || []
+
+    form.setFieldsValue({
+      bookIds: Array.from(new Set([...current, ...books.map(b => b.value)])),
+    })
+
+    message.success(`Добавлено ${books.length} книг`)
   }
 
   const handleClose = () => {
     setIsModalOpen(false)
     setEditingId(null)
-    setSelectOptions([])
     form.resetFields()
+    setSelectOptions([])
   }
 
   const onFinish = async () => {
-    try {
-      const values = await form.validateFields()
-      if (editingId) {
-        await updateCollection({ id: editingId, payload: values })
-      } else {
-        await createCollection(values)
-      }
-      handleClose()
-    } catch (e) {}
+    const values = await form.validateFields()
+
+    if (editingId) {
+      await updateCollection({ id: editingId, payload: values })
+    } else {
+      await createCollection(values)
+    }
+
+    handleClose()
   }
 
-  const columns: ColumnsType<CollectionRecord> = [
-    { title: 'Название', dataIndex: 'title', key: 'title' },
-    {
-      title: 'Slug',
-      dataIndex: 'slug',
-      key: 'slug',
-      render: s => <Tag color="blue">{s}</Tag>,
-    },
-    {
-      title: 'Статус',
-      dataIndex: 'isActive',
-      render: a => (
-        <Tag color={a ? 'green' : 'default'}>{a ? 'Активна' : 'Скрыта'}</Tag>
-      ),
-    },
-    {
-      title: 'Книг',
-      key: 'count',
-      align: 'center',
-      render: (_, r) => r._count?.books ?? r.books?.length ?? 0,
-    },
-    {
-      title: 'Действия',
-      align: 'right',
-      render: (_, r) => (
-        <Space>
-          <Button
-            icon={<EditOutlined />}
-            type="text"
-            onClick={() => handleEdit(r)}
-          />
-          <Popconfirm
-            title="Удалить?"
-            onConfirm={() => {
-              void deleteCollection(r.id)
-            }}
-          >
-            <Button icon={<DeleteOutlined />} type="text" danger />
-          </Popconfirm>
-        </Space>
-      ),
-    },
-  ]
-
   return (
-    <div className={styles.container}>
-      {/* Удалили несуществующие {contextHolder} */}
-      {collectionMessageHolder}
-
-      <header className={styles.header}>
-        <h2>Витрина рекомендаций</h2>
+    <div style={{ padding: 32 }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          marginBottom: 24,
+        }}
+      >
+        <h2>Подборки</h2>
         <Button
           type="primary"
           icon={<PlusOutlined />}
           onClick={() => setIsModalOpen(true)}
         >
-          Создать коллекцию
+          Создать
         </Button>
-      </header>
+      </div>
 
-      <Table
-        dataSource={collections}
-        columns={columns}
-        rowKey="id"
-        loading={isLoading}
-      />
+      <Row gutter={[16, 16]}>
+        {collections?.map(col => (
+          <Col xs={24} sm={12} md={8} lg={6} key={col.id}>
+            <CollectionCard
+              collection={col}
+              onEdit={handleEdit}
+              onDelete={deleteCollection}
+            />
+          </Col>
+        ))}
+      </Row>
 
       <Modal
-        title={editingId ? 'Редактирование' : 'Новая коллекция'}
+        title={editingId ? 'Редактирование' : 'Новая подборка'}
         open={isModalOpen}
         onCancel={handleClose}
-        onOk={() => {
-          void onFinish()
-        }}
+        onOk={() => void onFinish()}
         confirmLoading={isProcessing}
-        destroyOnHidden
+        width={700}
       >
         <RecommendationForm
           form={form}
+          genres={genres}
           isSearching={isSearching}
           selectOptions={selectOptions}
           onSearch={setSearchQuery}
           onBulkAdd={handleBulkAdd}
-          genres={genres}
         />
       </Modal>
     </div>
