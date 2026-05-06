@@ -1,0 +1,179 @@
+@use '@shared/styles/variables' as *;
+
+.pageWrapper {
+  padding: 40px 24px;
+  min-height: 100vh;
+  background-color: var(--bg-page);
+  background-image: var(--bg-gradient);
+  font-family: var(--font-family-base);
+  color: var(--text-primary);
+  transition: background var(--transition-speed);
+
+  @include mobile {
+    padding: 20px 16px;
+  }
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 32px;
+  gap: 20px;
+
+  @include mobile {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  :global(.ant-breadcrumb) {
+    margin-bottom: 8px;
+    font-size: var(--font-size-sm);
+
+    ol {
+      color: var(--text-secondary);
+    }
+  }
+
+  h4 {
+    font-weight: var(--font-weight-display);
+    font-size: var(--font-size-xl);
+    letter-spacing: -0.02em;
+    margin: 0;
+  }
+}
+
+.backBtn {
+  @include liquid-glass;
+  border-radius: $border-radius-md;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px !important;
+  height: auto !important;
+  color: var(--text-primary) !important;
+  font-weight: var(--font-weight-medium);
+
+  &:hover {
+    background: var(--bg-content);
+    border-color: #0071e3;
+    color: #0071e3 !important;
+  }
+}
+.card {
+  @include liquid-glass;
+  border-radius: var(--border-radius-primary);
+  overflow: hidden;
+  height: 100%;
+  box-shadow: $liquid-glass-shadow-light;
+
+  :global(.ant-card-head) {
+    background: transparent;
+    border-bottom: 1px solid var(--glass-border);
+    padding: 20px 24px;
+  }
+
+  :global(.ant-card-head-title) {
+    font-weight: var(--font-weight-display);
+    font-size: var(--font-size-md);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-secondary);
+  }
+
+  :global(.ant-card-body) {
+    padding: 24px;
+  }
+
+  &:hover {
+    box-shadow: $shadow-strong;
+  }
+}
+
+.statusRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: $border-radius-md;
+  margin-bottom: 24px;
+}
+
+.qtyBadge {
+  background: #0071e3;
+  color: #fff;
+  font-family: 'SF Mono', monospace;
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-xs);
+  padding: 4px 10px;
+  border-radius: 6px;
+  display: inline-block;
+}
+
+.sidebarContainer {
+  position: sticky;
+  top: 100px;
+
+  @include tablet {
+    position: static;
+  }
+}
+
+.userCard {
+  @extend .card;
+  text-align: center;
+
+  .userHeader {
+    padding: 20px 0;
+
+    :global(.ant-avatar) {
+      box-shadow: 0 0 0 4px var(--glass-border);
+      transition: var(--transition-speed);
+      &:hover {
+        transform: rotate(5deg) scale(1.1);
+      }
+    }
+  }
+
+  .userName {
+    color: var(--text-primary);
+    font-weight: var(--font-weight-display);
+    font-size: var(--font-size-lg);
+    margin: 16px 0 4px !important;
+  }
+}
+
+.infoItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: $border-radius-sm;
+  color: var(--text-secondary);
+  transition: background 0.2s;
+
+  &:hover {
+    background: var(--glass-bg);
+    color: var(--text-primary);
+  }
+
+  svg {
+    color: #0071e3;
+  }
+}
+
+.loader {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  gap: 16px;
+  color: var(--text-secondary);
+
+  :global(.ant-spin-dot-item) {
+    background-color: #0071e3;
+  }
+}

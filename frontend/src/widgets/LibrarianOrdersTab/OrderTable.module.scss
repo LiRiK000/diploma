@@ -36,3 +36,36 @@
   font-size: 12px;
   font-weight: 500;
 }
+
+.idBadge {
+  font-size: 11px;
+  color: #1890ff;
+  font-family: 'SF Mono', 'Monaco', monospace;
+  background: #e6f7ff;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.actionButtons {
+  display: flex;
+  justify-content: flex-end;
+
+  button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.04) !important;
+    }
+  }
+}
+
+.statusTag {
+  border-radius: 4px;
+  margin: 0;
+  font-weight: 500;
+  text-transform: capitalize;
+}

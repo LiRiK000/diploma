@@ -3,6 +3,7 @@ import { HomeCarousel } from './components/HomeCarousel/HomeCarousel'
 import { BookSection } from '@widgets/BookSection'
 import { useMainSections } from '@widgets/BookSection/hooks/useMainSections'
 import styles from './HomePage.module.scss'
+import { BookSkeleton } from '@widgets/BookFeed/components/BookSkeleton'
 
 export const HomePage = () => {
   const { sections, isLoading, isError } = useMainSections()
@@ -12,17 +13,7 @@ export const HomePage = () => {
       <HomeCarousel />
 
       <div className={styles.sectionsWrapper}>
-        {isLoading && (
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              padding: '40px',
-            }}
-          >
-            <Spin size="large" />
-          </div>
-        )}
+        {isLoading && <BookSkeleton count={10} />}
 
         {isError && (
           <div style={{ textAlign: 'center', padding: '20px' }}>

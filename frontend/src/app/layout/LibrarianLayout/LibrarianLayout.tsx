@@ -1,125 +1,97 @@
-import styles from './LibrarianLayout.module.scss'
-import { Button, Layout, Menu, Tooltip, Typography } from 'antd'
-import { librarianLayoutItems } from './constants'
 import { useState } from 'react'
-import { getPageTitle } from './utils'
-import { TabContent } from './components/TabContent/TabContent'
-import {
-  BookOutlined,
-  CheckCircleOutlined,
-  InboxOutlined,
-} from '@ant-design/icons'
-import {
-  LibrarianSettings,
-  useLibrarianSettingsStore,
-} from '@features/librarian-settings'
+import { Layout, Menu, Typography, Avatar } from 'antd'
 import { useShallow } from 'zustand/react/shallow'
-import {
-  GRID_ID,
-  ResetLayoutButton,
-  useLayoutStore,
-} from '@entities/widgets-grid'
+import { LucideUser } from 'lucide-react'
+import { useNavigate, useLocation, Outlet } from 'react-router-dom'
+import { librarianMenuFields } from './constants'
 import { VerifyCodeModal } from '@features/manage-orders/ui/VerifyCodeModal'
 import { ReturnBookModal } from '@features/manage-orders/ui/ReturnBookModal'
-import { ThemeToggle } from '@features/theme-toggle/ui/ThemeToggle'
-import { useWidgetBuilderStore } from '@features/widget-builder/model/useWidgetBuilderStore'
-import { WidgetBuilderTrigger } from '@features/widget-builder'
 import { WidgetBuilderDrawer } from '@features/widget-builder/ui/WidgetBuilderDrawer/WidgetBuilderDrawer'
+import { useLibrarianSettingsStore } from '@features/librarian-settings'
+import { useLayoutStore } from '@entities/widgets-grid'
+import { useWidgetBuilderStore } from '@features/widget-builder/model/useWidgetBuilderStore'
+
+import styles from './LibrarianLayout.module.scss'
+import { HeaderActions } from './components/HeaderActions/HeaderActions'
 
 const { Content, Sider, Header } = Layout
 
 export const LibrarianLayout = () => {
-  const [selectedKey, setSelectedKey] = useState(
-    localStorage.getItem('librarianSelectedKey') ?? 'dashboard',
-  )
-
+  const navigate = useNavigate()
+  const { pathname } = useLocation()
+  const [collapsed, setCollapsed] = useState(false)
   const [isVerifyModalOpen, setIsVerifyModalOpen] = useState(false)
   const [isReturnModalOpen, setIsReturnModalOpen] = useState(false)
-  const setWidgetBuilderOpen = useWidgetBuilderStore(state => state.setOpen)
 
+  const setWidgetBuilderOpen = useWidgetBuilderStore(state => state.setOpen)
   const { isEditing, toggleEditing } = useLibrarianSettingsStore(
-    useShallow(store => ({
-      isEditing: store.isEditing,
-      toggleEditing: store.toggleEditing,
+    useShallow(s => ({
+      isEditing: s.isEditing,
+      toggleEditing: s.toggleEditing,
     })),
   )
-
   const [hasLayoutsChanged] = useLayoutStore(
-    useShallow(store => [store.hasLayoutsChanged]),
+    useShallow(s => [s.hasLayoutsChanged]),
   )
 
-  const handleMenuClick = (key: string) => {
-    setSelectedKey(key)
-    localStorage.setItem('librarianSelectedKey', key)
+  const getCurrentTitle = () => {
+    if (pathname.includes('/orders/')) return 'Детали заказа'
+    const currentMenuItem = librarianMenuFields.find(item =>
+      pathname.includes(item.key),
+    )
+    return currentMenuItem?.label || 'Панель управления'
   }
 
   return (
-    <Layout className={styles.layout}>
-      <Sider className={styles.sider} width={200}>
+    <Layout className={styles.layout} hasSider>
+      <Sider
+        collapsible
+        collapsed={collapsed}
+        onCollapse={setCollapsed}
+        className={styles.sider}
+        width={240}
+      >
+        <div className={styles.logoContainer}>
+          <div className={styles.logoCircle} />
+        </div>
+
         <Menu
           mode="inline"
-          items={librarianLayoutItems}
-          selectedKeys={[selectedKey]}
-          onClick={({ key }) => handleMenuClick(key)}
+          items={librarianMenuFields}
+          selectedKeys={[pathname]}
+          onClick={({ key }) => navigate(key)}
         />
+
+        <div className={styles.siderFooter}>
+          <Avatar icon={<LucideUser size={18} />} />
+          {!collapsed && <span className={styles.userName}>Администратор</span>}
+        </div>
       </Sider>
 
-      <Layout className={styles.rightLayout}>
+      <Layout
+        className={styles.rightLayout}
+        style={{ marginLeft: collapsed ? 80 : 240 }}
+      >
         <Header className={styles.header}>
-          <Typography.Title level={2} className={styles.title}>
-            {getPageTitle(selectedKey)}
+          <Typography.Title level={3} className={styles.title}>
+            {getCurrentTitle()}
           </Typography.Title>
 
-          <div className={styles.headerActions}>
-            {isEditing ? (
-              <>
-                <WidgetBuilderTrigger
-                  onClick={() => setWidgetBuilderOpen(true)}
-                />
-
-                <Button
-                  type="primary"
-                  icon={<CheckCircleOutlined style={{ fontSize: 18 }} />}
-                  onClick={toggleEditing}
-                />
-
-                {hasLayoutsChanged[GRID_ID] && (
-                  <ResetLayoutButton fontSize={18} />
-                )}
-              </>
-            ) : (
-              <>
-                <Tooltip title="Выдать заказ по коду" placement="bottomLeft">
-                  <Button
-                    type="primary"
-                    icon={<BookOutlined />}
-                    onClick={() => setIsVerifyModalOpen(true)}
-                  />
-                </Tooltip>
-
-                <Tooltip title="Принять возврат книг" placement="bottomLeft">
-                  <Button
-                    icon={<InboxOutlined />}
-                    style={{
-                      backgroundColor: '#52c41a',
-                      borderColor: '#52c41a',
-                      color: '#fff',
-                    }}
-                    onClick={() => setIsReturnModalOpen(true)}
-                  />
-                </Tooltip>
-
-                <LibrarianSettings />
-              </>
-            )}
-            <ThemeToggle />
-          </div>
+          <HeaderActions
+            isEditing={isEditing}
+            toggleEditing={toggleEditing}
+            hasLayoutsChanged={hasLayoutsChanged}
+            onVerifyOpen={() => setIsVerifyModalOpen(true)}
+            onReturnOpen={() => setIsReturnModalOpen(true)}
+            setWidgetBuilderOpen={setWidgetBuilderOpen}
+          />
         </Header>
 
         <Content className={styles.content}>
-          <TabContent selectedKey={selectedKey} />
+          <Outlet />
         </Content>
       </Layout>
+
       <VerifyCodeModal
         open={isVerifyModalOpen}
         onClose={() => setIsVerifyModalOpen(false)}

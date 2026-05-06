@@ -26,16 +26,19 @@ import { ProfileSettingsPage } from '@pages/profile/ui/ProfileSettingsPage'
 import { ThemeProvider } from './providers/ThemeProvider/ThemeProvider'
 import { AchievementsPage } from '@pages/profile/AchievementsPage'
 import { Loader } from '@shared/components/Loader'
-import { App as AntApp } from 'antd' // Импортируем App из antd
-
+import { App as AntApp } from 'antd'
+import { OrderDetailsPage } from '@pages/OrderDetailsPage/OrderDetailsPage'
+import { LibrarianDashboardTab } from '@widgets/LibrarianDashboardTab'
+import { LibrarianOrdersTab } from '@widgets/LibrarianOrdersTab'
+import { LibrarianBooksTab } from '@widgets/LibrarianBooksTab'
+import { LibrarianAuthorsTab } from '@widgets/LibrarianAuthorsTab'
+import { LibrarianRecommendationsTab } from '@widgets/LibrarianRecommendationsTab'
 export const Router = () => {
   const init = useCookieConsentStore(useShallow(state => state.init))
 
   useEffect(() => {
     init()
-    // Выполняем только при монтировании
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [init])
 
   return (
     <BrowserRouter>
@@ -76,7 +79,7 @@ export const Router = () => {
                         <BookPage />
                       </PageProvider>
                     }
-                  />{' '}
+                  />
                   <Route
                     path={routes.order}
                     element={
@@ -101,6 +104,7 @@ export const Router = () => {
                       </PageProvider>
                     }
                   />
+
                   <Route
                     path={routes.cart}
                     element={
@@ -131,6 +135,8 @@ export const Router = () => {
                       </AuthProvider>
                     }
                   />
+
+                  {/* Вложенные роуты профиля */}
                   <Route
                     path={routes.profile}
                     element={
@@ -142,7 +148,6 @@ export const Router = () => {
                     }
                   >
                     <Route index element={<ProfileInfoPage />} />
-
                     <Route
                       path={routes.profileSettings}
                       element={<ProfileSettingsPage />}
@@ -153,7 +158,7 @@ export const Router = () => {
                     />
                     <Route
                       path={routes.secure}
-                      element={<div>Безопасность (Страница в разработке)</div>}
+                      element={<div>Безопасность (В разработке)</div>}
                     />
                   </Route>
                 </Route>
@@ -167,9 +172,25 @@ export const Router = () => {
                       </PageProvider>
                     </AuthProvider>
                   }
-                />
+                >
+                  <Route index element={<LibrarianDashboardTab />} />
+
+                  <Route path="orders" element={<LibrarianOrdersTab />} />
+
+                  <Route path="orders/:id" element={<OrderDetailsPage />} />
+
+                  <Route path="books" element={<LibrarianBooksTab />} />
+
+                  <Route path="authors" element={<LibrarianAuthorsTab />} />
+
+                  <Route
+                    path="recommendations"
+                    element={<LibrarianRecommendationsTab />}
+                  />
+                </Route>
+
                 <Route path={routes.privacy} element={<PrivacyPage />} />
-                <Route path={routes.notFound} element={<NotFound />} />
+                <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
           </AntApp>

@@ -64,7 +64,8 @@
   color: var(--header-link-hover);
   font-family: 'Monaco', 'Courier New', monospace;
   margin: 24px 0;
-  text-shadow: 0 0 20px color-mix(in srgb, var(--header-link-hover) 25%, transparent);
+  text-shadow: 0 0 20px
+    color-mix(in srgb, var(--header-link-hover) 25%, transparent);
 
   @include mobile {
     font-size: 32px;
@@ -137,15 +138,72 @@
   }
 }
 
-.statusTag {
-  margin: 0 !important;
-  width: fit-content;
-  border: none;
-  border-radius: 6px;
-  font-weight: var(--font-weight-bold);
-  padding: 2px 10px;
+.statusRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 24px;
+  background: var(--glass-bg);
+  backdrop-filter: var(--header-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  margin-bottom: 24px;
+  transition: var(--transition-speed);
+
+  @include mobile {
+    padding: 12px 16px;
+  }
 }
 
+.statusLabel {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-secondary);
+}
+
+.mainStatusTag {
+  border: none !important;
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-bold) !important;
+  font-size: var(--font-size-xs) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 6px 14px !important;
+  border-radius: 8px !important;
+  margin: 0 !important;
+
+  --status-color: #faad14;
+
+  background: color-mix(
+    in srgb,
+    var(--status-color) 15%,
+    transparent
+  ) !important;
+  color: var(--status-color) !important;
+  box-shadow: 0 0 15px color-mix(in srgb, var(--status-color) 10%, transparent);
+
+  &[data-status='active'] {
+    --status-color: #0071e3;
+  }
+  &[data-status='completed'] {
+    --status-color: #34c759;
+  }
+  &[data-status='pending'] {
+    --status-color: #ff9500;
+  }
+  &[data-status='danger'] {
+    --status-color: #ff3b30;
+  }
+
+  &:hover {
+    background: color-mix(
+      in srgb,
+      var(--status-color) 25%,
+      transparent
+    ) !important;
+    transform: translateY(-1px);
+  }
+}
 .returnVariant {
   color: #722ed1 !important;
   text-shadow: 0 0 20px rgba(114, 46, 209, 0.15);

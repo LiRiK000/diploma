@@ -51,9 +51,8 @@ export class OrdersController {
   @Roles(Role.LIBRARIAN)
   @UseGuards(RolesGuard)
   async getAllOrders() {
-    return this.ordersService.findAllForLibrarian();
+    return this.ordersService.findAllOrdersForLibrarian();
   }
-
   @Patch(':id/return')
   @Roles(Role.LIBRARIAN)
   @UseGuards(RolesGuard)
@@ -81,7 +80,11 @@ export class OrdersController {
   }
 
   @Get(':id')
-  async getOne(@Param('id') id: string, @CurrentUser('id') userId: string) {
-    return this.ordersService.findOne(id, userId);
+  async getOne(@Param('id') id: string, @CurrentUser() user: any) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    if (user.role === Role.LIBRARIAN) {
+      return this.ordersService.findOne(id);
+    }
+    return this.ordersService.findOne(id, user.id);
   }
 }

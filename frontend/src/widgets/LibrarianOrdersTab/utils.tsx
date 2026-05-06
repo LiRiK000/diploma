@@ -1,5 +1,5 @@
-import { Button, TableProps, Tag, Space, Popover } from 'antd'
-import { CheckOutlined, CloseOutlined, BookOutlined } from '@ant-design/icons'
+import { Button, Tag, Space, Popover, Tooltip, TableProps } from 'antd'
+import { Check, X, Book, Eye, ChevronRight } from 'lucide-react'
 import dayjs from 'dayjs'
 import { STATUS_CONFIG } from '@entities/order/consts/statusConfig'
 import classes from './OrderTable.module.scss'
@@ -8,84 +8,81 @@ import { OrderItem, OrderResponse } from './types'
 export const getTableColumns = (
   onApprove: (id: string) => void,
   onReject: (id: string) => void,
+  onDetails: (id: string) => void,
 ): TableProps<OrderResponse>['columns'] => {
   return [
     {
       title: 'ID',
       dataIndex: 'id',
-      width: 90,
+      width: 100,
       render: (id: string) => (
-        <span
-          style={{ fontSize: '11px', color: '#999', fontFamily: 'monospace' }}
-        >
-          #{id.slice(0, 6).toUpperCase()}
-        </span>
+        <span className={classes.idBadge}>#{id.slice(0, 6).toUpperCase()}</span>
       ),
     },
     {
       title: 'Пользователь',
       key: 'user',
-      width: 180,
+      width: 200,
       render: (_, record) => (
-        <div style={{ fontWeight: 500, fontSize: '13px' }}>
-          {record.user ? `${record.user.name} ${record.user.surname}` : '—'}
+        <div className={classes.userInfo}>
+          <div className={classes.userName}>
+            {record.user ? `${record.user.name} ${record.user.surname}` : '—'}
+          </div>
+          <div className={classes.userSub}>{record.user?.email}</div>
         </div>
       ),
     },
     {
       title: 'Состав заказа',
       dataIndex: 'items',
-      width: 320,
       render: (items: OrderItem[]) => (
         <Space wrap size={[4, 4]}>
-          {items?.map(item => {
-            const popoverContent = (
-              <div className={classes.popoverCard}>
-                <div className={classes.popoverHeader}>
-                  <span className={classes.popoverBookTitle}>
-                    {item.book?.title}
-                  </span>
+          {items?.slice(0, 3).map(item => (
+            <Popover
+              key={item.id}
+              content={
+                <div className={classes.popoverCard}>
+                  <div className={classes.popoverHeader}>
+                    <span className={classes.popoverBookTitle}>
+                      {item.book?.title}
+                    </span>
+                  </div>
+                  <div className={classes.popoverMetaRow}>
+                    <span>Автор:</span>
+                    <span>
+                      {item.book?.author?.firstName}{' '}
+                      {item.book?.author?.lastName || '—'}
+                    </span>
+                  </div>
+                  <div className={classes.popoverFooter}>
+                    Количество:{' '}
+                    <span style={{ color: '#1890ff' }}>
+                      {item.quantity} шт.
+                    </span>
+                  </div>
                 </div>
-                <div className={classes.popoverMetaRow}>
-                  <span>Инвентарный №:</span>
-                  <span style={{ color: '#555' }}>{item.id}</span>
-                </div>
-                <div className={classes.popoverMetaRow}>
-                  <span>Автор:</span>
-                  <span style={{ color: '#555' }}>
-                    {item.book?.author || 'Не указан'}
-                  </span>
-                </div>
-                <div className={classes.popoverFooter}>
-                  Количество в заказе:{' '}
-                  <span style={{ color: '#1890ff' }}>{item.quantity} шт.</span>
-                </div>
+              }
+              trigger="hover"
+            >
+              <div className={classes.bookCardMini}>
+                <Book size={14} className={classes.miniIcon} />
+                <span className={classes.miniTitle}>{item.book?.title}</span>
+                <span className={classes.miniQty}>x{item.quantity}</span>
               </div>
-            )
-
-            return (
-              <Popover
-                key={item.id}
-                content={popoverContent}
-                title="Детали книги"
-                trigger="hover"
-                placement="top"
-              >
-                <div className={classes.bookCardMini}>
-                  <BookOutlined className={classes.miniIcon} />
-                  <span className={classes.miniTitle}>{item.book?.title}</span>
-                  <span className={classes.miniQty}>x{item.quantity}</span>
-                </div>
-              </Popover>
-            )
-          })}
+            </Popover>
+          ))}
+          {items?.length > 3 && (
+            <Tag color="default" style={{ cursor: 'default' }}>
+              +{items.length - 3} еще
+            </Tag>
+          )}
         </Space>
       ),
     },
     {
       title: 'Дата',
       dataIndex: 'orderDate',
-      width: 140,
+      width: 130,
       render: (date: string) => (
         <div style={{ lineHeight: '1.2' }}>
           <div style={{ fontSize: '13px' }}>
@@ -102,12 +99,12 @@ export const getTableColumns = (
       dataIndex: 'status',
       width: 140,
       render: (status: string) => {
-        const config = STATUS_CONFIG[status] || {
+        const config = STATUS_CONFIG[status as any] || {
           label: status,
           color: 'default',
         }
         return (
-          <Tag color={config.color} style={{ borderRadius: '4px', margin: 0 }}>
+          <Tag color={config.color} className={classes.statusTag}>
             {config.label}
           </Tag>
         )
@@ -117,38 +114,52 @@ export const getTableColumns = (
       title: 'Действия',
       key: 'actions',
       fixed: 'right',
-      width: 110,
+      width: 120,
       render: (_, record) => (
-        <Space size="small">
-          {record.status === 'PENDING' && (
-            <>
+        <div className={classes.actionButtons}>
+          <Space size={4}>
+            <Tooltip title="Открыть детали">
               <Button
-                type="primary"
+                type="text"
                 shape="circle"
-                size="small"
-                onClick={() => onApprove(record.id)}
-                icon={<CheckOutlined />}
-                style={{ backgroundColor: '#52c41a', borderColor: '#52c41a' }}
+                icon={<Eye size={18} color="#1890ff" />}
+                onClick={() => onDetails(record.id)}
               />
-              <Button
-                danger
-                shape="circle"
-                size="small"
-                onClick={() => onReject(record.id)}
-                icon={<CloseOutlined />}
-              />
-            </>
-          )}
-        </Space>
+            </Tooltip>
+
+            {record.status === 'PENDING' && (
+              <>
+                <Tooltip title="Одобрить">
+                  <Button
+                    type="text"
+                    shape="circle"
+                    onClick={() => onApprove(record.id)}
+                    icon={<Check size={18} color="#52c41a" />}
+                  />
+                </Tooltip>
+                <Tooltip title="Отклонить">
+                  <Button
+                    type="text"
+                    danger
+                    shape="circle"
+                    onClick={() => onReject(record.id)}
+                    icon={<X size={18} />}
+                  />
+                </Tooltip>
+              </>
+            )}
+          </Space>
+        </div>
       ),
     },
   ]
 }
 
-export const getPagination = (
-  data: OrderResponse[],
-): TableProps<OrderResponse>['pagination'] => {
-  return data?.length > 10
-    ? { pageSize: 10, position: ['bottomLeft'], showSizeChanger: false }
-    : false
+export const getPagination = (data: OrderResponse[]) => {
+  if (!data || data.length <= 10) return false
+  return {
+    pageSize: 10,
+    position: ['bottomRight'] as const,
+    size: 'small' as const,
+  }
 }

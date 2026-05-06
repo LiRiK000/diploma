@@ -18,4 +18,5 @@ export const routes = {
   profileSettings: 'settings',
   achievements: 'achievements',
   secure: 'secure',
+  librarianOrderDetails: '/librarian/orders/:id',
 }

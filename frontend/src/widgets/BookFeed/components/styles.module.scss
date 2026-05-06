@@ -1,11 +1,76 @@
-.skeletonCol {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 446px;
+@use '@shared/styles/variables' as *;
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+  width: 100%;
+
+  @include tablet {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @include mobile {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
 }
-.skeleton {
-  width: 90%;
-  height: 250px;
-  border-radius: 24px;
+
+.card {
+  @include liquid-glass;
+  border-radius: var(--border-radius-primary);
+  background: var(--glass-bg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.cover {
+  width: 100% !important;
+  height: 280px !important;
+  background: var(--glass-border) !important;
+  border-bottom: 1px solid var(--glass-border);
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.05),
+      transparent
+    );
+    animation: shimmer 1.5s infinite;
+  }
+
+  :global(.ant-skeleton-image-svg) {
+    opacity: 0.2;
+    transform: scale(1.5);
+  }
+}
+
+.content {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  :global {
+    .ant-skeleton-title,
+    .ant-skeleton-paragraph > li {
+      background: var(--glass-border) !important;
+      border-radius: 4px !important;
+    }
+  }
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
 }

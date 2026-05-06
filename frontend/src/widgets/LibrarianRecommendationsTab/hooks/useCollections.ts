@@ -9,25 +9,21 @@ export const useCollections = (searchQuery = '') => {
   const queryClient = useQueryClient()
   const [debouncedSearch, setDebouncedSearch] = useState(searchQuery)
   const [messageApi, contextHolder] = message.useMessage()
-  // Дебаунс для поиска книг (500мс)
   useEffect(() => {
     const handler = setTimeout(() => setDebouncedSearch(searchQuery), 500)
     return () => clearTimeout(handler)
   }, [searchQuery])
 
-  // Загрузка всех коллекций для таблицы
   const { data: collections, isLoading } = useQuery({
     queryKey: ['collections'],
     queryFn: () => bookService.getAllCollections(),
   })
 
-  // Загрузка жанров для выпадающего списка массового добавления
   const { data: genres } = useQuery({
     queryKey: ['genres'],
     queryFn: () => genreService.getAll(),
   })
 
-  // Динамический поиск книг для селекта в модалке
   const { data: foundBooks, isFetching: isSearching } = useQuery({
     queryKey: ['admin-books-search', debouncedSearch],
     queryFn: () => bookService.getBooksForAdmin({ search: debouncedSearch }),

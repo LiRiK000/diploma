@@ -11,6 +11,8 @@ import {
   Book,
   User,
   AchievementCategory,
+  Author,
+  Genre,
 } from '@prisma/client';
 import * as crypto from 'crypto';
 import { GAMIFICATION_CONFIG } from 'src/gamification/gamification.constants';
@@ -19,12 +21,14 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { getFullUrl } from 'src/utils/getFullCoverUrl';
 
 type OrderWithRelations = Order & {
-  user?: User;
+  user: User;
   items: (OrderItem & {
-    book: Book;
+    book: Book & {
+      author: Author;
+      genre: Genre;
+    };
   })[];
 };
-
 @Injectable()
 export class OrdersService {
   constructor(
@@ -41,13 +45,31 @@ export class OrdersService {
       updatedAt: order.updatedAt.toISOString(),
       returnDate: order.returnDate ? order.returnDate.toISOString() : null,
 
+      user: order.user
+        ? {
+            id: order.user.id,
+            name: order.user.name,
+            surname: order.user.surname,
+            email: order.user.email,
+            phone: order.user.phone,
+            avatarUrl: order.user.avatarUrl,
+            level: order.user.level,
+            experience: order.user.experience,
+            isInBlacklist: order.user.isInBlacklist,
+          }
+        : null,
+
       items: order.items.map((item) => ({
         ...item,
         createdAt: item.createdAt.toISOString(),
         updatedAt: item.updatedAt.toISOString(),
         book: {
           ...item.book,
-          coverImage: item.book.coverImage,
+          author: {
+            ...item.book.author,
+            name: `${item.book.author.firstName} ${item.book.author.lastName}`.trim(),
+          },
+          genre: item.book.genre,
           coverUrl: getFullUrl(item.book.coverImage),
           createdAt: item.book.createdAt.toISOString(),
           updatedAt: item.book.updatedAt.toISOString(),
@@ -91,44 +113,58 @@ export class OrdersService {
     });
   }
 
-  async findOne(orderId: string, userId: string) {
+  async findOne(orderId: string, userId?: string) {
     const order = await this.prisma.order.findUnique({
       where: { id: orderId },
       include: {
-        items: { include: { book: true } },
+        user: true,
+        items: {
+          include: {
+            book: { include: { author: true, genre: true } },
+          },
+        },
       },
     });
 
-    if (!order || order.userId !== userId) {
-      throw new NotFoundException('Заказ не найден');
+    if (!order) throw new NotFoundException('Заказ не найден');
+
+    if (userId && order.userId !== userId) {
+      throw new ForbiddenException('Доступ к чужому заказу запрещен');
     }
 
     return this.formatOrder(order as OrderWithRelations);
   }
-
-  async findAll(userId: string) {
-    const orders = await this.prisma.order.findMany({
-      where: { userId },
-      include: {
-        items: { include: { book: true } },
-      },
-      orderBy: { createdAt: 'desc' },
-    });
-
-    return orders.map((order) => this.formatOrder(order as OrderWithRelations));
-  }
-
-  async findAllForLibrarian() {
+  async findAllOrdersForLibrarian() {
     const orders = await this.prisma.order.findMany({
       include: {
         user: true,
-        items: { include: { book: true } },
+        items: {
+          include: {
+            book: { include: { author: true, genre: true } },
+          },
+        },
       },
       orderBy: { createdAt: 'desc' },
     });
-
     return orders.map((order) => this.formatOrder(order as OrderWithRelations));
   }
+
+  orders = this.prisma.order.findMany({
+    include: {
+      user: true,
+      items: {
+        include: {
+          book: {
+            include: {
+              author: true,
+              genre: true,
+            },
+          },
+        },
+      },
+    },
+    orderBy: { createdAt: 'desc' },
+  });
 
   async confirmReceipt(orderId: string, userId: string) {
     const order = await this.prisma.order.findUnique({
@@ -262,6 +298,19 @@ export class OrdersService {
       where: { id: order.id },
       data: { status: OrderStatus.READY_TO_PICKUP, issuedById: librarianId },
     });
+  }
+
+  async findAll(userId: string) {
+    const orders = await this.prisma.order.findMany({
+      where: { userId },
+      include: {
+        items: {
+          include: { book: { include: { author: true, genre: true } } },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+    return orders.map((order) => this.formatOrder(order as OrderWithRelations));
   }
 
   async getAdminStats() {
