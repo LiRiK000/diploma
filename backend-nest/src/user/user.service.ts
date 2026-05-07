@@ -3,28 +3,10 @@ import { PrismaService } from '../prisma/prisma.service';
 import { FileService } from 'src/common/file/file.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { getFullUrl } from 'src/utils/getFullCoverUrl';
+import { userFullProfileSelect } from './select/user-full-profile.select';
 
 @Injectable()
 export class UserService {
-  private readonly s3PublicUrl = process.env.S3_PUBLIC_URL?.replace(/\/$/, '');
-
-  private readonly userSelect = {
-    id: true,
-    email: true,
-    name: true,
-    surname: true,
-    displayName: true,
-    phone: true,
-    birthDate: true,
-    gender: true,
-    avatarUrl: true,
-    role: true,
-    createdAt: true,
-    _count: {
-      select: { favoriteBooks: true, readBooks: true },
-    },
-  };
-
   constructor(
     private readonly prisma: PrismaService,
     private readonly fileService: FileService,
@@ -33,10 +15,10 @@ export class UserService {
   async getProfile(userId: string) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      select: this.userSelect,
+      select: userFullProfileSelect,
     });
 
-    if (!user) throw new NotFoundException('User not found');
+    if (!user) throw new NotFoundException('Пользователь не найден');
 
     return {
       ...user,
@@ -51,7 +33,7 @@ export class UserService {
         ...dto,
         birthDate: dto.birthDate ? new Date(dto.birthDate) : undefined,
       },
-      select: this.userSelect,
+      select: userFullProfileSelect,
     });
 
     return {

@@ -7,7 +7,7 @@ export const useReturnOrder = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (orderId: string) => orderService.returnOrder(orderId),
+    mutationFn: (code: string) => orderService.returnOrderByCode(code),
     onSuccess: () => {
       message.success('Книги успешно возвращены')
       queryClient.invalidateQueries({ queryKey: ['orders'] })

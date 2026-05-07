@@ -6,59 +6,48 @@ import {
   Inject,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import { Response } from 'express';
-import { RegisterDto } from './dto/register.dto';
-import { LoginDto } from './dto/login.dto';
-import type { User } from '@prisma/client';
+import { type User } from '@prisma/client';
+
 import { PrismaService } from 'src/prisma/prisma.service';
-import { UpdateMeDto } from './dto/update-me.dto';
 import { UserService } from '../user/user.service';
 
-export interface JwtPayload {
+import { RegisterDto } from './dto/register.dto';
+import { LoginDto } from './dto/login.dto';
+import { UpdateMeDto } from './dto/update-me.dto';
+
+import { Env } from 'src/config/env.schema';
+
+interface JwtPayload {
   id: string;
-  role: string;
-  iat?: number;
-  exp?: number;
+  role?: string;
 }
 
 @Injectable()
 export class AuthService {
   constructor(
-    private prisma: PrismaService,
-    private jwtService: JwtService,
+    private readonly prisma: PrismaService,
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService<Env>,
+
     @Inject(forwardRef(() => UserService))
-    private userService: UserService,
+    private readonly userService: UserService,
   ) {}
 
   async register(dto: RegisterDto, res: Response) {
-    const { email, password, phone, birthDate, ...otherData } = dto;
+    const { password, birthDate, ...data } = dto;
 
-    const existingUser = await this.prisma.user.findUnique({
-      where: { email },
-    });
-    if (existingUser)
-      throw new BadRequestException(
-        'Пользователь с таким email уже существует',
-      );
-
-    if (phone) {
-      const existingPhone = await this.prisma.user.findUnique({
-        where: { phone },
-      });
-      if (existingPhone)
-        throw new BadRequestException('Этот номер телефона уже используется');
-    }
+    await this.validateUniqueness(data.email, data.phone);
 
     const hashedPassword = await bcrypt.hash(password, 12);
 
     const user = await this.prisma.user.create({
       data: {
-        email,
+        ...data,
         password: hashedPassword,
-        phone,
         birthDate: birthDate ? new Date(birthDate) : null,
-        ...otherData,
       },
     });
 
@@ -67,109 +56,181 @@ export class AuthService {
 
   async login(dto: LoginDto, res: Response) {
     const user = await this.prisma.user.findUnique({
-      where: { email: dto.email },
+      where: {
+        email: dto.email,
+      },
     });
 
-    if (!user) throw new UnauthorizedException('Неверный email или пароль');
-
-    const isPasswordCorrect = await bcrypt.compare(dto.password, user.password);
-    if (!isPasswordCorrect)
+    if (!user) {
       throw new UnauthorizedException('Неверный email или пароль');
+    }
+
+    const isPasswordValid = await bcrypt.compare(dto.password, user.password);
+
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Неверный email или пароль');
+    }
 
     return this.createSendTokens(user, res);
   }
 
   async getUserFullProfile(userId: string) {
-    const user = await this.userService.getProfile(userId);
-    if (!user) throw new UnauthorizedException('Пользователь не найден');
-
-    return user;
-  }
-
-  async updateMe(userId: string, dto: UpdateMeDto) {
-    if (dto.phone !== undefined) {
-      const normalizedPhone = dto.phone.trim();
-      if (normalizedPhone.length > 0) {
-        const existingPhone = await this.prisma.user.findUnique({
-          where: { phone: normalizedPhone },
-        });
-        if (existingPhone && existingPhone.id !== userId) {
-          throw new BadRequestException('Этот номер телефона уже используется');
-        }
-      }
-    }
-
-    const updatedUser = await this.userService.updateProfile(userId, dto);
-
-    return updatedUser;
+    return this.prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        phone: true,
+        birthDate: true,
+        role: true,
+        createdAt: true,
+      },
+    });
   }
 
   async refresh(refreshToken: string, res: Response) {
-    if (!refreshToken)
+    if (!refreshToken) {
       throw new UnauthorizedException('Refresh token не найден');
+    }
 
-    let payload: JwtPayload;
     try {
-      payload = this.jwtService.verify(refreshToken, {
-        secret: process.env.JWT_REFRESH_SECRET,
+      const refreshSecret =
+        this.configService.get<string>('JWT_REFRESH_SECRET');
+
+      if (!refreshSecret) {
+        throw new Error('JWT_REFRESH_SECRET is not defined');
+      }
+
+      const payloadUnknown: unknown = this.jwtService.verify(refreshToken, {
+        secret: refreshSecret,
       });
-    } catch (error) {
+
+      const payload = payloadUnknown as JwtPayload;
+
+      const user = await this.prisma.user.findUnique({
+        where: {
+          id: payload.id,
+        },
+      });
+
+      if (!user || user.refreshToken !== refreshToken) {
+        throw new UnauthorizedException('Невалидный refresh токен');
+      }
+
+      return this.createSendTokens(user, res);
+    } catch {
       throw new UnauthorizedException(
-        `Невалидный или просроченный refresh token ${error}`,
+        'Невалидный или просроченный refresh токен',
       );
     }
-
-    const user = await this.prisma.user.findUnique({
-      where: { id: payload.id },
-    });
-
-    if (!user || user.refreshToken !== refreshToken) {
-      throw new UnauthorizedException('Доступ запрещен');
-    }
-
-    return this.createSendTokens(user, res);
   }
 
   async logout(userId: string, res: Response) {
     await this.prisma.user.update({
-      where: { id: userId },
-      data: { refreshToken: null },
+      where: {
+        id: userId,
+      },
+      data: {
+        refreshToken: null,
+      },
     });
 
     res.clearCookie('accessToken');
     res.clearCookie('refreshToken');
 
-    return { status: 'success', message: 'Вы успешно вышли' };
+    return {
+      message: 'Успешный выход',
+    };
+  }
+
+  async updateMe(userId: string, dto: UpdateMeDto) {
+    if (dto.phone) {
+      await this.validateUniqueness('', dto.phone, userId);
+    }
+
+    return this.userService.updateProfile(userId, dto);
+  }
+
+  private async validateUniqueness(
+    email: string,
+    phone?: string,
+    userId?: string,
+  ) {
+    const existing = await this.prisma.user.findFirst({
+      where: {
+        OR: [{ email }, ...(phone ? [{ phone }] : [])],
+        NOT: userId
+          ? {
+              id: userId,
+            }
+          : undefined,
+      },
+    });
+
+    if (existing) {
+      const field = existing.email === email ? 'email' : 'номер телефона';
+
+      throw new BadRequestException(`Этот ${field} уже используется`);
+    }
   }
 
   private async createSendTokens(
     user: Pick<User, 'id' | 'email' | 'role'>,
     res: Response,
   ) {
-    const accessToken = this.jwtService.sign(
-      { id: user.id, role: user.role },
-      { expiresIn: '15m' },
-    );
+    const accessToken = this.jwtService.sign({
+      id: user.id,
+      role: user.role,
+    });
+
+    const refreshSecret = this.configService.get<string>('JWT_REFRESH_SECRET');
+
+    if (!refreshSecret) {
+      throw new Error('JWT_REFRESH_SECRET is not defined');
+    }
 
     const refreshToken = this.jwtService.sign(
-      { id: user.id },
-      { secret: process.env.JWT_REFRESH_SECRET, expiresIn: '7d' },
+      {
+        id: user.id,
+      },
+      {
+        secret: refreshSecret,
+        expiresIn: '7d',
+      },
     );
 
     await this.prisma.user.update({
-      where: { id: user.id },
-      data: { refreshToken },
+      where: {
+        id: user.id,
+      },
+      data: {
+        refreshToken,
+      },
     });
 
-    const cookieOptions = {
+    const isProduction =
+      this.configService.get<string>('NODE_ENV') === 'production';
+
+    res.cookie('accessToken', accessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax' as const,
+      secure: isProduction,
+      sameSite: 'lax',
+    });
+
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    return {
+      id: user.id,
+      email: user.email,
+      role: user.role,
     };
-
-    res.cookie('accessToken', accessToken, cookieOptions);
-    res.cookie('refreshToken', refreshToken, cookieOptions);
-
-    return { id: user.id, email: user.email, role: user.role };
   }
 }

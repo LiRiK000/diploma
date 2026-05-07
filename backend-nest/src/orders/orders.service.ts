@@ -4,21 +4,26 @@ import {
   ForbiddenException,
   NotFoundException,
 } from '@nestjs/common';
+
 import {
   OrderStatus,
   Order,
   OrderItem,
   Book,
   User,
-  AchievementCategory,
   Author,
   Genre,
 } from '@prisma/client';
+
 import * as crypto from 'crypto';
-import { GAMIFICATION_CONFIG } from 'src/gamification/gamification.constants';
-import { GamificationService } from 'src/gamification/gamification.service';
+
 import { PrismaService } from 'src/prisma/prisma.service';
-import { getFullUrl } from 'src/utils/getFullCoverUrl';
+import { GamificationService } from 'src/gamification/gamification.service';
+import { AchievementCategory } from '@prisma/client';
+import { GAMIFICATION_CONFIG } from 'src/gamification/gamification.constants';
+
+import { OrderMapper } from './mappers/order.mapper';
+import { calculateDueDate } from './utils/due-date.util';
 
 type OrderWithRelations = Order & {
   user: User;
@@ -29,6 +34,7 @@ type OrderWithRelations = Order & {
     };
   })[];
 };
+
 @Injectable()
 export class OrdersService {
   constructor(
@@ -36,63 +42,22 @@ export class OrdersService {
     private readonly gamificationService: GamificationService,
   ) {}
 
-  private formatOrder(order: OrderWithRelations) {
-    return {
-      ...order,
-      orderDate: order.orderDate.toISOString(),
-      dueDate: order.dueDate.toISOString(),
-      createdAt: order.createdAt.toISOString(),
-      updatedAt: order.updatedAt.toISOString(),
-      returnDate: order.returnDate ? order.returnDate.toISOString() : null,
-
-      user: order.user
-        ? {
-            id: order.user.id,
-            name: order.user.name,
-            surname: order.user.surname,
-            email: order.user.email,
-            phone: order.user.phone,
-            avatarUrl: order.user.avatarUrl,
-            level: order.user.level,
-            experience: order.user.experience,
-            isInBlacklist: order.user.isInBlacklist,
-          }
-        : null,
-
-      items: order.items.map((item) => ({
-        ...item,
-        createdAt: item.createdAt.toISOString(),
-        updatedAt: item.updatedAt.toISOString(),
-        book: {
-          ...item.book,
-          author: {
-            ...item.book.author,
-            name: `${item.book.author.firstName} ${item.book.author.lastName}`.trim(),
-          },
-          genre: item.book.genre,
-          coverUrl: getFullUrl(item.book.coverImage),
-          createdAt: item.book.createdAt.toISOString(),
-          updatedAt: item.book.updatedAt.toISOString(),
-        },
-      })),
-    };
-  }
-
   async create(userId: string) {
     return this.prisma.$transaction(async (tx) => {
       const cart = await tx.cart.findUnique({
         where: { userId },
-        include: { items: { include: { book: true } } },
+        include: { items: true },
       });
 
-      if (!cart || cart.items.length === 0)
-        throw new BadRequestException('Cart is empty');
+      if (!cart || cart.items.length === 0) {
+        throw new BadRequestException('Корзина пуста');
+      }
 
       const order = await tx.order.create({
         data: {
-          user: { connect: { id: userId } },
+          userId,
           status: OrderStatus.PENDING,
-          dueDate: new Date(),
+          dueDate: calculateDueDate(30),
           items: {
             create: cart.items.map((item) => ({
               bookId: item.bookId,
@@ -100,121 +65,42 @@ export class OrdersService {
             })),
           },
         },
+        include: {
+          user: true,
+          items: {
+            include: { book: { include: { author: true, genre: true } } },
+          },
+        },
       });
 
       await tx.cartItem.deleteMany({ where: { cartId: cart.id } });
+
       await this.gamificationService.handleUserActivity(userId, {
         expToAdd: 50,
         category: AchievementCategory.SYSTEM,
         incrementValue: 1,
       });
 
-      return order;
+      return OrderMapper.toResponse(order as OrderWithRelations);
     });
   }
 
-  async findOne(orderId: string, userId?: string) {
-    const order = await this.prisma.order.findUnique({
-      where: { id: orderId },
-      include: {
-        user: true,
-        items: {
-          include: {
-            book: { include: { author: true, genre: true } },
-          },
-        },
-      },
-    });
-
-    if (!order) throw new NotFoundException('Заказ не найден');
-
-    if (userId && order.userId !== userId) {
-      throw new ForbiddenException('Доступ к чужому заказу запрещен');
-    }
-
-    return this.formatOrder(order as OrderWithRelations);
-  }
-  async findAllOrdersForLibrarian() {
-    const orders = await this.prisma.order.findMany({
-      include: {
-        user: true,
-        items: {
-          include: {
-            book: { include: { author: true, genre: true } },
-          },
-        },
-      },
-      orderBy: { createdAt: 'desc' },
-    });
-    return orders.map((order) => this.formatOrder(order as OrderWithRelations));
-  }
-
-  orders = this.prisma.order.findMany({
-    include: {
-      user: true,
-      items: {
-        include: {
-          book: {
-            include: {
-              author: true,
-              genre: true,
-            },
-          },
-        },
-      },
-    },
-    orderBy: { createdAt: 'desc' },
-  });
-
-  async confirmReceipt(orderId: string, userId: string) {
-    const order = await this.prisma.order.findUnique({
-      where: { id: orderId },
-    });
-
-    if (!order || order.userId !== userId)
-      throw new ForbiddenException('Доступ запрещен');
-    if (order.status !== OrderStatus.READY_TO_PICKUP)
-      throw new BadRequestException('Заказ еще не готов');
-
-    return this.prisma.$transaction(async (tx) => {
-      const orderItems = await tx.orderItem.findMany({
-        where: { orderId },
-        include: { book: true },
-      });
-
-      for (const item of orderItems) {
-        await tx.book.update({
-          where: { id: item.bookId },
-          data: { availableQuantity: { decrement: item.quantity } },
-        });
-      }
-
-      const updated = await tx.order.update({
-        where: { id: orderId },
-        data: {
-          status: OrderStatus.ON_HAND,
-          pickupCode: null,
-          dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
-        },
-        include: { items: { include: { book: true } } },
-      });
-
-      return this.formatOrder(updated as OrderWithRelations);
-    });
-  }
-
-  async returnOrder(shortId: string) {
-    if (shortId.length < 8) throw new BadRequestException('Минимум 8 символов');
-
+  async returnOrderByCode(shortCode: string) {
     const order = await this.prisma.order.findFirst({
       where: {
-        id: { startsWith: shortId.toLowerCase() },
-        status: { in: [OrderStatus.ON_HAND, OrderStatus.OVERDUE] },
+        id: {
+          startsWith: shortCode.toLowerCase(),
+        },
+        status: OrderStatus.ON_HAND,
       },
-      include: { items: { include: { book: true } } },
+      include: { items: true },
     });
 
-    if (!order) throw new NotFoundException('Заказ не найден');
+    if (!order) {
+      throw new NotFoundException(
+        'Заказ с таким коротким кодом не найден или он не "на руках"',
+      );
+    }
 
     return this.prisma.$transaction(async (tx) => {
       for (const item of order.items) {
@@ -223,27 +109,15 @@ export class OrdersService {
           data: { availableQuantity: { increment: item.quantity } },
         });
       }
-      await tx.order.update({
+
+      return tx.order.update({
         where: { id: order.id },
-        data: { status: OrderStatus.RETURNED, returnDate: new Date() },
-      });
-      await tx.user.update({
-        where: { id: order.userId },
         data: {
-          readBooks: {
-            connect: order.items.map((item) => ({ id: item.bookId })),
-          },
+          status: OrderStatus.RETURNED,
+          returnDate: new Date(),
+          pickupCode: null,
         },
       });
-
-      const booksCount = order.items.length;
-      await this.gamificationService.handleUserActivity(order.userId, {
-        expToAdd: booksCount * GAMIFICATION_CONFIG.EXP_PER_BOOK,
-        category: AchievementCategory.READING,
-        incrementValue: booksCount,
-      });
-
-      return { status: 'success' };
     });
   }
 
@@ -254,7 +128,7 @@ export class OrdersService {
     if (!order || order.userId !== userId)
       throw new ForbiddenException('Заказ не найден');
     if (order.status !== OrderStatus.PENDING)
-      throw new BadRequestException('Нельзя отменить одобренный заказ');
+      throw new BadRequestException('Нельзя отменить этот заказ');
 
     return this.prisma.order.update({
       where: { id: orderId },
@@ -263,6 +137,12 @@ export class OrdersService {
   }
 
   async approveOrder(orderId: string) {
+    const order = await this.prisma.order.findUnique({
+      where: { id: orderId },
+    });
+    if (!order || order.status !== OrderStatus.PENDING)
+      throw new BadRequestException('Заказ уже обработан или не существует');
+
     const pickupCode = crypto.randomBytes(4).toString('hex').toUpperCase();
     return this.prisma.order.update({
       where: { id: orderId },
@@ -270,60 +150,126 @@ export class OrdersService {
     });
   }
 
-  async rejectOrder(orderId: string) {
-    const order = await this.prisma.order.findUnique({
-      where: { id: orderId },
-    });
-    if (!order) throw new NotFoundException('Заказ не найден');
-    if (
-      order.status === OrderStatus.RETURNED ||
-      order.status === OrderStatus.ON_HAND
-    ) {
-      throw new BadRequestException('Нельзя отменить этот заказ');
-    }
-    return this.prisma.order.update({
-      where: { id: orderId },
-      data: { status: OrderStatus.CANCELLED },
-    });
-  }
-
   async verifyPickupCode(code: string, librarianId: string) {
     const order = await this.prisma.order.findUnique({
-      where: { pickupCode: code },
+      where: { pickupCode: code.toUpperCase() },
     });
     if (!order || order.status !== OrderStatus.APPROVED)
-      throw new BadRequestException('Код невалиден');
+      throw new BadRequestException('Невалидный код для выдачи');
 
     return this.prisma.order.update({
       where: { id: order.id },
       data: { status: OrderStatus.READY_TO_PICKUP, issuedById: librarianId },
     });
   }
+  async rejectOrder(orderId: string) {
+    return this.prisma.order.update({
+      where: { id: orderId },
+      data: { status: OrderStatus.CANCELLED },
+    });
+  }
+
+  async confirmReceipt(orderId: string, userId: string) {
+    const order = await this.prisma.order.findUnique({
+      where: { id: orderId },
+      include: { items: true },
+    });
+
+    if (!order || order.userId !== userId)
+      throw new ForbiddenException('Доступ запрещен');
+    if (order.status !== OrderStatus.READY_TO_PICKUP)
+      throw new BadRequestException('Заказ не готов');
+
+    return this.prisma.$transaction(async (tx) => {
+      for (const item of order.items) {
+        await tx.book.update({
+          where: { id: item.bookId },
+          data: { availableQuantity: { decrement: item.quantity } },
+        });
+      }
+
+      const updated = await tx.order.update({
+        where: { id: orderId },
+        data: {
+          status: OrderStatus.ON_HAND,
+        },
+        include: {
+          user: true,
+          items: {
+            include: { book: { include: { author: true, genre: true } } },
+          },
+        },
+      });
+
+      return OrderMapper.toResponse(updated as OrderWithRelations);
+    });
+  }
+
+  async returnOrder(id: string) {
+    const order = await this.prisma.order.findUnique({
+      where: { id },
+      include: { items: true },
+    });
+
+    if (!order) throw new NotFoundException('Заказ не найден');
+    if (order.status !== OrderStatus.ON_HAND)
+      throw new BadRequestException('Этот заказ еще не выдан');
+
+    return this.prisma.$transaction(async (tx) => {
+      for (const item of order.items) {
+        await tx.book.update({
+          where: { id: item.bookId },
+          data: { availableQuantity: { increment: item.quantity } },
+        });
+      }
+
+      return tx.order.update({
+        where: { id },
+        data: { status: OrderStatus.RETURNED, returnDate: new Date() },
+      });
+    });
+  }
+
+  async findOne(orderId: string, userId?: string) {
+    const order = await this.prisma.order.findUnique({
+      where: { id: orderId },
+      include: {
+        user: true,
+        items: {
+          include: { book: { include: { author: true, genre: true } } },
+        },
+      },
+    });
+    if (!order) throw new NotFoundException('Заказ не найден');
+    if (userId && order.userId !== userId)
+      throw new ForbiddenException('Доступ запрещён');
+    return OrderMapper.toResponse(order as OrderWithRelations);
+  }
 
   async findAll(userId: string) {
     const orders = await this.prisma.order.findMany({
       where: { userId },
       include: {
+        user: true,
         items: {
           include: { book: { include: { author: true, genre: true } } },
         },
       },
       orderBy: { createdAt: 'desc' },
     });
-    return orders.map((order) => this.formatOrder(order as OrderWithRelations));
+    return orders.map((o) => OrderMapper.toResponse(o as OrderWithRelations));
   }
 
-  async getAdminStats() {
-    const [totalOrders, pendingOrders, popularBooks] = await Promise.all([
-      this.prisma.order.count(),
-      this.prisma.order.count({ where: { status: OrderStatus.PENDING } }),
-      this.prisma.orderItem.groupBy({
-        by: ['bookId'],
-        _sum: { quantity: true },
-        orderBy: { _sum: { quantity: 'desc' } },
-        take: 5,
-      }),
-    ]);
-    return { totalOrders, pendingOrders, popularBooks };
+  async findAllOrdersForLibrarian() {
+    const orders = await this.prisma.order.findMany({
+      include: {
+        user: true,
+        items: {
+          include: { book: { include: { author: true, genre: true } } },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+    return orders.map((o) => OrderMapper.toResponse(o as OrderWithRelations));
   }
 }

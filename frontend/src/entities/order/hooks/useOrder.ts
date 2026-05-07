@@ -3,7 +3,6 @@ import { message } from 'antd'
 import { orderService } from '@shared/services/Order'
 import { OrderResponse, OrderStatus } from '@shared/services/Order/types'
 import { AxiosError } from 'axios'
-
 export const useOrder = (id: string | undefined) => {
   const queryClient = useQueryClient()
 
@@ -13,48 +12,38 @@ export const useOrder = (id: string | undefined) => {
     enabled: !!id,
     refetchInterval: query => {
       const status = query.state.data?.status
-      return status === OrderStatus.ON_HAND || status === OrderStatus.CANCELLED
-        ? false
-        : 5000
+      const finalStatuses = [
+        OrderStatus.ON_HAND,
+        OrderStatus.CANCELLED,
+        OrderStatus.RETURNED,
+      ]
+      return finalStatuses.includes(status as any) ? false : 5000
     },
   })
 
-  const confirmMutation = useMutation<
-    OrderResponse,
-    AxiosError<{ message: string }>,
-    void
-  >({
+  const confirmMutation = useMutation({
     mutationFn: () => orderService.confirmReceipt(id!),
     onSuccess: () => {
       message.success('Книги успешно получены!')
       queryClient.invalidateQueries({ queryKey: ['order', id] })
     },
-    onError: error => {
-      message.error(error.response?.data?.message || 'Ошибка подтверждения')
-    },
+    onError: (err: any) =>
+      message.error(err.response?.data?.message || 'Ошибка'),
   })
 
-  const cancelMutation = useMutation<
-    OrderResponse,
-    AxiosError<{ message: string }>,
-    void
-  >({
+  const cancelMutation = useMutation({
     mutationFn: () => orderService.cancelOrder(id!),
     onSuccess: () => {
       message.success('Заказ отменен')
       queryClient.invalidateQueries({ queryKey: ['order', id] })
     },
-    onError: error => {
-      message.error(
-        error.response?.data?.message || 'Не удалось отменить заказ',
-      )
-    },
+    onError: (err: any) =>
+      message.error(err.response?.data?.message || 'Ошибка'),
   })
 
   return {
     order: orderQuery.data,
     isLoading: orderQuery.isLoading,
-    isError: orderQuery.isError,
     confirmReceipt: confirmMutation.mutate,
     isConfirming: confirmMutation.isPending,
     cancelOrder: cancelMutation.mutate,

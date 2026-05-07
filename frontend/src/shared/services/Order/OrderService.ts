@@ -1,7 +1,6 @@
 import { api } from '@shared/api'
 import { OrderResponse } from './types'
 
-// Интерфейс для статистики
 export interface OrderStats {
   totalOrders: number
   pendingOrders: number
@@ -10,102 +9,57 @@ export interface OrderStats {
     _sum: { quantity: number }
   }>
 }
-
 export class OrderService {
-  /**
-   * Создание заказа из корзины (User)
-   */
   async checkout(): Promise<OrderResponse> {
-    const { data } = await api.post<OrderResponse>('/orders/checkout')
+    const { data } = await api.post('/orders/checkout')
     return data
   }
 
-  /**
-   * Получение всех заказов в системе (Librarian)
-   * Добавили этот метод для админки
-   */
-  async getAllOrders(): Promise<OrderResponse[]> {
-    const { data } = await api.get<OrderResponse[]>('/orders/all')
-    return data
-  }
-
-  /**
-   * Одобрение заказа (Librarian)
-   */
-  async approveOrder(orderId: string): Promise<OrderResponse> {
-    const { data } = await api.patch<OrderResponse>(
-      `/orders/${orderId}/approve`,
-    )
-    return data
-  }
-
-  /**
-   * Отклонение/Отмена заказа (Librarian/User)
-   * Используем роут /reject, который мы добавили на бэкенд
-   */
-  async rejectOrder(orderId: string): Promise<OrderResponse> {
-    const { data } = await api.patch<OrderResponse>(`/orders/${orderId}/reject`)
-    return data
-  }
-
-  /**
-   * Проверка 8-значного кода при выдаче (Librarian)
-   */
-  async verifyCode(pickupCode: string): Promise<OrderResponse> {
-    const { data } = await api.post<OrderResponse>('/orders/verify-code', {
-      pickupCode,
-    })
-    return data
-  }
-
-  /**
-   * Подтверждение получения книг пользователем (User)
-   */
-  async confirmReceipt(orderId: string): Promise<OrderResponse> {
-    const { data } = await api.patch<OrderResponse>(
-      `/orders/${orderId}/confirm-receipt`,
-    )
-    return data
-  }
-
-  /**
-   * Получение статистики для виджетов (Librarian)
-   */
-  async getStats(): Promise<OrderStats> {
-    const { data } = await api.get<OrderStats>('/orders/stats')
-    return data
-  }
-
-  /**
-   * Получение списка заказов текущего пользователя (User)
-   */
   async getMyOrders(): Promise<OrderResponse[]> {
-    const { data } = await api.get<OrderResponse[]>('/orders/my-orders')
+    const { data } = await api.get('/orders/my')
     return data
   }
 
-  /**
-   * Получение конкретного заказа по ID
-   */
   async getOrderById(orderId: string): Promise<OrderResponse> {
-    const { data } = await api.get<OrderResponse>(`/orders/${orderId}`)
+    const { data } = await api.get(`/orders/${orderId}`)
     return data
   }
 
-  async cancelOrder(id: string): Promise<OrderResponse> {
-    const { data } = await api.patch<OrderResponse>(`/orders/${id}/cancel`)
+  async cancelOrder(orderId: string): Promise<OrderResponse> {
+    const { data } = await api.patch(`/orders/${orderId}/cancel`)
     return data
   }
+
+  async confirmReceipt(orderId: string): Promise<OrderResponse> {
+    const { data } = await api.patch(`/orders/${orderId}/confirm-receipt`)
+    return data
+  }
+  async getAllOrders(): Promise<OrderResponse[]> {
+    const { data } = await api.get('/orders/admin/all')
+    return data
+  }
+
+  async approveOrder(orderId: string): Promise<OrderResponse> {
+    const { data } = await api.patch(`/orders/${orderId}/approve`)
+    return data
+  }
+
+  async rejectOrder(orderId: string): Promise<OrderResponse> {
+    const { data } = await api.patch(`/orders/${orderId}/reject`)
+    return data
+  }
+
   async verifyPickupCode(pickupCode: string): Promise<OrderResponse> {
-    const { data } = await api.post<OrderResponse>('/orders/verify-code', {
-      pickupCode,
-    })
+    const { data } = await api.post('/orders/verify-code', { pickupCode })
     return data
   }
+
   async returnOrder(orderId: string): Promise<OrderResponse> {
-    const { data } = await api.patch<OrderResponse>(`/orders/${orderId}/return`)
+    const { data } = await api.patch(`/orders/${orderId}/return`)
+    return data
+  }
+  async returnOrderByCode(code: string): Promise<OrderResponse> {
+    const { data } = await api.post('/orders/return-by-code', { code })
     return data
   }
 }
-
-export const orderService = new OrderService()

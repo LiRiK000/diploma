@@ -1,5 +1,5 @@
-import { useRef } from 'react'
-import { useGetMe } from '@app/providers/AuthProvider/hooks/useGetMe'
+import { useRef, useEffect } from 'react'
+import { useRef as useReactRef } from 'react'
 import styles from './ProfileInfoPage.module.scss'
 import {
   CameraOutlined,
@@ -19,9 +19,9 @@ import {
   Spin,
 } from 'antd'
 import dayjs from 'dayjs'
-import type { Gender } from '@shared/services/Auth/types'
 import { useUpdateMe } from '@widgets/ProfileSettings/hooks/useUpdateMe'
 import { useUpdateAvatar } from './hooks/useUpdateAvatar'
+import { useGetProfile } from './hooks/useGetProfile'
 
 const { Text } = Typography
 
@@ -29,27 +29,32 @@ export const ProfileInfoPage = () => {
   const [form] = Form.useForm()
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const { data, isLoading } = useGetMe()
+  const { data: user, isLoading } = useGetProfile()
   const { mutate: updateMe, isPending: isUpdating } = useUpdateMe()
   const { mutate: uploadAvatar, isPending: isAvatarUpdating } =
     useUpdateAvatar()
 
-  const user = data?.data.user
-
-  const getInitialBirthDate = (dateValue: unknown) => {
-    if (typeof dateValue === 'string' && dateValue.length > 0) {
-      const d = dayjs(dateValue)
-      return d.isValid() ? d : null
+  useEffect(() => {
+    if (user) {
+      form.setFieldsValue({
+        email: user.email,
+        name: user.name,
+        surname: user.surname,
+        displayName: user.displayName || '',
+        phone: user.phone || '',
+        gender: user.gender || undefined,
+        birthDate: user.birthDate ? dayjs(user.birthDate) : null,
+      })
     }
-    return null
-  }
+  }, [user, form])
 
-  if (isLoading)
+  if (isLoading) {
     return (
       <div className={styles.loader}>
         <Spin size="large" />
       </div>
     )
+  }
 
   if (!user) {
     return (
@@ -59,22 +64,11 @@ export const ProfileInfoPage = () => {
     )
   }
 
-  const initialBirthDate = getInitialBirthDate(user.birthDate)
-
-  const handleFinish = (values: {
-    name: string
-    surname: string
-    displayName?: string
-    phone?: string
-    gender?: Gender
-    birthDate?: dayjs.Dayjs | null
-  }) => {
+  const handleFinish = (values: any) => {
     updateMe({
+      ...values,
       name: values.name.trim(),
       surname: values.surname.trim(),
-      displayName: values.displayName?.trim() || '',
-      phone: values.phone?.trim() || '',
-      gender: values.gender,
       birthDate: values.birthDate ? values.birthDate.toISOString() : null,
     })
   }
@@ -140,20 +134,7 @@ export const ProfileInfoPage = () => {
         </div>
 
         <div className={styles.card}>
-          <Form
-            form={form}
-            layout="vertical"
-            initialValues={{
-              email: user.email,
-              name: user.name,
-              surname: user.surname,
-              displayName: user.displayName ?? '',
-              phone: user.phone ?? '',
-              gender: user.gender ?? undefined,
-              birthDate: initialBirthDate,
-            }}
-            onFinish={handleFinish}
-          >
+          <Form form={form} layout="vertical" onFinish={handleFinish}>
             <Row gutter={[16, 0]}>
               <Col xs={24} md={12}>
                 <Form.Item label="Email" name="email">
@@ -215,7 +196,6 @@ export const ProfileInfoPage = () => {
               style={{
                 display: 'flex',
                 justifyContent: 'center',
-                gap: 12,
                 margin: '12px 0',
               }}
             >
@@ -240,12 +220,19 @@ export const ProfileInfoPage = () => {
           <div className={styles.row}>
             <span>Отображаемое имя</span>
             <span className={styles.value}>
-              {user.displayName || `${user.name} ${user.surname?.[0]}.`}
+              {user.displayName || `${user.name} ${user.surname?.[0] || ''}.`}
             </span>
           </div>
           <div className={styles.row}>
-            <span>Локация</span>
-            <span className={styles.muted}>Россия, Москва</span>
+            <span>Статистика</span>
+            <span className={styles.value}>
+              Прочитано: {user._count?.readBooks} | Избранное:{' '}
+              {user._count?.favoriteBooks}
+            </span>
+          </div>
+          <div className={styles.row}>
+            <span>Роль</span>
+            <span className={styles.value}>{user.role}</span>
           </div>
         </div>
       </section>

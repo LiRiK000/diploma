@@ -7,84 +7,87 @@ import {
   Param,
   UseGuards,
 } from '@nestjs/common';
+
 import { OrdersService } from './orders.service';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
-import { ConfirmPickupDto } from './dto/create-order.dto';
+import { ConfirmPickupDto } from './dto/confirm-pickup.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 import { Role } from '@prisma/client';
-
 @UseGuards(JwtAuthGuard)
 @Controller('orders')
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
   @Post('checkout')
-  async checkout(@CurrentUser('id') userId: string) {
+  checkout(@CurrentUser('id') userId: string) {
     return this.ordersService.create(userId);
   }
 
-  @Post('verify-code')
-  @Roles(Role.LIBRARIAN)
-  @UseGuards(RolesGuard)
-  async verify(
-    @Body() dto: ConfirmPickupDto,
-    @CurrentUser('id') librarianId: string,
-  ) {
-    return this.ordersService.verifyPickupCode(dto.pickupCode, librarianId);
-  }
-
-  @Get('stats')
-  @Roles(Role.LIBRARIAN)
-  @UseGuards(RolesGuard)
-  async getStats() {
-    return this.ordersService.getAdminStats();
-  }
-
-  @Get('my-orders')
-  async getAllMyOrders(@CurrentUser('id') userId: string) {
+  @Get('my')
+  getMy(@CurrentUser('id') userId: string) {
     return this.ordersService.findAll(userId);
   }
 
-  @Get('all')
+  @Post('return-by-code')
   @Roles(Role.LIBRARIAN)
   @UseGuards(RolesGuard)
-  async getAllOrders() {
+  returnByCode(@Body('code') code: string) {
+    return this.ordersService.returnOrderByCode(code);
+  }
+  @Get('admin/all')
+  @Roles(Role.LIBRARIAN)
+  @UseGuards(RolesGuard)
+  getAllForAdmin() {
     return this.ordersService.findAllOrdersForLibrarian();
   }
-  @Patch(':id/return')
-  @Roles(Role.LIBRARIAN)
-  @UseGuards(RolesGuard)
-  async return(@Param('id') id: string) {
-    return this.ordersService.returnOrder(id);
+
+  @Get(':id')
+  getOne(@Param('id') id: string, @CurrentUser() user: any) {
+    return user.role === Role.LIBRARIAN
+      ? this.ordersService.findOne(id)
+      : this.ordersService.findOne(id, user.id);
+  }
+
+  @Patch(':id/cancel')
+  cancel(@Param('id') id: string, @CurrentUser('id') userId: string) {
+    return this.ordersService.cancelOrderByUser(id, userId);
+  }
+
+  @Patch(':id/confirm-receipt')
+  confirm(@Param('id') id: string, @CurrentUser('id') userId: string) {
+    return this.ordersService.confirmReceipt(id, userId);
   }
 
   @Patch(':id/approve')
   @Roles(Role.LIBRARIAN)
   @UseGuards(RolesGuard)
-  async approve(@Param('id') id: string) {
+  approve(@Param('id') id: string) {
     return this.ordersService.approveOrder(id);
   }
 
   @Patch(':id/reject')
   @Roles(Role.LIBRARIAN)
   @UseGuards(RolesGuard)
-  async reject(@Param('id') id: string) {
+  reject(@Param('id') id: string) {
     return this.ordersService.rejectOrder(id);
   }
 
-  @Patch(':id/confirm-receipt')
-  async confirm(@Param('id') id: string, @CurrentUser('id') userId: string) {
-    return this.ordersService.confirmReceipt(id, userId);
+  @Post('verify-code')
+  @Roles(Role.LIBRARIAN)
+  @UseGuards(RolesGuard)
+  verify(
+    @Body() dto: ConfirmPickupDto,
+    @CurrentUser('id') librarianId: string,
+  ) {
+    return this.ordersService.verifyPickupCode(dto.pickupCode, librarianId);
   }
 
-  @Get(':id')
-  async getOne(@Param('id') id: string, @CurrentUser() user: any) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    if (user.role === Role.LIBRARIAN) {
-      return this.ordersService.findOne(id);
-    }
-    return this.ordersService.findOne(id, user.id);
+  @Patch(':id/return')
+  @Roles(Role.LIBRARIAN)
+  @UseGuards(RolesGuard)
+  return(@Param('id') id: string) {
+    return this.ordersService.returnOrder(id);
   }
 }

@@ -21,10 +21,19 @@ export class FileUrlInterceptor implements NestInterceptor {
       return obj.map((v) => this.transform(v));
     }
 
-    if (obj !== null && typeof obj === 'object') {
-      const result = { ...obj };
+    if (
+      obj === null ||
+      typeof obj !== 'object' ||
+      obj instanceof Date ||
+      obj instanceof Buffer
+    ) {
+      return obj;
+    }
 
-      Object.keys(result).forEach((key) => {
+    const result = { ...obj };
+
+    for (const key in result) {
+      if (Object.prototype.hasOwnProperty.call(result, key)) {
         const value = result[key];
 
         const isUrlKey = /url|image|photo|cover|avatar/i.test(key);
@@ -41,10 +50,9 @@ export class FileUrlInterceptor implements NestInterceptor {
         } else if (value !== null && typeof value === 'object') {
           result[key] = this.transform(value);
         }
-      });
-      return result;
+      }
     }
 
-    return obj;
+    return result;
   }
 }

@@ -1,28 +1,34 @@
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
+import { ValidationPipe, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { join } from 'path';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
+import { join } from 'path';
+
 import { AppModule } from './app.module';
 import { FileUrlInterceptor } from './common/interceptors/file-url.interceptor';
-import { shouldServeLocalUploads } from './common/file/file-storage.config';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const configService = app.get(ConfigService);
+  const logger = new Logger('Bootstrap');
 
-  app.setGlobalPrefix('api');
-
-  if (shouldServeLocalUploads()) {
-    app.useStaticAssets(join(process.cwd(), 'uploads'), {
-      prefix: '/uploads/',
-    });
-  }
-
-  app.useGlobalInterceptors(new FileUrlInterceptor());
+  app.use(
+    helmet({
+      crossOriginResourcePolicy: false,
+    }),
+  );
   app.use(cookieParser());
 
+  app.setGlobalPrefix('api');
+  app.useGlobalInterceptors(new FileUrlInterceptor());
+
+  const clientUrl =
+    configService.get<string>('CLIENT_URL') || 'http://localhost:5173';
   app.enableCors({
-    origin: 'http://localhost:5173',
+    origin: clientUrl,
     credentials: true,
   });
 
@@ -34,14 +40,25 @@ async function bootstrap() {
     }),
   );
 
-  const port = Number(process.env.PORT) || 4000;
+  const staticPath = configService.get<string>('STATIC_PATH') || 'uploads';
+  app.useStaticAssets(join(process.cwd(), staticPath), {
+    prefix: `/${staticPath}/`,
+  });
+
+  const config = new DocumentBuilder()
+    .setTitle('Diplom API')
+    .setDescription('Документация бэкенда для диплома')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api/docs', app, document);
+
+  const port = configService.get<number>('PORT') || 4000;
   await app.listen(port);
 
-  console.log(`🚀 Nest server is running on port ${port}`);
-  if (shouldServeLocalUploads()) {
-    console.log(
-      `📂 Static files available at: http://localhost:${port}/uploads/`,
-    );
-  }
+  logger.log(`🚀 Server running on http://localhost:${port}/api`);
+  logger.log(`📄 Swagger docs: http://localhost:${port}/api/docs`);
 }
+
 void bootstrap();

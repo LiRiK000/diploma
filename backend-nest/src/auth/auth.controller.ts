@@ -6,74 +6,62 @@ import {
   Get,
   UseGuards,
   Patch,
+  UseInterceptors,
 } from '@nestjs/common';
+import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
-import * as express from 'express';
+import { LoginDto } from './dto/login.dto';
+import { UpdateMeDto } from './dto/update-me.dto';
 import { JwtAuthGuard } from './guards/jwt.guard';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { Cookie } from 'src/common/decorators/get-cookies.decorator';
-import { LoginDto } from './dto/login.dto';
-import { UpdateMeDto } from './dto/update-me.dto';
+import { TransformInterceptor } from 'src/common/interceptors/transform.interceptor';
 
 @Controller('auth')
+@UseInterceptors(TransformInterceptor)
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
-  async register(
+  register(
     @Body() dto: RegisterDto,
-    @Res({ passthrough: true }) res: express.Response,
+    @Res({ passthrough: true }) res: Response,
   ) {
     return this.authService.register(dto, res);
   }
 
   @Post('login')
-  async login(
-    @Body() dto: LoginDto,
-    @Res({ passthrough: true }) res: express.Response,
-  ) {
+  login(@Body() dto: LoginDto, @Res({ passthrough: true }) res: Response) {
     return this.authService.login(dto, res);
   }
 
   @Get('me')
   @UseGuards(JwtAuthGuard)
-  async getMe(@CurrentUser('id') userId: string) {
-    const user = await this.authService.getUserFullProfile(userId);
-    return {
-      status: 'success',
-      data: { user },
-    };
+  getMe(@CurrentUser('id') userId: string) {
+    return this.authService.getUserFullProfile(userId);
   }
 
   @Patch('me')
   @UseGuards(JwtAuthGuard)
-  async updateMe(@CurrentUser('id') userId: string, @Body() dto: UpdateMeDto) {
-    const user = await this.authService.updateMe(userId, dto);
-    return {
-      status: 'success',
-      data: { user },
-    };
+  updateMe(@CurrentUser('id') userId: string, @Body() dto: UpdateMeDto) {
+    return this.authService.updateMe(userId, dto);
   }
 
   @Post('refresh-token')
-  async refreshTokens(
-    @Cookie('refreshToken') token: string | undefined,
-    @Res({ passthrough: true }) res: express.Response,
+  refresh(
+    @Cookie('refreshToken') token: string,
+    @Res({ passthrough: true }) res: Response,
   ) {
     return this.authService.refresh(token, res);
   }
 
   @Post('logout')
   @UseGuards(JwtAuthGuard)
-  async logout(
+  logout(
     @CurrentUser('id') userId: string,
-    @Res({ passthrough: true }) res: express.Response,
+    @Res({ passthrough: true }) res: Response,
   ) {
-    await this.authService.logout(userId, res);
-    return {
-      status: 'success',
-      message: 'Logged out successfully',
-    };
+    return this.authService.logout(userId, res);
   }
 }
