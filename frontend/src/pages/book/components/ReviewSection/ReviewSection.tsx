@@ -13,7 +13,7 @@ export const ReviewSection = ({ bookId, tags }: ReviewSectionProps) => {
     useBookReviews(bookId)
   const { data: meData } = useGetMe()
 
-  const currentUserId = meData?.data?.user?.id
+  const currentUserId = meData?.data
   const hasAlreadyReviewed = reviews?.some(r => r.userId === currentUserId)
 
   return (

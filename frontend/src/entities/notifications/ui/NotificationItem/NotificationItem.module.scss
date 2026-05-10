@@ -1,0 +1,111 @@
+@use '@shared/styles/variables' as *;
+ы .card {
+  position: relative;
+  display: flex;
+  gap: $spacing-lg;
+  padding: 20px 24px;
+  margin-bottom: $spacing-md;
+  border-radius: $border-radius-lg;
+  cursor: pointer;
+  overflow: hidden;
+
+  @include liquid-glass;
+
+  &:hover {
+    background: var(--bg-content);
+    transform: translateY(-2px) scale(1.01);
+    box-shadow: $liquid-glass-shadow;
+    border-color: var(--header-link-hover);
+  }
+
+  &.unread {
+    background: var(--bg-content);
+    border-left: 4px solid var(--header-link-hover);
+
+    &::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      right: 0;
+      background: radial-gradient(
+        circle at 0% 50%,
+        rgba(var(--header-link-hover-rgb), 0.05),
+        transparent
+      );
+      pointer-events: none;
+    }
+  }
+}
+
+.iconBox {
+  width: 48px;
+  height: 48px;
+  border-radius: $border-radius-md + 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-xl);
+  flex-shrink: 0;
+
+  &.achievement {
+    background: rgba(250, 173, 20, 0.15);
+    color: #faad14;
+  }
+  &.order_status {
+    background: rgba(24, 144, 255, 0.15);
+    color: #1890ff;
+  }
+  &.overdue {
+    background: rgba(255, 59, 48, 0.15);
+    color: #ff3b30;
+  }
+  &.system {
+    background: rgba(114, 46, 209, 0.15);
+    color: #722ed1;
+  }
+}
+
+.body {
+  flex: 1;
+
+  .headerRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $spacing-xs;
+  }
+
+  .title {
+    margin: 0 !important;
+    font-size: var(--font-size-md) !important;
+    font-weight: var(--font-weight-bold) !important;
+    color: var(--text-primary);
+  }
+
+  .time {
+    font-size: var(--font-size-xs);
+    color: var(--text-secondary);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .message {
+    display: block;
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    line-height: var(--line-height-body);
+    max-width: 95%;
+  }
+}
+
+.glowIndicator {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 8px;
+  height: 8px;
+  background: var(--header-link-hover);
+  border-radius: 50%;
+  box-shadow: 0 0 12px var(--header-link-hover);
+}

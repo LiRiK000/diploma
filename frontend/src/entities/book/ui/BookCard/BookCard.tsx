@@ -1,11 +1,12 @@
 import styles from './BookCard.module.scss'
 import { Typography, Space } from 'antd'
+import { StarFilled } from '@ant-design/icons'
 import { BookCardProps } from './types'
 import { Link, useNavigate } from 'react-router-dom'
 import { AddToCartButton } from '@features/add-to-cart/components'
 import { AddToWishlistButton } from '@features/add-to-wishlist/components'
 
-const { Title } = Typography
+const { Title, Text } = Typography
 
 export const BookCard = ({ book }: BookCardProps) => {
   const navigate = useNavigate()
@@ -14,14 +15,6 @@ export const BookCard = ({ book }: BookCardProps) => {
     e.preventDefault()
     e.stopPropagation()
     void navigate(`/author/${book.authorId}`)
-  }
-
-  let quantityClass = styles.quantity
-
-  if (book.availableQuantity === 0) {
-    quantityClass += ` ${styles.empty}`
-  } else if (book.availableQuantity < 2) {
-    quantityClass += ` ${styles.low}`
   }
 
   return (
@@ -37,8 +30,8 @@ export const BookCard = ({ book }: BookCardProps) => {
               fetchPriority="high"
               loading="eager"
               className={styles.coverImage}
+              alt={book.title}
             />
-
             <div className={styles.pages} />
             <div className={styles.bookmark} />
           </div>
@@ -55,21 +48,21 @@ export const BookCard = ({ book }: BookCardProps) => {
         </div>
 
         <div className={styles.footer}>
-          <div className={quantityClass}>
-            {book.availableQuantity > 0
-              ? `В наличии: ${book.availableQuantity}`
-              : 'Нет в наличии'}
+          <div className={styles.reviews}>
+            <StarFilled className={styles.starIcon} />
+            <Text className={styles.count}>{book.ratingsCount || 0}</Text>
           </div>
 
-          <Space>
-            <AddToWishlistButton
-              title={book.title}
-              variant="icon"
-              id={book.id}
-            />
-
-            <AddToCartButton bookId={book.id} variant="icon" />
-          </Space>
+          <div className={styles.actions}>
+            <Space size={8}>
+              <AddToWishlistButton
+                title={book.title}
+                variant="icon"
+                id={book.id}
+              />
+              <AddToCartButton bookId={book.id} variant="icon" />
+            </Space>
+          </div>
         </div>
       </div>
     </Link>

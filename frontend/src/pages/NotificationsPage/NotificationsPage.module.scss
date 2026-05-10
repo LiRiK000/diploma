@@ -1,0 +1,66 @@
+@use '@shared/styles/variables' as *;
+
+.page {
+  position: relative;
+  min-height: 100vh;
+  padding: 60px 24px;
+  background-color: var(--bg-page);
+  background-image: var(--bg-gradient);
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  scrollbar-width: none;
+
+  -ms-overflow-style: none;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.wrapper {
+  position: relative;
+  max-width: 800px;
+  margin: 0 auto;
+  z-index: 2;
+}
+
+.breadcrumb {
+  margin-bottom: $spacing-lg * 2;
+
+  :global(.ant-breadcrumb-link) {
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-sm);
+
+    a {
+      color: var(--text-secondary);
+      transition: $transition-liquid;
+      &:hover {
+        color: var(--header-link-hover);
+      }
+    }
+  }
+
+  :global(.ant-breadcrumb-last) {
+    color: var(--text-primary);
+    font-weight: var(--font-weight-semibold);
+  }
+}
+
+.ambientGlow {
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  transform: translate(-50%, 0);
+  width: 800px;
+  height: 800px;
+  background: radial-gradient(
+    circle,
+    var(--hero-glow-color) 0%,
+    transparent 70%
+  );
+  filter: blur(100px);
+  pointer-events: none;
+  z-index: 1;
+}

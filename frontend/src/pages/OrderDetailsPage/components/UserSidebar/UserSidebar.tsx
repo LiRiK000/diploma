@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import {
   Card,
   Avatar,
@@ -16,6 +16,7 @@ import { User, Phone, Mail, ShieldAlert, Key } from 'lucide-react'
 import classes from './UserSideBar.module.scss'
 import { OrderResponse } from '@widgets/LibrarianOrdersTab/types'
 import { useOrderManagement } from '../../hooks/use-order-management'
+import { STATUS_CONFIG, OrderStatus } from '@entities/order/consts/statusConfig'
 
 const { Title, Text } = Typography
 
@@ -25,6 +26,11 @@ export const UserSidebar: React.FC<{ order: OrderResponse }> = ({ order }) => {
 
   const { verifyCode, returnOrder, isVerifying, isReturning } =
     useOrderManagement(order.id)
+
+  const currentStatus = useMemo(
+    () => STATUS_CONFIG[order.status as OrderStatus],
+    [order.status],
+  )
 
   const handleVerify = () => {
     if (pickupCode.length !== 8) {
@@ -81,10 +87,18 @@ export const UserSidebar: React.FC<{ order: OrderResponse }> = ({ order }) => {
         <Space direction="vertical" size={16} style={{ width: '100%' }}>
           <div className={classes.statusRow}>
             <Text className={classes.statusLabel}>Текущий статус</Text>
-            <div className={classes.statusBadge}>
-              <span className={classes.statusDot} />
-              {order.status}
-            </div>
+            <Tag
+              color={currentStatus?.color || 'default'}
+              icon={currentStatus?.icon}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                margin: 0,
+              }}
+            >
+              {currentStatus?.label.toUpperCase() || order.status}
+            </Tag>
           </div>
 
           {order.status === 'APPROVED' && (
@@ -117,7 +131,7 @@ export const UserSidebar: React.FC<{ order: OrderResponse }> = ({ order }) => {
             </div>
           )}
 
-          {order.status === 'ON_HAND' && (
+          {(order.status === 'ON_HAND' || order.status === 'OVERDUE') && (
             <Button
               type="primary"
               danger

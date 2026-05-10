@@ -1,0 +1,63 @@
+@use '@shared/styles/variables' as *;
+
+.container {
+  width: 100%;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: $spacing-lg * 2;
+
+  .mainTitle {
+    margin: 0 !important;
+    font-size: var(--font-size-2xl) !important;
+    font-weight: var(--font-weight-display) !important;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+  }
+}
+
+.tabs {
+  margin-bottom: $spacing-lg * 1.5;
+
+  :global {
+    .ant-tabs-nav::before {
+      border-bottom: 1px solid var(--header-border);
+    }
+    .ant-tabs-tab {
+      padding: $spacing-md $spacing-lg;
+      font-weight: var(--font-weight-semibold);
+      color: var(--text-secondary);
+      transition: $transition-liquid;
+
+      &:hover {
+        color: var(--header-link-hover);
+      }
+    }
+    .ant-tabs-tab-active .ant-tabs-tab-btn {
+      color: var(--header-link-hover) !important;
+    }
+    .ant-tabs-ink-bar {
+      background: var(--header-link-hover);
+      height: 3px;
+      border-radius: $border-radius-sm;
+    }
+  }
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+  min-height: 400px;
+}
+
+.empty {
+  margin-top: 80px;
+  :global(.ant-empty-description) {
+    font-weight: var(--font-weight-medium);
+    color: $text-disabled;
+  }
+}

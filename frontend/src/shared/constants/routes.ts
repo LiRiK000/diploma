@@ -1,3 +1,5 @@
+import { notification } from 'antd'
+
 export const routes = {
   home: '/',
   register: '/register',

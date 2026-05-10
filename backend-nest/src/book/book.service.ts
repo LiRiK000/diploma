@@ -16,19 +16,35 @@ export class BookService {
   ) {}
 
   async getMainPageSections() {
-    return this.prisma.collection.findMany({
+    const sections = await this.prisma.collection.findMany({
       where: { isActive: true },
       orderBy: { order: 'asc' },
       include: {
         books: {
           take: 10,
           include: {
-            author: { select: { firstName: true, lastName: true } },
+            author: { select: { id: true, firstName: true, lastName: true } },
             genre: { select: { label: true } },
+            _count: {
+              select: { reviews: true },
+            },
           },
         },
       },
     });
+
+    return sections.map((section) => ({
+      ...section,
+      books: section.books.map((book) => ({
+        ...book,
+        author: `${book.author.firstName} ${book.author.lastName}`,
+        authorId: book.author.id,
+        genre: book.genre.label,
+        coverUrl: book.coverImage,
+        ratingsCount: book._count.reviews,
+        rating: 5.0,
+      })),
+    }));
   }
 
   async getSmartRecommendations(bookId: string) {

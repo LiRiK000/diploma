@@ -83,17 +83,31 @@ model Review {
 }
 
 model Notification {
-  id String @id @default(uuid())
-  user User @relation(fields: [userId], references: [id])
-  userId String
-  message String
-  isViewed Boolean @default(false)
+  id          String               @id @default(uuid())
+  user        User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String
+  
+  type        NotificationType     @default(SYSTEM)
+  priority    NotificationPriority @default(MEDIUM)
+  
+  title       String               // Заголовок (напр: "Книга готова!")
+  message     String               // Тело (напр: "Вас ждет 'Гарри Поттер' в зале №3")
+  
+  // Полезная нагрузка: храним ID объекта, на который ссылаемся
+  // Например: { "orderId": "uuid-123", "action": "open_order" }
+  payload     Json?                
+  
+  // Прямая ссылка для фронтенда, если не хочется парсить JSON
+  link        String?              
+  
+  isViewed    Boolean              @default(false)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+
+  @@index([userId, isViewed]) // Индекс для быстрого получения непрочитанных
   @@map("notifications")
 }
-
 model Book {
   id String @id @default(uuid())
   title String
@@ -280,4 +294,20 @@ enum OrderStatus {
   OVERDUE
   RETURNED
   CANCELLED
+}
+
+enum NotificationType {
+  ORDER_STATUS    // Изменение статуса заказа
+  OVERDUE         // Просрочка возврата
+  ACHIEVEMENT     // Новая ачивка или уровень
+  NEW_ARRIVAL     // Новинка от любимого автора
+  REMINDER        // Напоминание (например, скоро сдача книги)
+  SYSTEM          // Технические сообщения или бан
+}
+
+enum NotificationPriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
 }

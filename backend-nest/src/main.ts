@@ -17,7 +17,8 @@ async function bootstrap() {
 
   app.use(
     helmet({
-      crossOriginResourcePolicy: false,
+      crossOriginResourcePolicy: { policy: 'cross-origin' },
+      crossOriginEmbedderPolicy: { policy: 'credentialless' },
     }),
   );
   app.use(cookieParser());

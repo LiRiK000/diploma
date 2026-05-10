@@ -1,37 +1,61 @@
-import { Card, Tag, Space, Button, Popconfirm } from 'antd'
-import { EditOutlined, DeleteOutlined } from '@ant-design/icons'
+import { Card, Tag, Space, Button, Popconfirm, Tooltip } from 'antd'
+import { EditOutlined, DeleteOutlined, BookOutlined } from '@ant-design/icons'
 import styles from './CollectionCard.module.scss'
 
 export const CollectionCard = ({ collection, onEdit, onDelete }) => {
+  const books = collection.books || []
+  const count = collection._count?.books ?? 0
+
   return (
-    <Card className={styles.card}>
+    <Card className={styles.card} bordered={false}>
       <div className={styles.header}>
-        <div>
+        <div className={styles.titleInfo}>
           <h3>{collection.title}</h3>
-          <Tag color="blue">{collection.slug}</Tag>
+          <code>/{collection.slug}</code>
         </div>
-
-        <Tag color={collection.isActive ? 'green' : 'default'}>
-          {collection.isActive ? 'Активна' : 'Скрыта'}
-        </Tag>
+        <div className={styles.status}>
+          <div
+            className={`${styles.dot} ${collection.isActive ? styles.active : ''}`}
+          />
+        </div>
       </div>
-
-      <div className={styles.preview}>
-        {collection.books?.slice(0, 4).map(book => (
-          <img key={book.id} src={'book.png'} alt="" />
-        ))}
-      </div>
+      <img src="book.png" alt="" />
+      <div className={styles.previewContainer}></div>
 
       <div className={styles.footer}>
-        <span>{collection._count?.books ?? 0} книг</span>
+        <div className={styles.countInfo}>
+          <BookOutlined />
+          <span>{count} книг</span>
+        </div>
 
-        <Space>
-          <Button icon={<EditOutlined />} onClick={() => onEdit(collection)} />
+        <Space size="middle">
+          <Tooltip title="Редактировать">
+            <Button
+              type="text"
+              shape="circle"
+              icon={<EditOutlined />}
+              onClick={() => onEdit(collection)}
+              className={styles.actionBtn}
+            />
+          </Tooltip>
+
           <Popconfirm
-            title="Удалить коллекцию?"
+            title="Удалить подборку?"
+            description="Это действие нельзя будет отменить."
             onConfirm={() => onDelete(collection.id)}
+            okText="Да"
+            cancelText="Нет"
+            okButtonProps={{ danger: true }}
           >
-            <Button icon={<DeleteOutlined />} danger />
+            <Tooltip title="Удалить">
+              <Button
+                type="text"
+                shape="circle"
+                icon={<DeleteOutlined />}
+                danger
+                className={styles.actionBtn}
+              />
+            </Tooltip>
           </Popconfirm>
         </Space>
       </div>

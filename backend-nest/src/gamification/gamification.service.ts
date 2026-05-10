@@ -1,6 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { AchievementCategory, Prisma } from '@prisma/client';
+import {
+  AchievementCategory,
+  Prisma,
+  NotificationType,
+  NotificationPriority,
+} from '@prisma/client';
 import { GAMIFICATION_CONFIG, RANKS } from './gamification.constants';
 
 type PrismaTransaction = Prisma.TransactionClient;
@@ -68,7 +73,10 @@ export class GamificationService {
         await tx.notification.create({
           data: {
             userId,
-            message: `🎉 Уровень повышен! Теперь вы ${newLevel} уровня (${this.getRankTitle(newLevel)}).`,
+            type: NotificationType.ACHIEVEMENT,
+            priority: NotificationPriority.HIGH,
+            title: '🎉 Уровень повышен!',
+            message: `Теперь вы ${newLevel} уровня (${this.getRankTitle(newLevel)}).`,
           },
         });
       }
@@ -150,7 +158,11 @@ export class GamificationService {
         await tx.notification.create({
           data: {
             userId,
-            message: `🏅 Достижение получено: "${ach.title}"! +${ach.rewardExp} XP`,
+            type: NotificationType.ACHIEVEMENT,
+            priority: NotificationPriority.MEDIUM,
+            title: '🏅 Получено достижение!',
+            message: `Вы открыли: "${ach.title}"! +${ach.rewardExp} XP`,
+            payload: { achievementId: ach.id },
           },
         });
       }

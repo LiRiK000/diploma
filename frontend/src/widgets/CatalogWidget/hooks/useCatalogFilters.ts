@@ -1,37 +1,44 @@
 import { useSearchParams } from 'react-router-dom'
-import {
-  GetCatalogParams,
-  CatalogSort,
-} from '@shared/services/Catalog/catalog.types'
+import { useCallback, useMemo } from 'react'
 
 export const useCatalogFilters = () => {
   const [searchParams, setSearchParams] = useSearchParams()
 
-  const filters: GetCatalogParams = {
-    page: Number(searchParams.get('page')) || 1,
-    limit: Number(searchParams.get('limit')) || 12,
-    genreId: searchParams.get('genreId') || undefined,
-    authorId: searchParams.get('authorId') || undefined,
-    search: searchParams.get('search') || '',
-    sort: (searchParams.get('sort') as CatalogSort) || 'newest',
-  }
+  const filters = useMemo(
+    () => ({
+      page: Number(searchParams.get('page')) || 1,
+      limit: 12,
+      genreId: searchParams.get('genreId') || undefined,
+      authorId: searchParams.get('authorId') || undefined,
+      collection: searchParams.get('collection') || undefined,
+      sort: searchParams.get('sort') || 'newest',
+      search: searchParams.get('search') || '',
+    }),
+    [searchParams],
+  )
 
-  const updateFilters = (partialFilters: Partial<GetCatalogParams>) => {
-    const newFilters = { ...filters, ...partialFilters }
+  const updateFilters = useCallback(
+    (newFilters: Partial<typeof filters>) => {
+      setSearchParams(prev => {
+        const next = new URLSearchParams(prev)
 
-    if (partialFilters.page === undefined) {
-      newFilters.page = 1
-    }
+        Object.entries(newFilters).forEach(([key, value]) => {
+          if (value === undefined || value === '' || value === null) {
+            next.delete(key)
+          } else {
+            next.set(key, String(value))
+          }
+        })
 
-    const params: Record<string, string> = {}
-    Object.entries(newFilters).forEach(([key, value]) => {
-      if (value !== undefined && value !== '' && value !== null) {
-        params[key] = String(value)
-      }
-    })
+        if (!newFilters.hasOwnProperty('page')) {
+          next.set('page', '1')
+        }
 
-    setSearchParams(params)
-  }
+        return next
+      })
+    },
+    [setSearchParams],
+  )
 
   return { filters, updateFilters }
 }

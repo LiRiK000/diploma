@@ -6,8 +6,6 @@ import { getFullUrl } from '../utils/getFullCoverUrl';
 
 @Injectable()
 export class CatalogService {
-  private readonly s3PublicUrl = process.env.S3_PUBLIC_URL;
-
   constructor(private readonly prisma: PrismaService) {}
 
   async getCatalog(dto: GetCatalogDto) {
@@ -18,6 +16,7 @@ export class CatalogService {
       authorId,
       search,
       sort = 'newest',
+      collection,
     } = dto;
 
     const skip = (page - 1) * limit;
@@ -25,31 +24,19 @@ export class CatalogService {
     const where: Prisma.BookWhereInput = {
       ...(genreId && { genreId }),
       ...(authorId && { authorId }),
-
+      ...(collection && {
+        collections: {
+          some: {
+            slug: collection,
+            isActive: true,
+          },
+        },
+      }),
       ...(search && {
         OR: [
-          {
-            title: {
-              contains: search,
-              mode: 'insensitive',
-            },
-          },
-          {
-            author: {
-              firstName: {
-                contains: search,
-                mode: 'insensitive',
-              },
-            },
-          },
-          {
-            author: {
-              lastName: {
-                contains: search,
-                mode: 'insensitive',
-              },
-            },
-          },
+          { title: { contains: search, mode: 'insensitive' } },
+          { author: { firstName: { contains: search, mode: 'insensitive' } } },
+          { author: { lastName: { contains: search, mode: 'insensitive' } } },
         ],
       }),
     };
@@ -67,43 +54,43 @@ export class CatalogService {
         orderBy,
         skip,
         take: limit,
-
         include: {
           author: {
-            select: {
-              id: true,
-              firstName: true,
-              lastName: true,
-            },
+            select: { id: true, firstName: true, lastName: true },
           },
           genre: {
-            select: {
-              id: true,
-              label: true,
-            },
+            select: { id: true, label: true },
+          },
+          _count: {
+            select: { reviews: true },
           },
         },
       }),
-
       this.prisma.book.count({ where }),
     ]);
+
+    let collectionInfo = null;
+    if (collection) {
+      collectionInfo = await this.prisma.collection.findUnique({
+        where: { slug: collection },
+        select: { title: true, description: true },
+      });
+    }
 
     return {
       items: books.map((book) => ({
         id: book.id,
         title: book.title,
-
         author: `${book.author.firstName} ${book.author.lastName}`,
         authorId: book.author.id,
-
         genre: book.genre.label,
         genreId: book.genre.id,
-
         coverUrl: getFullUrl(book.coverImage),
         availableQuantity: book.availableQuantity,
         description: book.description,
+        ratingsCount: book._count.reviews,
       })),
-
+      collection: collectionInfo,
       pagination: {
         page,
         limit,

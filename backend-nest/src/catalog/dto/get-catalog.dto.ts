@@ -6,13 +6,12 @@ export class GetCatalogDto {
   @Type(() => Number)
   @IsInt()
   @Min(1)
-  page?: number = 1;
+  page?: number;
 
   @IsOptional()
   @Type(() => Number)
   @IsInt()
-  @Min(1)
-  limit?: number = 12;
+  limit?: number;
 
   @IsOptional()
   @IsString()
@@ -29,4 +28,8 @@ export class GetCatalogDto {
   @IsOptional()
   @IsString()
   sort?: 'newest' | 'oldest' | 'title';
+
+  @IsOptional()
+  @IsString()
+  collection?: string;
 }

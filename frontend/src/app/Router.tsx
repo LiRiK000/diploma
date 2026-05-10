@@ -33,6 +33,7 @@ import { LibrarianOrdersTab } from '@widgets/LibrarianOrdersTab'
 import { LibrarianBooksTab } from '@widgets/LibrarianBooksTab'
 import { LibrarianAuthorsTab } from '@widgets/LibrarianAuthorsTab'
 import { LibrarianRecommendationsTab } from '@widgets/LibrarianRecommendationsTab'
+import { NotificationsPage } from '@pages/NotificationsPage/NotificationPage'
 export const Router = () => {
   const init = useCookieConsentStore(useShallow(state => state.init))
 
@@ -131,6 +132,17 @@ export const Router = () => {
                       <AuthProvider>
                         <PageProvider>
                           <OrderList />
+                        </PageProvider>
+                      </AuthProvider>
+                    }
+                  />
+
+                  <Route
+                    path={routes.notifications}
+                    element={
+                      <AuthProvider>
+                        <PageProvider>
+                          <NotificationsPage />
                         </PageProvider>
                       </AuthProvider>
                     }

@@ -43,7 +43,6 @@ export class BookController {
         slug: col.slug,
         items: col.books.map((b) => ({
           ...b,
-          author: `${b.author.firstName} ${b.author.lastName}`,
           coverUrl: b.coverImage,
         })),
       })),
