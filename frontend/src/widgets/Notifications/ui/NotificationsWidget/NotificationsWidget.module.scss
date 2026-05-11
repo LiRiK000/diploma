@@ -2,38 +2,67 @@
 
 .container {
   width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: $spacing-lg;
 }
 
 .header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
-  margin-bottom: $spacing-lg * 2;
+  align-items: flex-start;
+  margin-bottom: calc($spacing-lg * 2);
+
+  @include mobile {
+    flex-direction: column;
+    gap: $spacing-md;
+  }
 
   .mainTitle {
     margin: 0 !important;
     font-size: var(--font-size-2xl) !important;
     font-weight: var(--font-weight-display) !important;
-    letter-spacing: -0.02em;
-    color: var(--text-primary);
+    color: var(--header-text-primary);
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+
+    .countBadge {
+      font-size: var(--font-size-md);
+      background: var(--header-link-hover);
+      color: $text-white;
+      padding: 2px 10px;
+      border-radius: $border-radius-lg;
+      font-weight: var(--font-weight-bold);
+    }
+  }
+}
+
+.actionBtn {
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-secondary);
+  transition: $transition-liquid;
+
+  &:hover {
+    color: var(--header-link-hover) !important;
+    background: var(--glass-bg) !important;
   }
 }
 
 .tabs {
-  margin-bottom: $spacing-lg * 1.5;
+  margin-bottom: $spacing-lg;
 
   :global {
     .ant-tabs-nav::before {
       border-bottom: 1px solid var(--header-border);
     }
     .ant-tabs-tab {
-      padding: $spacing-md $spacing-lg;
       font-weight: var(--font-weight-semibold);
       color: var(--text-secondary);
       transition: $transition-liquid;
 
       &:hover {
-        color: var(--header-link-hover);
+        color: var(--header-link-hover) !important;
       }
     }
     .ant-tabs-tab-active .ant-tabs-tab-btn {
@@ -42,7 +71,6 @@
     .ant-tabs-ink-bar {
       background: var(--header-link-hover);
       height: 3px;
-      border-radius: $border-radius-sm;
     }
   }
 }
@@ -50,14 +78,33 @@
 .list {
   display: flex;
   flex-direction: column;
-  gap: $spacing-sm;
-  min-height: 400px;
+  gap: $spacing-md;
 }
 
-.empty {
-  margin-top: 80px;
-  :global(.ant-empty-description) {
-    font-weight: var(--font-weight-medium);
-    color: $text-disabled;
+.paginationWrapper {
+  display: flex;
+  justify-content: center;
+  padding: $spacing-lg 0;
+
+  .loadMoreBtn {
+    @include liquid-glass;
+    padding: $spacing-sm $spacing-lg;
+    height: auto;
+    border-radius: $border-radius-md;
+    color: var(--text-primary);
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: $liquid-glass-shadow;
+    }
   }
+}
+
+.skeletons {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+  padding: $spacing-lg;
+  @include liquid-glass;
+  border-radius: $border-radius-lg;
 }

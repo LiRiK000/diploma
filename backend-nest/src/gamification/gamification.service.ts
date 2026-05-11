@@ -7,6 +7,7 @@ import {
   NotificationPriority,
 } from '@prisma/client';
 import { GAMIFICATION_CONFIG, RANKS } from './gamification.constants';
+import { NotificationsService } from 'src/notifications/notifications.service';
 
 type PrismaTransaction = Prisma.TransactionClient;
 
@@ -14,7 +15,10 @@ type PrismaTransaction = Prisma.TransactionClient;
 export class GamificationService {
   private readonly logger = new Logger(GamificationService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly notifications: NotificationsService,
+  ) {}
 
   private getThresholdForLevel(level: number): number {
     if (level <= 0) return GAMIFICATION_CONFIG.BASE_EXP;
@@ -70,14 +74,13 @@ export class GamificationService {
       }
 
       if (isLevelUp) {
-        await tx.notification.create({
-          data: {
-            userId,
-            type: NotificationType.ACHIEVEMENT,
-            priority: NotificationPriority.HIGH,
-            title: '🎉 Уровень повышен!',
-            message: `Теперь вы ${newLevel} уровня (${this.getRankTitle(newLevel)}).`,
-          },
+        await this.notifications.createForUser(tx, {
+          userId,
+          type: NotificationType.ACHIEVEMENT,
+          priority: NotificationPriority.HIGH,
+          title: '🎉 Уровень повышен!',
+          message: `Теперь вы ${newLevel} уровня (${this.getRankTitle(newLevel)}).`,
+          payload: { kind: 'level_up', level: newLevel },
         });
       }
 
@@ -155,15 +158,13 @@ export class GamificationService {
           data: { experience: { increment: ach.rewardExp } },
         });
 
-        await tx.notification.create({
-          data: {
-            userId,
-            type: NotificationType.ACHIEVEMENT,
-            priority: NotificationPriority.MEDIUM,
-            title: '🏅 Получено достижение!',
-            message: `Вы открыли: "${ach.title}"! +${ach.rewardExp} XP`,
-            payload: { achievementId: ach.id },
-          },
+        await this.notifications.createForUser(tx, {
+          userId,
+          type: NotificationType.ACHIEVEMENT,
+          priority: NotificationPriority.MEDIUM,
+          title: '🏅 Получено достижение!',
+          message: `Вы открыли: "${ach.title}"! +${ach.rewardExp} XP`,
+          payload: { achievementId: ach.id, kind: 'achievement' },
         });
       }
     }

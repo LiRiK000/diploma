@@ -7,17 +7,15 @@ import {
   InfoCircleOutlined,
   ClockCircleOutlined,
 } from '@ant-design/icons'
-import dayjs from 'dayjs'
-import relativeTime from 'dayjs/plugin/relativeTime'
 import classNames from 'classnames'
 
+import { Notification, NotificationType } from '@entities/notifications/types'
 import styles from './NotificationItem.module.scss'
-import { NotificationType } from '@entities/notifications/types'
+import { formatNotificationDate } from '@shared/utils/dataFormater'
 
-dayjs.extend(relativeTime)
 const { Text, Title } = Typography
 
-const ICON_MAP = {
+const ICON_MAP: Record<NotificationType, React.ReactNode> = {
   [NotificationType.ORDER_STATUS]: <ShoppingOutlined />,
   [NotificationType.ACHIEVEMENT]: <TrophyOutlined />,
   [NotificationType.OVERDUE]: <WarningOutlined />,
@@ -32,23 +30,27 @@ interface Props {
 }
 
 export const NotificationItem = ({ data, onRead }: Props) => {
+  const typeKey = data.type?.toLowerCase() as keyof typeof styles
+
   return (
     <div
       className={classNames(styles.card, { [styles.unread]: !data.isViewed })}
-      onClick={() => onRead(data.id)}
+      onClick={() => !data.isViewed && onRead(data.id)}
     >
-      <div
-        className={classNames(styles.iconBox, styles[data.type.toLowerCase()])}
-      >
-        {ICON_MAP[data.type]}
+      <div className={classNames(styles.iconBox, styles[typeKey])}>
+        {ICON_MAP[data.type] || <BellOutlined />}
       </div>
 
       <div className={styles.body}>
         <div className={styles.headerRow}>
           <Title level={5} className={styles.title}>
-            {data.title}
+            {data.title === 'ысысы' || data.title === 'ысыс'
+              ? 'Системное уведомление'
+              : data.title}
           </Title>
-          <Text className={styles.time}>{dayjs(data.createdAt).fromNow()}</Text>
+          <Text className={styles.time}>
+            {formatNotificationDate(data.createdAt)}
+          </Text>
         </div>
         <Text className={styles.message}>{data.message}</Text>
       </div>

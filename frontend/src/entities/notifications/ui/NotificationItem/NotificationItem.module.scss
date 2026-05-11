@@ -1,38 +1,37 @@
 @use '@shared/styles/variables' as *;
-ы .card {
+
+.card {
   position: relative;
   display: flex;
   gap: $spacing-lg;
-  padding: 20px 24px;
-  margin-bottom: $spacing-md;
+  padding: $spacing-lg $padding-xl;
   border-radius: $border-radius-lg;
   cursor: pointer;
   overflow: hidden;
-
   @include liquid-glass;
+
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
 
   &:hover {
     background: var(--bg-content);
-    transform: translateY(-2px) scale(1.01);
-    box-shadow: $liquid-glass-shadow;
     border-color: var(--header-link-hover);
+    transform: translateY(-2px);
+    box-shadow: $liquid-glass-shadow;
   }
 
   &.unread {
     background: var(--bg-content);
     border-left: 4px solid var(--header-link-hover);
 
-    &::after {
+    &::before {
       content: '';
       position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      right: 0;
+      inset: 0;
       background: radial-gradient(
         circle at 0% 50%,
-        rgba(var(--header-link-hover-rgb), 0.05),
-        transparent
+        var(--hero-glow-color),
+        transparent 70%
       );
       pointer-events: none;
     }
@@ -42,12 +41,13 @@
 .iconBox {
   width: 48px;
   height: 48px;
-  border-radius: $border-radius-md + 2px;
+  border-radius: $border-radius-md;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: var(--font-size-xl);
   flex-shrink: 0;
+  transition: $transition-liquid;
 
   &.achievement {
     background: rgba(250, 173, 20, 0.15);
@@ -65,16 +65,22 @@
     background: rgba(114, 46, 209, 0.15);
     color: #722ed1;
   }
+  &.new_arrival {
+    background: rgba(52, 199, 89, 0.15);
+    color: #34c759;
+  }
 }
 
 .body {
   flex: 1;
+  min-width: 0;
 
   .headerRow {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    margin-bottom: $spacing-xs;
+    align-items: baseline;
+    gap: $spacing-sm;
+    margin-bottom: 4px;
   }
 
   .title {
@@ -82,12 +88,13 @@
     font-size: var(--font-size-md) !important;
     font-weight: var(--font-weight-bold) !important;
     color: var(--text-primary);
+    line-height: var(--line-height-tight);
   }
 
   .time {
     font-size: var(--font-size-xs);
     color: var(--text-secondary);
-    font-weight: var(--font-weight-medium);
+    white-space: nowrap;
   }
 
   .message {
@@ -95,17 +102,32 @@
     font-size: var(--font-size-sm);
     color: var(--text-secondary);
     line-height: var(--line-height-body);
-    max-width: 95%;
   }
 }
 
 .glowIndicator {
   position: absolute;
-  top: 14px;
-  right: 14px;
+  top: 12px;
+  right: 12px;
   width: 8px;
   height: 8px;
   background: var(--header-link-hover);
   border-radius: 50%;
-  box-shadow: 0 0 12px var(--header-link-hover);
+  box-shadow: 0 0 10px var(--header-link-hover);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.2);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }

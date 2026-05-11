@@ -8,12 +8,11 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 import { GamificationService } from 'src/gamification/gamification.service';
+import { NotificationsService } from 'src/notifications/notifications.service';
 import { AchievementCategory, Prisma, Review } from '@prisma/client';
 
-export interface ReviewResponse extends Omit<
-  Review,
-  'createdAt' | 'updatedAt'
-> {
+export interface ReviewResponse
+  extends Omit<Review, 'createdAt' | 'updatedAt'> {
   createdAt: string;
   updatedAt: string;
   userName?: string;
@@ -39,11 +38,9 @@ export class ReviewService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly gamificationService: GamificationService,
+    private readonly notifications: NotificationsService,
   ) {}
 
-  /**
-   * Маппинг данных отзыва для фронтенда
-   */
   private mapReview(
     review: ReviewWithUser,
     levelTitle?: string,
@@ -100,6 +97,8 @@ export class ReviewService {
     } catch (error) {
       console.error('Gamification error:', error);
     }
+
+    await this.notifications.notifyReviewPublished(userId, book.title, bookId);
 
     return this.mapReview(review, levelTitle);
   }

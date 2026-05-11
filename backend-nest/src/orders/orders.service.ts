@@ -19,8 +19,8 @@ import * as crypto from 'crypto';
 
 import { PrismaService } from 'src/prisma/prisma.service';
 import { GamificationService } from 'src/gamification/gamification.service';
+import { NotificationsService } from 'src/notifications/notifications.service';
 import { AchievementCategory } from '@prisma/client';
-import { GAMIFICATION_CONFIG } from 'src/gamification/gamification.constants';
 
 import { OrderMapper } from './mappers/order.mapper';
 import { calculateDueDate } from './utils/due-date.util';
@@ -40,10 +40,11 @@ export class OrdersService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly gamificationService: GamificationService,
+    private readonly notifications: NotificationsService,
   ) {}
 
   async create(userId: string) {
-    return this.prisma.$transaction(async (tx) => {
+    const response = await this.prisma.$transaction(async (tx) => {
       const cart = await tx.cart.findUnique({
         where: { userId },
         include: { items: true },
@@ -83,6 +84,14 @@ export class OrdersService {
 
       return OrderMapper.toResponse(order as OrderWithRelations);
     });
+
+    await this.notifications.notifyOrderStatus({
+      userId,
+      orderId: response.id,
+      status: OrderStatus.PENDING,
+    });
+
+    return response;
   }
 
   async returnOrderByCode(shortCode: string) {
@@ -102,7 +111,7 @@ export class OrdersService {
       );
     }
 
-    return this.prisma.$transaction(async (tx) => {
+    const updated = await this.prisma.$transaction(async (tx) => {
       for (const item of order.items) {
         await tx.book.update({
           where: { id: item.bookId },
@@ -119,6 +128,14 @@ export class OrdersService {
         },
       });
     });
+
+    await this.notifications.notifyOrderStatus({
+      userId: order.userId,
+      orderId: order.id,
+      status: OrderStatus.RETURNED,
+    });
+
+    return updated;
   }
 
   async cancelOrderByUser(orderId: string, userId: string) {
@@ -130,10 +147,19 @@ export class OrdersService {
     if (order.status !== OrderStatus.PENDING)
       throw new BadRequestException('Нельзя отменить этот заказ');
 
-    return this.prisma.order.update({
+    const updated = await this.prisma.order.update({
       where: { id: orderId },
       data: { status: OrderStatus.CANCELLED },
     });
+
+    await this.notifications.notifyOrderStatus({
+      userId: order.userId,
+      orderId: order.id,
+      status: OrderStatus.CANCELLED,
+      cancelledBy: 'user',
+    });
+
+    return updated;
   }
 
   async approveOrder(orderId: string) {
@@ -144,10 +170,19 @@ export class OrdersService {
       throw new BadRequestException('Заказ уже обработан или не существует');
 
     const pickupCode = crypto.randomBytes(4).toString('hex').toUpperCase();
-    return this.prisma.order.update({
+    const updated = await this.prisma.order.update({
       where: { id: orderId },
       data: { status: OrderStatus.APPROVED, pickupCode },
     });
+
+    await this.notifications.notifyOrderStatus({
+      userId: updated.userId,
+      orderId: updated.id,
+      status: OrderStatus.APPROVED,
+      pickupCode: updated.pickupCode,
+    });
+
+    return updated;
   }
 
   async verifyPickupCode(code: string, librarianId: string) {
@@ -157,16 +192,38 @@ export class OrdersService {
     if (!order || order.status !== OrderStatus.APPROVED)
       throw new BadRequestException('Невалидный код для выдачи');
 
-    return this.prisma.order.update({
+    const updated = await this.prisma.order.update({
       where: { id: order.id },
       data: { status: OrderStatus.READY_TO_PICKUP, issuedById: librarianId },
     });
+
+    await this.notifications.notifyOrderStatus({
+      userId: updated.userId,
+      orderId: updated.id,
+      status: OrderStatus.READY_TO_PICKUP,
+    });
+
+    return updated;
   }
   async rejectOrder(orderId: string) {
-    return this.prisma.order.update({
+    const existing = await this.prisma.order.findUnique({
+      where: { id: orderId },
+    });
+    if (!existing) throw new NotFoundException('Заказ не найден');
+
+    const updated = await this.prisma.order.update({
       where: { id: orderId },
       data: { status: OrderStatus.CANCELLED },
     });
+
+    await this.notifications.notifyOrderStatus({
+      userId: existing.userId,
+      orderId: existing.id,
+      status: OrderStatus.CANCELLED,
+      cancelledBy: 'librarian',
+    });
+
+    return updated;
   }
 
   async confirmReceipt(orderId: string, userId: string) {
@@ -180,7 +237,7 @@ export class OrdersService {
     if (order.status !== OrderStatus.READY_TO_PICKUP)
       throw new BadRequestException('Заказ не готов');
 
-    return this.prisma.$transaction(async (tx) => {
+    const mapped = await this.prisma.$transaction(async (tx) => {
       for (const item of order.items) {
         await tx.book.update({
           where: { id: item.bookId },
@@ -203,6 +260,14 @@ export class OrdersService {
 
       return OrderMapper.toResponse(updated as OrderWithRelations);
     });
+
+    await this.notifications.notifyOrderStatus({
+      userId,
+      orderId: mapped.id,
+      status: OrderStatus.ON_HAND,
+    });
+
+    return mapped;
   }
 
   async returnOrder(id: string) {
@@ -215,7 +280,7 @@ export class OrdersService {
     if (order.status !== OrderStatus.ON_HAND)
       throw new BadRequestException('Этот заказ еще не выдан');
 
-    return this.prisma.$transaction(async (tx) => {
+    const updated = await this.prisma.$transaction(async (tx) => {
       for (const item of order.items) {
         await tx.book.update({
           where: { id: item.bookId },
@@ -228,6 +293,14 @@ export class OrdersService {
         data: { status: OrderStatus.RETURNED, returnDate: new Date() },
       });
     });
+
+    await this.notifications.notifyOrderStatus({
+      userId: order.userId,
+      orderId: order.id,
+      status: OrderStatus.RETURNED,
+    });
+
+    return updated;
   }
 
   async findOne(orderId: string, userId?: string) {

@@ -14,6 +14,7 @@ import { ReviewsModule } from './reviews/reviews.module';
 import { UserModule } from './user/user.module';
 import { GamificationModule } from './gamification/gamification.module';
 import { CollectionModule } from './collection/collection.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { CollectionModule } from './collection/collection.module';
     ReviewsModule,
     CollectionModule,
     GamificationModule,
+    NotificationsModule,
   ],
 })
 export class AppModule {}

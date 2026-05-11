@@ -19,7 +19,6 @@ export default defineConfig({
       '/api': {
         target: 'http://localhost:4000',
         changeOrigin: true,
-        // rewrite: path => path.replace(/^\/api/, ''),
       },
     },
   },
@@ -27,19 +26,18 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      workbox: {
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5 МБ
+        globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+      },
       includeAssets: ['favicon.svg', 'robots.txt', 'apple-touch-icon.png'],
       manifest: {
-        // TODO: Поменять на итоговое название
         name: 'Библиотека',
-        // TODO: Поменять на итоговое название
         short_name: 'Библиотека',
-        // TODO: Поменять на итоговое описание
         description: 'Сервис для поиска, заказа и получения книг из библиотеки',
-        // TODO: Поменять на итоговый цвет шапки
         theme_color: '#ffffff',
         icons: [
           {
-            // TODO: Поменять на итоговый иконку
             src: 'vite.svg',
             sizes: 'any',
             type: 'image/svg+xml',
@@ -47,7 +45,6 @@ export default defineConfig({
         ],
         start_url: '/',
         display: 'standalone',
-        // TODO: Поменять на итоговый цвет шапки
         background_color: '#ffffff',
         orientation: 'portrait',
         scope: '/',

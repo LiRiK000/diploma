@@ -1,41 +1,75 @@
-version: "3.8"
-
 services:
-  # 1. База данных
   db:
     image: postgres:15-alpine
-    container_name: library_db
+    container_name: diploma_db
     restart: always
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: your_strong_password
-      POSTGRES_DB: myDiplom
-    ports:
-      - "5432:5432"
-    volumes:
-      - db_data:/var/lib/postgresql/data
 
-  # 2. Бэкенд (NestJS)
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_DB: ${POSTGRES_DB:-diploma_db}
+
+    ports:
+      - "${DB_BIND_HOST:-127.0.0.1}:${DB_PORT:-15432}:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-user} -d ${POSTGRES_DB:-diploma_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   backend:
     build:
-      context: ./backend-nest
-      dockerfile: Dockerfile
-    container_name: library_backend
+      context: .
+      dockerfile: backend-nest/Dockerfile
+
+    container_name: diploma_backend
+
     restart: always
+
     depends_on:
-      - db
-    ports:
-      - "3000:3000"
+      db:
+        condition: service_healthy
+
     environment:
-      # ВАЖНО: здесь вместо localhost пишем db (имя сервиса выше)
-      DATABASE_URL: "postgresql://postgres:your_strong_password@db:5432/myDiplom?schema=public"
-      JWT_SECRET: "super-secret-key-123"
-      S3_ENDPOINT: 192.168.1.138 # Пока оставляем IP ноута для S3
-      S3_PORT: 9090
-      S3_ACCESS_KEY: admin
-      S3_SECRET_KEY: password123
-      S3_BUCKET: covers
-      S3_PUBLIC_URL: http://192.168.1.138:9090/covers
+      NODE_ENV: production
+      PORT: ${BACKEND_PORT:-4000}
+
+      DATABASE_URL: postgresql://${POSTGRES_USER:-user}:${POSTGRES_PASSWORD:-password}@db:5432/${POSTGRES_DB:-diploma_db}?schema=public
+
+      JWT_SECRET: ${JWT_SECRET:-super-secret-key}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-super-refresh-secret}
+      CLIENT_URL: ${CLIENT_URL:-http://localhost}
+      MIGRATE_ON_START: ${MIGRATE_ON_START:-true}
+
+    ports:
+      - "${BACKEND_BIND_HOST:-127.0.0.1}:${BACKEND_PORT:-4000}:4000"
+
+    volumes:
+      - ./backend-nest/uploads:/app/uploads
+    healthcheck:
+      test: ["CMD-SHELL", "wget --spider -q http://localhost:4000/api/docs || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+
+    container_name: diploma_frontend
+
+    restart: always
+
+    depends_on:
+      backend:
+        condition: service_healthy
+
+    ports:
+      - "${FRONTEND_BIND_HOST:-0.0.0.0}:${FRONTEND_PORT:-80}:80"
 
 volumes:
-  db_data:
+  postgres_data:

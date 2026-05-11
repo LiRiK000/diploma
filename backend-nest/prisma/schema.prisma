@@ -6,7 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  // using default output for @prisma/client; no custom src path (safer for dist runtime)
+  // Use default output so imports from @prisma/client work in build/runtime.
   // moduleFormat = "cjs"
 }
 datasource db {

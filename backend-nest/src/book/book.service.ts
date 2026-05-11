@@ -7,12 +7,14 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { FileService } from '../common/file/file.service';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class BookService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly fileService: FileService,
+    private readonly notifications: NotificationsService,
   ) {}
 
   async getMainPageSections() {
@@ -172,13 +174,29 @@ export class BookService {
       );
     }
 
-    return this.prisma.book.create({
+    const book = await this.prisma.book.create({
       data: {
         ...dto,
         publishedDate: dto.publishedDate ? new Date(dto.publishedDate) : null,
         subjects: Array.isArray(dto.subjects) ? dto.subjects : [],
       },
     });
+
+    const author = await this.prisma.author.findUnique({
+      where: { id: book.authorId },
+      select: { firstName: true, lastName: true },
+    });
+    if (author) {
+      const authorName = `${author.firstName} ${author.lastName}`;
+      await this.notifications.notifyFollowersNewBook({
+        authorId: book.authorId,
+        bookId: book.id,
+        bookTitle: book.title,
+        authorName,
+      });
+    }
+
+    return book;
   }
 
   async updateBook(id: string, dto: UpdateBookDto) {

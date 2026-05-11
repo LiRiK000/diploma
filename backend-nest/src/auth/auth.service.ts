@@ -13,6 +13,7 @@ import { type User } from '@prisma/client';
 
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserService } from '../user/user.service';
+import { NotificationsService } from 'src/notifications/notifications.service';
 
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
@@ -34,6 +35,7 @@ export class AuthService {
 
     @Inject(forwardRef(() => UserService))
     private readonly userService: UserService,
+    private readonly notifications: NotificationsService,
   ) {}
 
   async register(dto: RegisterDto, res: Response) {
@@ -50,6 +52,12 @@ export class AuthService {
         birthDate: birthDate ? new Date(birthDate) : null,
       },
     });
+
+    const welcomeName =
+      user.displayName?.trim() ||
+      [user.name, user.surname].filter(Boolean).join(' ').trim() ||
+      user.name;
+    await this.notifications.notifyWelcome(user.id, welcomeName);
 
     return this.createSendTokens(user, res);
   }

@@ -1,46 +1,33 @@
-# 1. Среда сборки
 FROM node:20-alpine AS builder
 
-# Устанавливаем зависимости для работы Prisma и Sharp (необходимы в alpine)
-RUN apk add --no-cache libc6-compat openssl
+RUN apk add --no-cache libc6-compat
+RUN npm install -g pnpm
 
 WORKDIR /app
 
-# Копируем файлы зависимостей
-COPY package*.json ./
-COPY prisma ./prisma/
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY backend-nest/package.json ./backend-nest/
 
-# Устанавливаем ВСЕ зависимости (включая dev для сборки)
-RUN npm install
+RUN pnpm install --frozen-lockfile
 
-# Копируем остальной код
-COPY . .
+COPY backend-nest ./backend-nest
 
-# Генерируем клиент Prisma
+# Генерируем клиент и билдим
+WORKDIR /app/backend-nest
 RUN npx prisma generate
+RUN pnpm build
 
-# Собираем проект (из TS в JS)
-RUN npm run build
+FROM node:20-alpine AS runner
 
-# Удаляем лишние dev-зависимости, чтобы уменьшить образ
-RUN npm prune --production
-
-# 2. Среда запуска (финальный образ)
-FROM node:20-alpine
-
+RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-# Устанавливаем библиотеку для работы Prisma в рантайме
-RUN apk add --no-cache openssl
+# Copy full built workspace to keep Prisma runtime intact.
+COPY --from=builder /app /app
+WORKDIR /app/backend-nest
+RUN sed -i 's/\r$//' ./docker/entrypoint.sh
 
-# Копируем только то, что нужно для работы
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/prisma ./prisma
+EXPOSE 4000
 
-# Пробрасываем порт
-EXPOSE 3000
-
-# Запускаем через скрипт из package.json
-CMD ["npm", "run", "start:prod"]
+# App entrypoint with optional Prisma migrations.
+CMD ["sh", "./docker/entrypoint.sh"]
