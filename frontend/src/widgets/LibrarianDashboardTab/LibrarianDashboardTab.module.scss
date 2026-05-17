@@ -1,23 +1,44 @@
 @use '@shared/styles/variables' as *;
 
-.loader {
-  animation: simpleFade 0.5s ease-in-out infinite;
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  border-radius: 8px;
+.skeletonDashboard {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-auto-rows: 50px;
+  gap: 16px;
   width: 100%;
   height: 100%;
+  padding: 16px;
 }
-@keyframes simpleFade {
-  from {
-    opacity: 0;
-  }
-  to {
+
+.skeletonItem {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.03) 25%,
+    rgba(255, 255, 255, 0.08) 37%,
+    rgba(255, 255, 255, 0.03) 63%
+  );
+  background-size: 400% 100%;
+  animation: skeleton-loading 1.4s ease infinite;
+  border-radius: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.fadeContainer {
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  width: 100%;
+  height: 100%;
+
+  &.visible {
     opacity: 1;
   }
 }
 
-:global(.ant-skeleton.ant-skeleton-active .ant-skeleton-button) {
-  background: var(--glass-bg) !important;
-  border: 1px solid var(--glass-border) !important;
+@keyframes skeleton-loading {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }

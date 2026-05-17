@@ -1,17 +1,25 @@
 import { create } from 'zustand'
 
-export type WidgetType = 'bar' | 'line' | 'pie'
+export type WidgetType = 'bar' | 'line' | 'area' | 'pie' | 'donut' | 'radar'
+
 export type DataSource =
   | 'popular_genres'
   | 'popular_authors'
   | 'workload'
   | 'overdue'
+  | 'orders_status'
+  | 'overview_activity'
+
+export type WidgetSizePreset = 'compact' | 'standard' | 'wide' | 'tall' | 'hero'
+export type WidgetPlacement = 'auto' | 'top' | 'bottom' | 'left' | 'right'
 
 export interface WidgetConfig {
   title: string
   type: WidgetType
   source: DataSource
   range: 'week' | 'month' | 'year'
+  sizePreset: WidgetSizePreset
+  placement: WidgetPlacement
 }
 
 interface WidgetBuilderState {
@@ -26,10 +34,12 @@ interface WidgetBuilderState {
 }
 
 const defaultConfig: WidgetConfig = {
-  title: 'Новый отчет',
+  title: 'Новый отчёт',
   type: 'bar',
   source: 'popular_genres',
-  range: 'week',
+  range: 'month',
+  sizePreset: 'standard',
+  placement: 'auto',
 }
 
 export const useWidgetBuilderStore = create<WidgetBuilderState>((set, get) => ({
@@ -42,7 +52,7 @@ export const useWidgetBuilderStore = create<WidgetBuilderState>((set, get) => ({
   setOnSave: fn => set({ onSave: fn }),
   save: () => {
     const { config, onSave, reset, setOpen } = get()
-    if (onSave) onSave(config)
+    if (onSave) onSave({ ...config })
     reset()
     setOpen(false)
   },

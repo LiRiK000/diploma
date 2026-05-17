@@ -19,11 +19,13 @@ export const LibrarianKpiWidget: FC<LibrarianKpiWidgetProps> = ({
   isResizing,
 }) => {
   const { data, isLoading } = useFetchData()
+  const overdueCount = data?.overdue ?? 0
 
   return (
     <WidgetWrapper
       id={LIBRARIAN_KPI_WIDGET_ID}
       title="Сводка по смене"
+      subtitle="Показатели за сегодня"
       isLoading={isLoading}
       isEmpty={!data}
       emptyMessage="Нет данных"
@@ -49,9 +51,11 @@ export const LibrarianKpiWidget: FC<LibrarianKpiWidgetProps> = ({
           <div className={styles.label}>Возвраты сегодня</div>
           <div className={styles.value}>{data?.returnsToday ?? 0}</div>
         </div>
-        <div className={styles.card}>
+        <div
+          className={`${styles.card} ${overdueCount > 0 ? styles.cardDanger : ''}`}
+        >
           <div className={styles.label}>Просрочено</div>
-          <div className={styles.value}>{data?.overdue ?? 0}</div>
+          <div className={styles.value}>{overdueCount}</div>
         </div>
       </div>
     </WidgetWrapper>

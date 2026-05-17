@@ -1,0 +1,80 @@
+// widgets/LibraryWorkloadWidget/LibraryWorkloadWidget.module.scss
+@use '@shared/styles/variables' as *;
+
+.container {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 8px 0;
+  overflow: hidden;
+
+}
+
+.chartArea {
+  flex: 1;
+  min-height: 0;
+}
+
+// Стилизация тултипа Recharts под Apple Style
+:global(.recharts-default-tooltip) {
+  background-color: rgba(255, 255, 255, 0.8) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  border-radius: 14px !important;
+  border: 1px solid rgba(255, 255, 255, 0.5) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08) !important;
+  padding: 10px 14px !important;
+}
+
+:global(.recharts-tooltip-label) {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  color: #1d1d1f;
+  margin-bottom: 4px;
+}
+
+:global(.recharts-tooltip-item) {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-size: 12px;
+  padding: 2px 0 !important;
+}
+
+// Стилизация осей
+:global(.recharts-cartesian-axis-tick-value) {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-weight: 500;
+  fill: #86868b; // iOS Secondary Label Color
+}
+
+// Эффект свечения для линий при ховере (опционально)
+.areaActive {
+  filter: drop-shadow(0px 4px 8px rgba(0, 122, 255, 0.3));
+}
+
+// Стили для Empty и Skeleton
+.centerContent {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+// Плавная анимация появления
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.chartFadeIn {
+  animation: fadeIn 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}

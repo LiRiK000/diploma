@@ -1,8 +1,7 @@
-import { CSSProperties, FC, useLayoutEffect, useState } from 'react'
-import { Responsive as ResponsiveGridLayout, Layouts } from 'react-grid-layout'
-import { useFullscreenStore } from '@entities/widgets-grid/model/store'
-import { GRID_ID } from '@entities/widgets-grid/constants'
-import { loadLayoutsFromStorage } from '@widgets/LibrarianDashboardTab/utils'
+import { CSSProperties, FC } from 'react'
+import { Responsive as ResponsiveGridLayout } from 'react-grid-layout'
+import { useFullscreenStore, useLayoutStore } from '../../model/store'
+import { GRID_ID } from '../../constants'
 import { GridItem } from '../GridItem/GridItem'
 import {
   GRID_BREAKPOINTS,
@@ -13,16 +12,11 @@ import {
   DRAGGABLE_HANDLE,
 } from './model/constants'
 import { useGridWidth } from './hooks/useGridWidth'
-import { useLayoutPersistence } from './hooks/useLayoutPersistence'
 import classes from './Grid.module.scss'
 import { GridProps } from './types'
 
-const isLayouts = (value: unknown): value is Layouts =>
-  typeof value === 'object' && value !== null && !Array.isArray(value)
-
 export const Grid: FC<GridProps> = ({
   items,
-  layouts,
   isDraggable = false,
   isResizable = false,
   hideOverflowX,
@@ -30,31 +24,30 @@ export const Grid: FC<GridProps> = ({
 }) => {
   const { containerRef, width } = useGridWidth()
   const isGridReady = width > 0
-  const [currentLayouts, setCurrentLayouts] = useState<Layouts>(layouts || {})
-  const [isDragging, setIsDragging] = useState(false)
-  const [isResizing, setIsResizing] = useState(false)
-  const handleLayoutChange = useLayoutPersistence()
+
+  // Получаем стейт слоя под конкретный GRID_ID
+  const currentLayouts = useLayoutStore(
+    state => state.gridLayoutsStates[GRID_ID] || {},
+  )
+  const updateLayoutsTemporarily = useLayoutStore(
+    state => state.updateLayoutsTemporarily,
+  )
 
   const fullScreenItemId = useFullscreenStore(
     state => state.gridFullScreenStates[GRID_ID]?.fullScreenItemId,
   )
+
   const isFullScreenActive = useFullscreenStore(
     state => state.gridFullScreenStates[GRID_ID]?.isFullscreen,
   )
 
-  useLayoutEffect(() => {
-    const stored: unknown = loadLayoutsFromStorage()
-    if (isLayouts(stored)) {
-      setCurrentLayouts(stored)
-    } else if (layouts) {
-      setCurrentLayouts(layouts)
-    }
-  }, [layouts])
-
   return (
     <div
       ref={containerRef}
-      className={`${classes.grid} ${isFullScreenActive ? classes.fullscreenActive : ''}`}
+      className={`
+        ${classes.grid}
+        ${isFullScreenActive ? classes.fullscreenActive : ''}
+      `}
       style={
         {
           overflowX: hideOverflowX ? 'hidden' : 'auto',
@@ -73,20 +66,15 @@ export const Grid: FC<GridProps> = ({
           containerPadding={GRID_CONTAINER_PADDING}
           preventCollision={false}
           compactType="vertical"
-          draggableHandle={`${DRAGGABLE_HANDLE}`}
+          draggableHandle={DRAGGABLE_HANDLE}
           isDraggable={isDraggable}
           isResizable={isResizable}
           resizeHandles={['se']}
           useCSSTransforms
           isBounded
-          onLayoutChange={(layout, allLayouts) => {
-            setCurrentLayouts(allLayouts)
-            handleLayoutChange(layout, allLayouts)
+          onLayoutChange={(_, allLayouts) => {
+            updateLayoutsTemporarily(allLayouts)
           }}
-          onDragStart={() => setIsDragging(true)}
-          onDragStop={() => setIsDragging(false)}
-          onResizeStart={() => setIsResizing(true)}
-          onResizeStop={() => setIsResizing(false)}
         >
           {items.map(item => {
             const isThisWidgetFull =
@@ -96,17 +84,10 @@ export const Grid: FC<GridProps> = ({
               <div
                 key={item.id}
                 className={isThisWidgetFull ? classes.widgetFullscreen : ''}
-                data-grid={item.gridParams}
               >
-                <GridItem
-                  isDragging={isDragging}
-                  isResizing={isResizing}
-                  isEditing={isDraggable}
-                >
+                <GridItem isEditing={isDraggable}>
                   {item.content({
                     id: item.id,
-                    isDragging,
-                    isResizing,
                     isEditing: isDraggable,
                   })}
                 </GridItem>

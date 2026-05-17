@@ -1,0 +1,8 @@
+.trigger {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  border-radius: 10px !important;
+  box-shadow: 0 4px 14px rgba(var(--primary-rgb), 0.25);
+}

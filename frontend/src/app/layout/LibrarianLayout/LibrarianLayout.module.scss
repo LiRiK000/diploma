@@ -3,105 +3,254 @@
 .layout {
   min-height: 100vh;
   background: var(--bg-page);
+  display: flex;
+  position: relative;
+  font-family: var(--font-family-base);
 }
 
 .sider {
-  background: var(--bg-content) !important;
-  position: fixed !important;
-  height: 100vh;
-  left: 0;
+  // Используем системный бэкграунд стекла и размытие из твоего файла
+  background: var(--glass-bg) !important;
+  backdrop-filter: var(--header-blur);
+  -webkit-backdrop-filter: var(--header-blur);
+
+  // Прилипание к экрану: сайдбар всегда растянут на всю видимую высоту
+  position: sticky !important;
   top: 0;
-  z-index: 100;
+  height: 100vh;
+
+  z-index: 110;
   border-right: 1px solid var(--glass-border);
   display: flex;
   flex-direction: column;
+  box-shadow: var(--header-shadow);
+  transition: all var(--transition-speed) cubic-bezier(0.25, 0.1, 0.25, 1) !important;
 
   :global(.ant-layout-sider-children) {
     display: flex;
     flex-direction: column;
-    background: var(--bg-content);
+    background: transparent; // Прозрачный фон, чтобы работал блюр сзади
+    height: 100%;
+    position: relative;
   }
 
   :global(.ant-menu) {
     flex: 1;
     background: transparent;
     border-inline-end: none !important;
-    padding: 8px;
+    padding: 16px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    :global(.ant-menu-item) {
+      border-radius: $border-radius-md !important; // 12px из твоего файла
+      margin: 0 !important;
+      width: 100% !important;
+      height: 44px !important;
+      line-height: 44px !important;
+      color: var(--text-secondary); // Твой токен второстепенного текста
+      font-size: var(--font-size-sm); // 14px
+      transition: $transition-liquid;
+
+      &:hover {
+        background: rgba(
+          0,
+          113,
+          227,
+          0.05
+        ) !important; // Apple-blue с легкой прозрачностью
+        color: var(--header-link-hover) !important;
+        transform: translateX(4px);
+      }
+
+      &:global(.ant-menu-item-selected) {
+        background: rgba(
+          0,
+          113,
+          227,
+          0.08
+        ) !important; // Выделение в стиле Apple
+        color: #0071e3 !important; // Основной синий бренд-цвет
+        font-weight: var(--font-weight-semibold);
+
+        &::after {
+          border-right: 3px solid #0071e3 !important;
+          right: 0;
+          height: 18px;
+          top: 13px;
+          border-radius: $border-radius-sm;
+        }
+      }
+    }
+  }
+}
+
+// Кастомная парящая кнопка сворачивания на границе сайдбара
+.customTrigger {
+  position: absolute;
+  top: 24px;
+  right: -14px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  z-index: 120;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: $shadow-light;
+
+  // Интегрируем твой фирменный стеклянный миксин!
+  @include liquid-glass;
+
+  &:hover {
+    color: var(--text-primary);
+    transform: scale(
+      1.1
+    ); // Слегка переопределяем ховер миксина для круглой кнопки
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  svg {
+    transition: transform var(--transition-speed) ease;
+  }
+
+  &.collapsedActive svg {
+    transform: rotate(180deg);
   }
 }
 
 .logoContainer {
-  height: 64px;
+  height: 72px;
   display: flex;
   align-items: center;
-  padding: 0 20px;
-  gap: 12px;
-  margin-bottom: 8px;
+  padding: 0 24px;
+  gap: 14px;
+  border-bottom: 1px solid var(--glass-border);
 }
 
 .logoCircle {
   width: 32px;
   height: 32px;
-  border-radius: 8px;
-  background: linear-gradient(135deg, #1890ff 0%, #722ed1 100%);
+  border-radius: 10px;
+  background: linear-gradient(135deg, #0071e3 0%, #1d1d1f 100%);
+  box-shadow: 0 4px 12px rgba(0, 113, 227, 0.2);
+  flex-shrink: 0;
+}
+
+.logoText {
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-md); // 16px
+  letter-spacing: -0.4px;
+  color: var(--text-primary); // Системный основной цвет
+  white-space: nowrap;
+  opacity: 1;
+  transition: all var(--transition-speed) ease;
+
+  &.hidden {
+    opacity: 0;
+    transform: translateX(-10px);
+    pointer-events: none;
+  }
 }
 
 .siderFooter {
-  padding: 16px;
-  border-top: 1px solid var(--glass-border);
+  padding: 12px;
+  margin: 16px;
+  border-radius: $border-radius-md; // 12px
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  backdrop-filter: var(--header-blur);
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+  transition: $transition-liquid;
+}
+
+.userAvatar {
+  background: linear-gradient(135deg, #0071e3 0%, #86868b 100%);
+  color: $text-white;
+  box-shadow: 0 4px 10px rgba(0, 113, 227, 0.15);
+  flex-shrink: 0;
+}
+
+.userInfo {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: opacity var(--transition-speed) ease;
+
+  &.hidden {
+    opacity: 0;
+    width: 0;
+    margin: 0;
+    pointer-events: none;
+  }
+}
+
+.userName {
+  font-size: var(--font-size-xs); // 12px
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.userRole {
+  font-size: 10px;
+  color: var(--text-secondary);
+  white-space: nowrap;
 }
 
 .rightLayout {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
   background: var(--bg-page) !important;
-  transition: margin-left 0.2s;
+  overflow: hidden;
+  width: 100%;
 }
 
 .header {
+  // Берем липкий полупрозрачный фон хедера из твоих настроек
   background: var(--header-bg-sticky) !important;
-  backdrop-filter: blur(8px);
+  backdrop-filter: var(--header-blur);
+  -webkit-backdrop-filter: var(--header-blur);
   border-bottom: 1px solid var(--glass-border);
-  padding: 0 24px;
-  height: 64px;
+  padding: 0 40px;
+  height: 72px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   position: sticky;
   top: 0;
-  z-index: 50;
+  z-index: 100;
+  box-shadow: var(--header-shadow);
 }
 
 .title {
   margin: 0 !important;
-  font-weight: 700 !important;
-  letter-spacing: -0.5px;
-}
-
-.headerActions {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-
-.returnBtn {
-  background-color: #52c41a !important;
-  border-color: #52c41a !important;
-  color: #fff !important;
-  &:hover {
-    background-color: #73d13d !important;
-    opacity: 0.9;
-  }
+  font-weight: var(
+    --font-weight-display
+  ) !important; // Жирный премиальный шрифт 800
+  font-size: var(--font-size-xl) !important; // 22px
+  letter-spacing: -0.6px;
+  color: var(--text-primary);
 }
 
 .content {
-  padding: 24px;
-  margin: 24px;
+  padding: 32px;
+  // Верхний марджин убран, контент аккуратно стыкуется с липким хедером
+  margin: 0 40px 40px 40px;
   background: var(--bg-content) !important;
-  border-radius: 16px;
+  border-radius: $border-radius-lg; // 24px из твоего файла переменных
   border: 1px solid var(--glass-border);
   min-height: calc(100vh - 112px);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.05);
+  box-shadow: $shadow-light;
+  display: flex;
+  flex-direction: column;
 }

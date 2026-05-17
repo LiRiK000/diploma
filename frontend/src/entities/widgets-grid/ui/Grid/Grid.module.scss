@@ -6,6 +6,9 @@
   min-height: 400px;
   position: relative;
 
+  // Плавный переход для изменения размеров самой сетки
+  transition: width 200ms cubic-bezier(0.2, 0.8, 0.2, 1);
+
   &.fullscreenActive {
     overflow: hidden !important;
   }
@@ -17,40 +20,59 @@
     }
 
     .react-grid-item {
+      // Плавное перемещение блоков карточек, когда меняется ширина родителя
       transition:
-        transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1),
-        width 180ms cubic-bezier(0.2, 0.8, 0.2, 1),
-        height 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+        transform 200ms cubic-bezier(0.2, 0.8, 0.2, 1),
+        width 200ms cubic-bezier(0.2, 0.8, 0.2, 1),
+        height 200ms cubic-bezier(0.2, 0.8, 0.2, 1);
 
       .react-resizable-handle {
         position: absolute;
-        right: 0;
-        bottom: 0;
-        width: 28px;
-        height: 28px;
+        right: 8px;
+        bottom: 8px;
+        width: 16px;
+        height: 16px;
         cursor: se-resize;
         z-index: 10;
-        transition: opacity 0.2s;
-        opacity: 0.3;
+        transition: all 0.2s ease;
+        opacity: 0; // Скрываем по дефолту, чтобы не мусорить UI
+
+        // Красивый минималистичный уголок ресайза в стиле macOS
+        border-right: 2px solid var(--text-secondary);
+        border-bottom: 2px solid var(--text-secondary);
+        border-bottom-right-radius: 3px;
+      }
+
+      // Показываем уголок ресайза только при наведении на конкретную карточку
+      &:hover .react-resizable-handle {
+        opacity: 0.4;
         &:hover {
-          opacity: 1;
+          opacity: 0.9;
+          border-color: #0071e3; // Подсвечиваем фирменным синим цветом при наведении на сам уголок
         }
       }
     }
 
     .react-grid-item.react-draggable-dragging {
       z-index: 100;
+      transition: none !important; // Отключаем анимации при перетаскивании
     }
 
+    // Стильный системный плейсхолдер во время перетаскивания
     .react-grid-placeholder {
-      background: rgba(100, 108, 255, 0.15);
-      border: 2px dashed rgba(100, 108, 255, 0.4);
-      border-radius: 12px;
-      transition: all 200ms ease;
+      background: var(
+        --hero-glow-color
+      ) !important; // Твой токен мягкого свечения
+      border: 2px dashed #0071e3 !important; // Аккуратный штрих
+      border-radius: $border-radius-md !important; // Идеальный радиус 12px
+      box-shadow: inset 0 4px 20px rgba(0, 113, 227, 0.04);
+      transition: all 0.15s ease;
+      z-index: 1;
     }
   }
 }
 
+// Премиальный режим "На весь экран"
 .widgetFullscreen {
   position: fixed !important;
   top: 0 !important;
@@ -59,15 +81,50 @@
   height: 100vh !important;
   z-index: 9999 !important;
   transform: none !important;
-  transition: all 0.3s ease-in-out !important;
   margin: 0 !important;
 
+  // Создаем подложку: системный фон страницы + размытие заднего плана
+  background: var(--bg-page) !important;
+  backdrop-filter: var(--header-blur);
+  -webkit-backdrop-filter: var(--header-blur);
+
+  // Внутренние отступы, чтобы контент виджета изящно смотрелся на большом мониторе
+  padding: 40px !important;
+  box-sizing: border-box;
+
+  // Плавная киношная анимация выплывания виджета при открытии
+  animation: fullscreenFadeIn 0.35s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+
   :global(.react-resizable-handle) {
-    display: none !important;
+    display: none !important; // Прячем ручку изменения размера в фулскрине
+  }
+
+  // Если внутри виджета есть карточка, убираем у неё внешние тени и заставляем занять 100%
+  > div {
+    width: 100% !important;
+    height: 100% !important;
+    box-shadow: none !important;
+    border: 1px solid var(--glass-border) !important;
+    background: var(--bg-content) !important;
+    border-radius: $border-radius-lg !important; // Красивый радиус 24px
   }
 }
 
 .grid__item {
   width: 100%;
   height: 100%;
+}
+
+// Анимация для бесшовного и красивого масштабирования
+@keyframes fullscreenFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+    backdrop-filter: blur(0px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+    backdrop-filter: var(--header-blur);
+  }
 }

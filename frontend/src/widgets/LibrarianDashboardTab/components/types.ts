@@ -6,4 +6,5 @@ export interface DynamicWidgetProps {
   isEditing?: boolean
   isDragging?: boolean
   isResizing?: boolean
+  onRemove?: () => void
 }

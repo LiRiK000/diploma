@@ -73,3 +73,12 @@
   line-height: var(--line-height-tight);
   letter-spacing: -0.02em;
 }
+
+.cardDanger {
+  border-color: rgba(255, 69, 58, 0.35);
+  background: rgba(255, 69, 58, 0.08);
+
+  .value {
+    color: #ff453a;
+  }
+}

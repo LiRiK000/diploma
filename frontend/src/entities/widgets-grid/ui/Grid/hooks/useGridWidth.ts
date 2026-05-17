@@ -1,28 +1,29 @@
-import { useLayoutEffect, useRef, useState } from 'react'
+import { useState, useLayoutEffect, useRef } from 'react'
 
 export const useGridWidth = () => {
   const containerRef = useRef<HTMLDivElement>(null)
-  const [width, setWidth] = useState(0)
+  const [width, setWidth] = useState<number>(0)
 
   useLayoutEffect(() => {
     const container = containerRef.current
     if (!container) return
 
-    const update = () => {
-      setWidth(container.clientWidth)
+    // Создаем обсервер, который следит за изменением физического размера контейнера сетки
+    const resizeObserver = new ResizeObserver(entries => {
+      if (!entries || entries.length === 0) return
+
+      const { width: contentWidth } = entries[0].contentRect
+
+      // Округляем до целого числа, чтобы избежать микро-багов react-grid-layout с дробными пикселями
+      setWidth(Math.floor(contentWidth))
+    })
+
+    resizeObserver.observe(container)
+
+    return () => {
+      resizeObserver.disconnect()
     }
-
-    update()
-
-    const observer = new ResizeObserver(update)
-
-    observer.observe(container)
-
-    return () => observer.disconnect()
   }, [])
 
-  return {
-    containerRef,
-    width,
-  }
+  return { containerRef, width }
 }

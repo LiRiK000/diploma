@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
+import { api } from '@shared/api'
 
 export interface LibrarianKpiData {
   activeOrders: number
@@ -7,20 +8,13 @@ export interface LibrarianKpiData {
   overdue: number
 }
 
-const librarianKpiService = {
-  getKpi: async (): Promise<LibrarianKpiData> => {
-    return {
-      activeOrders: 18,
-      issuedToday: 7,
-      returnsToday: 5,
-      overdue: 3,
-    }
-  },
-}
-
 export const useFetchData = () => {
   return useQuery({
-    queryKey: ['librarianKpi'],
-    queryFn: () => librarianKpiService.getKpi(),
+    queryKey: ['librarian-shift-kpi'],
+    queryFn: async () => {
+      const { data } = await api.get<LibrarianKpiData>('/statistics/admin/shift-kpi')
+      return data
+    },
+    staleTime: 60_000,
   })
 }

@@ -1,44 +1,93 @@
 import { FC } from 'react'
-import { Space } from 'antd'
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Cell,
+} from 'recharts'
 import { FullScreenButton } from '@entities/widgets-grid'
 import { WidgetWrapper } from '@shared/components/WidgetWrapper'
-import { LineChart } from '@shared/components/LineChart'
+import { ChartBox } from '@shared/components/ChartMeasure'
+import { useAdminOverdue } from '@entities/statistic/hooks/useAdminOverdue'
 import styles from './OverdueTrendWidget.module.scss'
-import { useFetchData } from './hooks/useFetchData'
 
-export const OVERDUE_TREND_WIDGET_ID = '2' as const
+const COLORS = ['#FFD60A', '#FF9F0A', '#FF453A', '#8E8E93']
 
-interface OverdueTrendWidgetProps {
-  isEditing?: boolean
-  isDragging?: boolean
-  isResizing?: boolean
+const CustomTooltip = ({ active, payload }: any) => {
+  if (active && payload?.length) {
+    const data = payload[0].payload
+    const cellColor = payload[0].color
+
+    return (
+      <div className={styles.customTooltip}>
+        <div className={styles.label}>{data.label}</div>
+        <div className={styles.valueContainer}>
+          <div
+            className={styles.indicator}
+            style={{ backgroundColor: cellColor }}
+          />
+          <div className={styles.value}>{payload[0].value} шт.</div>
+        </div>
+      </div>
+    )
+  }
+  return null
 }
 
-export const OverdueTrendWidget: FC<OverdueTrendWidgetProps> = ({
+export const OverdueTrendWidget: FC<any> = ({
   isEditing,
   isDragging,
   isResizing,
 }) => {
-  const { data, isLoading } = useFetchData()
+  const { data, isLoading } = useAdminOverdue()
+  const isEmpty = !isLoading && (!data || data.length === 0)
 
   return (
     <WidgetWrapper
-      id={OVERDUE_TREND_WIDGET_ID}
-      title="Просрочки за неделю"
+      id="2"
+      title="Анализ просрочек"
+      subtitle="Распределение по срокам"
       isLoading={isLoading}
-      isEmpty={!data?.length}
-      emptyMessage="Нет данных"
+      isEmpty={isEmpty}
+      emptyMessage="Просроченных заказов нет"
       isEditing={isEditing}
       isDragging={isDragging}
       isResizing={isResizing}
-      headerContent={
-        <Space>
-          <FullScreenButton widgetId={OVERDUE_TREND_WIDGET_ID} />
-        </Space>
-      }
-      contentClass={styles.chart}
+      headerContent={<FullScreenButton widgetId="2" />}
     >
-      <LineChart data={data ?? []} stroke="#FFBB28" />
+      <ChartBox className={styles.chart}>
+        <BarChart
+          data={data ?? []}
+          margin={{ top: 10, right: 10, left: 10, bottom: 5 }}
+        >
+          <XAxis
+            dataKey="label"
+            axisLine={false}
+            tickLine={false}
+            dy={8}
+            tick={{ fontSize: 11, fill: 'var(--text-secondary)' }}
+          />
+          <YAxis hide />
+          <Tooltip
+            content={<CustomTooltip />}
+            cursor={{ fill: 'rgba(255, 255, 255, 0.03)', radius: 10 }}
+            animationDuration={200}
+          />
+          <Bar
+            dataKey="value"
+            radius={[8, 8, 0, 0]}
+            barSize={32}
+            animationDuration={800}
+            animationEasing="ease-out"
+          >
+            {(data ?? []).map((_, index) => (
+              <Cell key={index} fill={COLORS[index % COLORS.length]} />
+            ))}
+          </Bar>
+        </BarChart>
+      </ChartBox>
     </WidgetWrapper>
   )
 }

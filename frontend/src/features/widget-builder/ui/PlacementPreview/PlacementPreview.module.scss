@@ -1,0 +1,56 @@
+.wrap {
+  padding: 14px;
+  border-radius: 14px;
+  background: rgba(var(--primary-rgb), 0.04);
+  border: 1px solid rgba(var(--primary-rgb), 0.12);
+}
+
+.label {
+  margin: 0 0 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: repeat(8, 10px);
+  gap: 3px;
+}
+
+.cell {
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.04);
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.cellActive {
+  background: linear-gradient(
+    135deg,
+    rgba(var(--primary-rgb), 0.55),
+    rgba(var(--primary-rgb), 0.25)
+  );
+  box-shadow: 0 0 0 1px rgba(var(--primary-rgb), 0.35);
+  animation: pulseCell 1.2s ease-in-out infinite;
+}
+
+.hint {
+  margin: 10px 0 0;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+@keyframes pulseCell {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.75;
+  }
+}
