@@ -1,6 +1,6 @@
 import { Skeleton } from 'antd'
 import type { WidgetConfig } from '../../model/useWidgetBuilderStore'
-import { useDynamicWidgetChart } from '@widgets/LibrarianDashboardTab/hooks/useDynamicWidgetChart'
+import { useDynamicWidgetChart } from '@widgets/LibrarianDashboardTab'
 import { ChartRenderer } from '../ChartRenderer/ChartRenderer'
 
 export const PreviewChart = ({ config }: { config: WidgetConfig }) => {

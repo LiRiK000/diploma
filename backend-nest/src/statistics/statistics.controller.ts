@@ -1,3 +1,4 @@
+// statistics.controller.ts
 import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { Role } from '@prisma/client';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
@@ -14,8 +15,8 @@ export class StatisticsController {
 
   @Get('admin/shift-kpi')
   @Roles(Role.LIBRARIAN)
-  getAdminShiftKpi() {
-    return this.statisticsService.getAdminShiftKpi();
+  getAdminShiftKpi(@Query() query: StatsRangeQueryDto) {
+    return this.statisticsService.getAdminShiftKpi(query);
   }
 
   @Get('admin/overview')
@@ -35,18 +36,20 @@ export class StatisticsController {
   getAdminDynamics(@Query() query: StatsRangeQueryDto) {
     return this.statisticsService.getAdminLibraryDynamics(query);
   }
+
+  @Get('admin/overdue-analytics')
+  @Roles(Role.LIBRARIAN)
+  getAdminOverdue(@Query() query: StatsRangeQueryDto) {
+    return this.statisticsService.getAdminOverdueAnalytics(query);
+  }
+
   @Get('admin/dynamic-widget')
   @Roles(Role.LIBRARIAN)
   getDynamicWidget(
     @Query('source') source: string,
-    @Query('range') range: 'week' | 'month' | 'year',
+    @Query() query: StatsRangeQueryDto,
   ) {
-    return this.statisticsService.getDynamicWidgetData(source, range);
-  }
-  @Get('admin/overdue-analytics')
-  @Roles(Role.LIBRARIAN)
-  getAdminOverdue() {
-    return this.statisticsService.getAdminOverdueAnalytics();
+    return this.statisticsService.getDynamicWidgetData(source, query);
   }
 
   @Get('me/summary')

@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, useMemo } from 'react'
 import {
   BarChart,
   Bar,
@@ -7,10 +7,15 @@ import {
   Tooltip,
   Cell,
 } from 'recharts'
-import { FullScreenButton } from '@entities/widgets-grid'
+import type { WidgetGridProps } from '@entities/widgets-grid/types'
+import { toStatsQuery, DEFAULT_WIDGET_RANGE } from '@entities/statistic/lib/statsQuery'
 import { WidgetWrapper } from '@shared/components/WidgetWrapper'
 import { ChartBox } from '@shared/components/ChartMeasure'
 import { useAdminOverdue } from '@entities/statistic/hooks/useAdminOverdue'
+import {
+  buildWidgetHeaderExtras,
+  getWidgetRangeSubtitle,
+} from '@widgets/LibrarianDashboardTab/model/widgetRangeProps'
 import styles from './OverdueTrendWidget.module.scss'
 
 const COLORS = ['#FFD60A', '#FF9F0A', '#FF453A', '#8E8E93']
@@ -36,26 +41,31 @@ const CustomTooltip = ({ active, payload }: any) => {
   return null
 }
 
-export const OverdueTrendWidget: FC<any> = ({
-  isEditing,
-  isDragging,
-  isResizing,
-}) => {
-  const { data, isLoading } = useAdminOverdue()
+export const OverdueTrendWidget: FC<WidgetGridProps> = props => {
+  const { isEditing, isDragging, isResizing, rangeConfig, onRangeChange } =
+    props
+
+  const range = rangeConfig ?? DEFAULT_WIDGET_RANGE
+  const statsQuery = useMemo(() => toStatsQuery(range), [range])
+  const { data, isLoading } = useAdminOverdue(statsQuery)
   const isEmpty = !isLoading && (!data || data.length === 0)
 
   return (
     <WidgetWrapper
       id="2"
       title="Анализ просрочек"
-      subtitle="Распределение по срокам"
+      subtitle={getWidgetRangeSubtitle(props, 'Распределение по срокам')}
       isLoading={isLoading}
       isEmpty={isEmpty}
       emptyMessage="Просроченных заказов нет"
       isEditing={isEditing}
       isDragging={isDragging}
       isResizing={isResizing}
-      headerContent={<FullScreenButton widgetId="2" />}
+      headerContent={buildWidgetHeaderExtras('2', {
+        rangeConfig: range,
+        onRangeChange,
+        isEditing,
+      }, { allowToday: false })}
     >
       <ChartBox className={styles.chart}>
         <BarChart

@@ -1,4 +1,5 @@
-import { Drawer, Input, Button, Typography, Tag } from 'antd'
+import { Drawer, Input, Button, Typography, Tag, DatePicker } from 'antd'
+import dayjs from 'dayjs'
 import {
   BarChart3,
   LineChart,
@@ -168,12 +169,40 @@ export const WidgetBuilderDrawer = () => {
                   styles.chip,
                   config.range === opt.value && styles.chipActive,
                 )}
-                onClick={() => updateConfig({ range: opt.value })}
+                onClick={() =>
+                  updateConfig({
+                    range: opt.value,
+                    ...(opt.value === 'custom' && !config.from
+                      ? {
+                          from: dayjs().subtract(30, 'day').toISOString(),
+                          to: dayjs().toISOString(),
+                        }
+                      : {}),
+                  })
+                }
               >
                 {opt.label}
               </button>
             ))}
           </div>
+          {config.range === 'custom' && (
+            <DatePicker.RangePicker
+              className={styles.dateRange}
+              value={
+                config.from && config.to
+                  ? [dayjs(config.from), dayjs(config.to)]
+                  : undefined
+              }
+              onChange={dates => {
+                if (!dates?.[0] || !dates?.[1]) return
+                updateConfig({
+                  from: dates[0].startOf('day').toISOString(),
+                  to: dates[1].endOf('day').toISOString(),
+                })
+              }}
+              format="DD.MM.YYYY"
+            />
+          )}
         </section>
 
         <section className={styles.section}>

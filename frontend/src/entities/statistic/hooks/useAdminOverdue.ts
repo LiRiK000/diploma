@@ -1,11 +1,11 @@
 import { useQuery } from '@tanstack/react-query'
+import type { StatsRangeQueryDto } from '../model/types'
 import { statisticService } from '@shared/services/StatisticService'
-import { OverdueAnalyticsResponse } from '../model/types'
 
-export const useAdminOverdue = () => {
-  return useQuery<OverdueAnalyticsResponse>({
-    queryKey: ['admin-stats-overdue'],
-    queryFn: () => statisticService.getAdminOverdueAnalytics(),
-    staleTime: 10 * 60 * 1000,
+export const useAdminOverdue = (query: StatsRangeQueryDto) => {
+  return useQuery({
+    queryKey: ['admin-stats-overdue', query],
+    queryFn: () => statisticService.getAdminOverdueAnalytics(query),
+    staleTime: 5 * 60 * 1000,
   })
 }

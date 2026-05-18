@@ -5,19 +5,24 @@ import {
   PolarGrid,
   PolarAngleAxis,
 } from 'recharts'
-import { FullScreenButton } from '@entities/widgets-grid'
+import type { WidgetGridProps } from '@entities/widgets-grid/types'
+import { toStatsQuery, DEFAULT_WIDGET_RANGE } from '@entities/statistic/lib/statsQuery'
 import { WidgetWrapper } from '@shared/components/WidgetWrapper'
 import { ChartBox } from '@shared/components/ChartMeasure'
 import { useAdminIssuanceByGenre } from '@entities/statistic/hooks/useAdminIssuanceByGenre'
+import {
+  buildWidgetHeaderExtras,
+  getWidgetRangeSubtitle,
+} from '@widgets/LibrarianDashboardTab/model/widgetRangeProps'
 import classes from './TopGenresWidget.module.scss'
 
-export const TopGenresWidget: FC<any> = ({
-  isEditing,
-  isDragging,
-  isResizing,
-}) => {
-  const queryParams = useMemo(() => ({ from: undefined, to: undefined }), [])
-  const { data, isLoading } = useAdminIssuanceByGenre(queryParams)
+export const TopGenresWidget: FC<WidgetGridProps> = props => {
+  const { isEditing, isDragging, isResizing, rangeConfig, onRangeChange } =
+    props
+
+  const range = rangeConfig ?? DEFAULT_WIDGET_RANGE
+  const statsQuery = useMemo(() => toStatsQuery(range), [range])
+  const { data, isLoading } = useAdminIssuanceByGenre(statsQuery)
   const genres = data?.genres ?? []
   const isEmpty = !isLoading && genres.length === 0
 
@@ -25,14 +30,18 @@ export const TopGenresWidget: FC<any> = ({
     <WidgetWrapper
       id="4"
       title="Популярные жанры"
-      subtitle="По количеству выдач"
+      subtitle={getWidgetRangeSubtitle(props, 'По количеству выдач')}
       isLoading={isLoading}
       isEmpty={isEmpty}
       emptyMessage="Нет выдач за период"
       isEditing={isEditing}
       isDragging={isDragging}
       isResizing={isResizing}
-      headerContent={<FullScreenButton widgetId="4" />}
+      headerContent={buildWidgetHeaderExtras('4', {
+        rangeConfig: range,
+        onRangeChange,
+        isEditing,
+      }, { allowToday: false })}
     >
       <ChartBox className={classes.chartContainer}>
         <RadarChart cx="50%" cy="50%" outerRadius="75%" data={genres}>

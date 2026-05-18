@@ -2,15 +2,6 @@ import { Layout, Layouts } from 'react-grid-layout'
 import { GridItemConfig } from '../types'
 import { sanitizeLayoutItem } from './sanitizeLayout'
 
-export const DEFAULT_DASHBOARD_LAYOUTS: Layouts = {
-  lg: [
-    { i: '1', x: 0, y: 0, w: 6, h: 10, minW: 3, minH: 4 },
-    { i: '2', x: 6, y: 0, w: 6, h: 10, minW: 3, minH: 4 },
-    { i: '3', x: 0, y: 10, w: 8, h: 8, minW: 3, minH: 4 },
-    { i: '4', x: 8, y: 10, w: 4, h: 8, minW: 3, minH: 4 },
-  ],
-}
-
 const layoutFromItem = (item: GridItemConfig, fallbackY = 0): Layout => ({
   i: item.id,
   x: item.gridParams?.x ?? 0,

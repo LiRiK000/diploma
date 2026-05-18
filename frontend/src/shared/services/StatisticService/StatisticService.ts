@@ -1,7 +1,7 @@
-// @shared/services/StatisticService.ts
 import {
   AdminOverviewResponse,
   IssuanceByGenreResponse,
+  LibrarianKpiResponse,
   LibraryDynamicsResponse,
   OverdueAnalyticsResponse,
   StatsRangeQueryDto,
@@ -30,9 +30,6 @@ export class StatisticService {
     return response.data
   }
 
-  /**
-   * Новое: Данные для AreaChart (Динамика)
-   */
   async getAdminDynamics(
     query: StatsRangeQueryDto,
   ): Promise<LibraryDynamicsResponse> {
@@ -43,13 +40,33 @@ export class StatisticService {
     return response.data
   }
 
-  /**
-   * Новое: Данные для BarChart (Просрочки)
-   */
-  async getAdminOverdueAnalytics(): Promise<OverdueAnalyticsResponse> {
+  async getAdminOverdueAnalytics(
+    query: StatsRangeQueryDto,
+  ): Promise<OverdueAnalyticsResponse> {
     const response = await api.get<OverdueAnalyticsResponse>(
       '/statistics/admin/overdue-analytics',
+      { params: query },
     )
+    return response.data
+  }
+
+  async getAdminShiftKpi(
+    query: StatsRangeQueryDto,
+  ): Promise<LibrarianKpiResponse> {
+    const response = await api.get<LibrarianKpiResponse>(
+      '/statistics/admin/shift-kpi',
+      { params: query },
+    )
+    return response.data
+  }
+
+  async getDynamicWidget(
+    source: string,
+    query: StatsRangeQueryDto,
+  ): Promise<Array<{ name: string; value: number; issued?: number; returned?: number }>> {
+    const response = await api.get('/statistics/admin/dynamic-widget', {
+      params: { source, ...query },
+    })
     return response.data
   }
 

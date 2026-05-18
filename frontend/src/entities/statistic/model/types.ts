@@ -1,6 +1,10 @@
+/** Пресеты периода — совпадают с DateRangePreset на бэкенде */
+export type DateRangePreset = 'today' | 'week' | 'month' | 'year' | 'custom'
+
 export interface StatsRangeQueryDto {
   from?: string
   to?: string
+  range?: DateRangePreset
 }
 
 export interface AdminOverviewResponse {
@@ -37,6 +41,7 @@ export interface UserSummaryResponse {
   reviewsWritten: number
   favoriteGenresCount: number
 }
+
 export interface LibraryDynamicRow {
   date: string
   issued: number
@@ -52,5 +57,12 @@ export interface OverdueStatRow {
   value: number
 }
 
-// Тип ответа - это просто массив строк статистики
 export type OverdueAnalyticsResponse = OverdueStatRow[]
+
+export interface LibrarianKpiResponse {
+  activeOrders: number
+  issuedToday: number
+  returnsToday: number
+  overdue: number
+  range: { from: string; to: string }
+}

@@ -1,20 +1,11 @@
 import { useQuery } from '@tanstack/react-query'
-import { api } from '@shared/api'
+import type { StatsRangeQueryDto } from '@entities/statistic/model/types'
+import { statisticService } from '@shared/services/StatisticService'
 
-export interface LibrarianKpiData {
-  activeOrders: number
-  issuedToday: number
-  returnsToday: number
-  overdue: number
-}
-
-export const useFetchData = () => {
+export const useFetchData = (query: StatsRangeQueryDto) => {
   return useQuery({
-    queryKey: ['librarian-shift-kpi'],
-    queryFn: async () => {
-      const { data } = await api.get<LibrarianKpiData>('/statistics/admin/shift-kpi')
-      return data
-    },
+    queryKey: ['librarian-shift-kpi', query],
+    queryFn: () => statisticService.getAdminShiftKpi(query),
     staleTime: 60_000,
   })
 }

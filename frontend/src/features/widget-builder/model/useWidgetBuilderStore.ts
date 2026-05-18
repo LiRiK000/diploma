@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import type { DateRangePreset } from '@entities/statistic/model/types'
 
 export type WidgetType = 'bar' | 'line' | 'area' | 'pie' | 'donut' | 'radar'
 
@@ -17,7 +18,9 @@ export interface WidgetConfig {
   title: string
   type: WidgetType
   source: DataSource
-  range: 'week' | 'month' | 'year'
+  range: DateRangePreset
+  from?: string
+  to?: string
   sizePreset: WidgetSizePreset
   placement: WidgetPlacement
 }

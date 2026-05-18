@@ -21,7 +21,7 @@ import {
 } from 'recharts'
 import { ChartBox } from '@shared/components/ChartMeasure'
 import type { WidgetType } from '../../model/useWidgetBuilderStore'
-import type { ChartPoint } from '@widgets/LibrarianDashboardTab/hooks/useDynamicWidgetChart'
+import type { ChartPoint } from '@widgets/LibrarianDashboardTab'
 import styles from './ChartRenderer.module.scss'
 
 const PALETTE = ['#007AFF', '#34C759', '#FF9500', '#AF52DE', '#FF453A', '#5AC8FA']

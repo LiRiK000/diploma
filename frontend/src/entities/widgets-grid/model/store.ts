@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { Layouts } from 'react-grid-layout'
-import { IFullScreenState, ILayoutState } from './types' // твой файл типов
+import { IFullScreenState, ILayoutState } from './types'
 import { initialFullScreenState } from './constants'
 import {
   GRID_ID,
@@ -35,10 +35,6 @@ export const useFullscreenStore = create<IFFullScreenState>(set => ({
   },
 }))
 
-// Расширяем интерфейс твоего ILayoutState в коде (или добавь эти методы в types.ts)
-// Мы добавляем:
-// - initializeDefaultLayouts (если в локалсторадже пусто)
-// - commitLayouts (фиксация изменений на диск)
 interface ILayoutStateExtended extends ILayoutState {
   initializeDefaultLayouts: (defaultLayouts: Layouts) => void
   updateLayoutsTemporarily: (layouts: Layouts) => void
@@ -70,7 +66,6 @@ export const useLayoutStore = create<ILayoutStateExtended>((set, get) => ({
       }
     }
 
-    // Если в диске пусто, берем дефолтные параметры
     set(state => ({
       gridLayoutsStates: {
         ...state.gridLayoutsStates,

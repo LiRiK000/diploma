@@ -7,25 +7,24 @@ import {
   Tooltip,
   CartesianGrid,
 } from 'recharts'
-import { FullScreenButton } from '@entities/widgets-grid'
+import type { WidgetGridProps } from '@entities/widgets-grid/types'
+import { toStatsQuery, DEFAULT_WIDGET_RANGE } from '@entities/statistic/lib/statsQuery'
 import { WidgetWrapper } from '@shared/components/WidgetWrapper'
 import { ChartBox } from '@shared/components/ChartMeasure'
 import { useAdminDynamics } from '@entities/statistic/hooks/useAdminDynamics'
+import {
+  buildWidgetHeaderExtras,
+  getWidgetRangeSubtitle,
+} from '@widgets/LibrarianDashboardTab/model/widgetRangeProps'
 import styles from './LibraryWorkloadWidget.module.scss'
 
-export const LibraryWorkloadWidget: FC<any> = ({
-  isEditing,
-  isDragging,
-  isResizing,
-}) => {
-  const queryParams = useMemo(
-    () => ({
-      from: new Date(Date.now() - 7 * 86400000).toISOString(),
-    }),
-    [],
-  )
+export const LibraryWorkloadWidget: FC<WidgetGridProps> = props => {
+  const { isEditing, isDragging, isResizing, rangeConfig, onRangeChange } =
+    props
 
-  const { data, isLoading } = useAdminDynamics(queryParams)
+  const range = rangeConfig ?? DEFAULT_WIDGET_RANGE
+  const statsQuery = useMemo(() => toStatsQuery(range), [range])
+  const { data, isLoading } = useAdminDynamics(statsQuery)
   const chartData = data?.data ?? []
   const isEmpty = !isLoading && chartData.length === 0
 
@@ -33,14 +32,18 @@ export const LibraryWorkloadWidget: FC<any> = ({
     <WidgetWrapper
       id="3"
       title="Нагрузка библиотеки"
-      subtitle="Выдачи и возвраты за 7 дней"
+      subtitle={getWidgetRangeSubtitle(props, 'Выдачи и возвраты')}
       isLoading={isLoading}
       isEmpty={isEmpty}
       emptyMessage="Нет операций за период"
       isEditing={isEditing}
       isDragging={isDragging}
       isResizing={isResizing}
-      headerContent={<FullScreenButton widgetId="3" />}
+      headerContent={buildWidgetHeaderExtras('3', {
+        rangeConfig: range,
+        onRangeChange,
+        isEditing,
+      }, { allowToday: false })}
     >
       <ChartBox className={styles.container}>
         <AreaChart

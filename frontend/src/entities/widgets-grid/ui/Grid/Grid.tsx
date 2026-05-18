@@ -89,6 +89,8 @@ export const Grid: FC<GridProps> = ({
                   {item.content({
                     id: item.id,
                     isEditing: isDraggable,
+                    rangeConfig: item.rangeConfig,
+                    onRangeChange: item.onRangeChange,
                   })}
                 </GridItem>
               </div>

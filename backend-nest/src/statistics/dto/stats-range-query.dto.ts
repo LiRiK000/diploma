@@ -1,18 +1,24 @@
-import { IsDateString, IsOptional } from 'class-validator';
-import { Transform } from 'class-transformer';
+// stats-range-query.dto.ts
+import { IsOptional, IsString, IsEnum } from 'class-validator';
+
+export enum DateRangePreset {
+  TODAY = 'today',
+  WEEK = 'week',
+  MONTH = 'month',
+  YEAR = 'year',
+  CUSTOM = 'custom',
+}
 
 export class StatsRangeQueryDto {
   @IsOptional()
-  @Transform(({ value }) =>
-    typeof value === 'string' && value.trim() === '' ? undefined : value,
-  )
-  @IsDateString({}, { message: 'from must be a valid ISO 8601 date string' })
+  @IsString()
   from?: string;
 
   @IsOptional()
-  @Transform(({ value }) =>
-    typeof value === 'string' && value.trim() === '' ? undefined : value,
-  )
-  @IsDateString({}, { message: 'to must be a valid ISO 8601 date string' })
+  @IsString()
   to?: string;
+
+  @IsOptional()
+  @IsEnum(DateRangePreset)
+  range?: DateRangePreset;
 }

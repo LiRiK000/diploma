@@ -55,6 +55,7 @@ export const RANGE_OPTIONS = [
   { value: 'week' as const, label: '7 дней' },
   { value: 'month' as const, label: '30 дней' },
   { value: 'year' as const, label: '12 месяцев' },
+  { value: 'custom' as const, label: 'Свой период' },
 ]
 
 export const SIZE_PRESET_OPTIONS: {
