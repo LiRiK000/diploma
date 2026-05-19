@@ -1,11 +1,19 @@
 import React, { useState, useMemo } from 'react'
 import { Empty, DatePicker, Select, Space } from 'antd'
 import dayjs, { Dayjs } from 'dayjs'
+
 import { useWidgetData } from '@entities/widget/hooks/useWidgetData'
+
 import { LibrarianKpi } from '@entities/widget/components/LibrarianKpi/LibrarianKpi'
 import { OverdueTrend } from '@entities/widget/components/OverdueTrend/OverdueTrend'
 import { TopGenres } from '@entities/widget/components/TopGenres/TopGenres'
 import { RecentOrders } from '@entities/widget/components/RecentOrders/RecentOrders'
+
+import {
+  AVAILABLE_WIDGETS,
+  WidgetRenderType,
+} from '@features/addWidget/model/availableWidgets'
+
 import { WidgetWrapper } from '../WidgetWrapper/WidgetWrapper'
 
 const { RangePicker } = DatePicker
@@ -16,6 +24,7 @@ interface WidgetLoaderProps {
   title: string
   isEditing: boolean
   settings?: {
+    renderType?: WidgetRenderType
     limit?: number
     range?: string
     [key: string]: any
@@ -24,6 +33,24 @@ interface WidgetLoaderProps {
   onFullscreenChange: (isFullscreen: boolean) => void
   onSettingsClick?: (id: string) => void
   onDeleteClick?: (id: string) => void
+}
+
+const getSafeRenderType = (
+  widgetType: string,
+  renderType?: WidgetRenderType,
+): WidgetRenderType => {
+  const widgetMeta = AVAILABLE_WIDGETS.find(w => w.type === widgetType)
+
+  if (!widgetMeta) return 'bar'
+
+  const supportedTypes = widgetMeta.supportedRenderTypes.map(t => t.type)
+
+  // SAFE FALLBACK ДЛЯ СТАРОЙ БД
+  if (!renderType || !supportedTypes.includes(renderType)) {
+    return supportedTypes[0]
+  }
+
+  return renderType
 }
 
 export const WidgetLoader: React.FC<WidgetLoaderProps> = React.memo(
@@ -46,6 +73,11 @@ export const WidgetLoader: React.FC<WidgetLoaderProps> = React.memo(
       [Dayjs | null, Dayjs | null] | null
     >(null)
 
+    const renderType = useMemo(
+      () => getSafeRenderType(type, settings?.renderType),
+      [type, settings?.renderType],
+    )
+
     const widgetQuery = useMemo(() => {
       if (
         rangeType === 'CUSTOM' &&
@@ -58,7 +90,10 @@ export const WidgetLoader: React.FC<WidgetLoaderProps> = React.memo(
           to: customDates[1].endOf('day').toISOString(),
         }
       }
-      return { range: rangeType }
+
+      return {
+        range: rangeType,
+      }
     }, [rangeType, customDates])
 
     const { data, isLoading, error } = useWidgetData(id, widgetQuery)
@@ -68,25 +103,29 @@ export const WidgetLoader: React.FC<WidgetLoaderProps> = React.memo(
         return (
           <Empty
             image={Empty.PRESENTED_IMAGE_SIMPLE}
-            description="Данные отсутствуют"
+            description="Нет данных для отображения"
           />
         )
       }
 
       switch (type) {
         case 'librarian_kpi':
-          return <LibrarianKpi data={data} />
+          return <LibrarianKpi data={data} renderType={renderType} />
+
         case 'overdue_trend':
-          return <OverdueTrend data={data} />
+          return <OverdueTrend data={data} renderType={renderType} />
+
         case 'top_genres':
-          return <TopGenres data={data} />
+          return <TopGenres data={data} renderType={renderType} />
+
         case 'recent_orders':
-          return <RecentOrders data={data} limit={settings?.limit || 4} />
+          return <RecentOrders data={data} limit={settings?.limit || 5} />
+
         default:
           return (
             <Empty
               image={Empty.PRESENTED_IMAGE_SIMPLE}
-              description={`Тип виджета "${type}" не поддерживается`}
+              description={`Виджет "${type}" не поддерживается`}
             />
           )
       }
@@ -94,7 +133,7 @@ export const WidgetLoader: React.FC<WidgetLoaderProps> = React.memo(
 
     const dateControls = (
       <Space
-        size={4}
+        size={6}
         onClick={e => e.stopPropagation()}
         onMouseDown={e => e.stopPropagation()}
       >
@@ -102,7 +141,7 @@ export const WidgetLoader: React.FC<WidgetLoaderProps> = React.memo(
           size="small"
           value={rangeType}
           onChange={value => setRangeType(value)}
-          style={{ width: 105, fontSize: '12px' }}
+          style={{ width: 120 }}
           options={[
             { value: 'TODAY', label: 'Сегодня' },
             { value: 'WEEK', label: 'Неделя' },
@@ -111,10 +150,11 @@ export const WidgetLoader: React.FC<WidgetLoaderProps> = React.memo(
             { value: 'CUSTOM', label: 'Период...' },
           ]}
         />
+
         {rangeType === 'CUSTOM' && (
           <RangePicker
             size="small"
-            style={{ width: 210 }}
+            style={{ width: 240 }}
             value={customDates}
             onChange={dates => setCustomDates(dates)}
             allowClear={false}
@@ -129,7 +169,7 @@ export const WidgetLoader: React.FC<WidgetLoaderProps> = React.memo(
         isEditing={isEditing}
         isLoading={isLoading}
         error={
-          error ? (error as any).message || 'Ошибка загрузки аналитики' : null
+          error ? (error as any)?.message || 'Ошибка загрузки аналитики' : null
         }
         isFullscreen={isFullscreen}
         onFullscreenChange={onFullscreenChange}

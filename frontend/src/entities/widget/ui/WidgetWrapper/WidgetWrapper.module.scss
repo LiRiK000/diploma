@@ -1,10 +1,7 @@
 @use '@shared/styles/variables' as *;
 
+// Локальные тайминги анимаций Apple (Плавный отклик)
 $apple-transition: 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-$apple-blur: blur(20px) saturate(190%);
-$light-shadow:
-  0 4px 30px rgba(0, 0, 0, 0.03),
-  0 1px 3px rgba(0, 0, 0, 0.02);
 $inner-stroke: inset 0 1px 0 rgba(255, 255, 255, 0.4);
 
 .wrapper {
@@ -13,13 +10,18 @@ $inner-stroke: inset 0 1px 0 rgba(255, 255, 255, 0.4);
   flex-direction: column;
   box-sizing: border-box;
 
-  background: var(--glass-bg, rgba(255, 255, 255, 0.6)) !important;
-  backdrop-filter: $apple-blur !important;
-  -webkit-backdrop-filter: $apple-blur !important;
-  border: 0.5px solid var(--glass-border, rgba(0, 0, 0, 0.08)) !important;
-  border-radius: 16px !important;
-  box-shadow: $light-shadow, $inner-stroke !important;
+  // Используем твои CSS-переменные для идеальной темы
+  background: var(--glass-bg) !important;
+  backdrop-filter: var(--header-blur) !important;
+  -webkit-backdrop-filter: var(--header-blur) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(
+    --border-radius-primary,
+    24px
+  ) !important; // Нативный закругленный радиус Apple
+  box-shadow: $shadow-light, $inner-stroke !important;
   overflow: hidden;
+
   transition:
     transform $apple-transition,
     box-shadow $apple-transition,
@@ -27,156 +29,156 @@ $inner-stroke: inset 0 1px 0 rgba(255, 255, 255, 0.4);
     border-color 0.3s ease !important;
 
   &:hover {
-    box-shadow:
-      0 8px 40px rgba(0, 0, 0, 0.06),
-      $inner-stroke !important;
+    box-shadow: $liquid-glass-shadow-light, $inner-stroke !important;
   }
 
+  // Стилизация шапки карточки Ant Design
   :global(.ant-card-head) {
-    min-height: 48px !important;
-    padding: 0 16px !important;
-    border-bottom: 0.5px solid var(--glass-border, rgba(0, 0, 0, 0.06)) !important;
+    min-height: 52px !important;
+    padding: 0 20px !important;
+    border-bottom: 1px solid var(--glass-border) !important;
     background: transparent !important;
   }
 
   :global(.ant-card-head-title) {
-    padding: 12px 0 !important;
+    padding: 14px 0 !important;
   }
 
   :global(.ant-card-extra) {
-    padding: 12px 0 !important;
+    padding: 14px 0 !important;
   }
 
+  // Интеграция компонентов ввода AntD под стиль macOS/iOS
   :global(.ant-select-selector),
   :global(.ant-picker) {
     background: rgba(0, 0, 0, 0.04) !important;
     border: none !important;
-    border-radius: 8px !important;
-    transition: background 0.2s ease !important;
+    border-radius: $border-radius-md !important;
+    transition: background 0.2s cubic-bezier(0.25, 0.1, 0.25, 1) !important;
 
     &:hover {
       background: rgba(0, 0, 0, 0.07) !important;
     }
   }
 
+  // Состояние редактирования (Сетка Drag-and-Drop)
   &.isEditing {
     border-style: dashed !important;
-    border-color: #007aff !important;
-    background: rgba(0, 122, 255, 0.01) !important;
-    box-shadow: 0 4px 20px rgba(0, 122, 255, 0.03) !important;
-    animation: applePulse 2.5s infinite ease-in-out;
+    border-color: #007aff !important; // Нативный Apple Blue
+    background: rgba(0, 122, 255, 0.02) !important;
+    box-shadow: 0 4px 24px rgba(0, 122, 255, 0.04) !important;
+    animation: applePulse 3s infinite ease-in-out;
   }
 
+  // Полноэкранный режим виджета (Фокус-мод)
   &.isFullscreen {
     position: fixed !important;
     top: 0 !important;
     left: 0 !important;
     width: 100vw !important;
     height: 100vh !important;
-    z-index: 999999 !important;
+    z-index: 99999 !important;
     border-radius: 0 !important;
     border: none !important;
     box-shadow: none !important;
 
-    background: rgba(10, 10, 12, 0.85) !important;
-    backdrop-filter: blur(50px) saturate(210%) !important;
-    -webkit-backdrop-filter: blur(50px) saturate(210%) !important;
+    // Мягкий глубокий бэкграунд с сильным размытием
+    background: rgba(251, 251, 253, 0.8) !important;
+    backdrop-filter: blur(40px) saturate(200%) !important;
+    -webkit-backdrop-filter: blur(40px) saturate(200%) !important;
 
-    animation: appleFullscreenOpen 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: appleFullscreenOpen 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 
     :global(.ant-card-head) {
       padding: 0 48px !important;
-      min-height: 80px !important;
-      border-bottom: 0.5px solid rgba(255, 255, 255, 0.08) !important;
+      min-height: 88px !important;
+      border-bottom: 1px solid var(--glass-border) !important;
     }
 
     :global(.ant-card-head-title) .title {
-      font-size: 22px !important;
-      font-weight: 700;
-      color: #ffffff !important;
+      font-size: var(--font-size-xl) !important;
+      font-weight: var(--font-weight-bold);
+      color: var(--text-primary) !important;
       letter-spacing: -0.02em;
     }
 
+    // Инпуты внутри полноэкранного режима
     :global(.ant-select-selector),
     :global(.ant-picker) {
-      background: rgba(255, 255, 255, 0.08) !important;
-      color: #ffffff !important;
+      background: rgba(0, 0, 0, 0.05) !important;
+      color: var(--text-primary) !important;
 
       &:hover {
-        background: rgba(255, 255, 255, 0.15) !important;
+        background: rgba(0, 0, 0, 0.08) !important;
       }
       :global(.ant-select-selection-item),
       :global(.ant-picker-input > input) {
-        color: #ffffff !important;
-      }
-      :global(.ant-select-arrow),
-      :global(.ant-picker-suffix) {
-        color: rgba(255, 255, 255, 0.4) !important;
+        color: var(--text-primary) !important;
       }
     }
 
     :global(.ant-empty-description) {
-      color: rgba(255, 255, 255, 0.5) !important;
+      color: var(--text-secondary) !important;
     }
     :global(.ant-result-title) {
-      color: #ffffff !important;
+      color: var(--text-primary) !important;
     }
     :global(.widget-text-primary) {
-      color: #ffffff !important;
+      color: var(--text-primary) !important;
     }
     :global(.widget-text-secondary) {
-      color: rgba(255, 255, 255, 0.45) !important;
+      color: var(--text-secondary) !important;
     }
     :global(.ant-list-item) {
-      border-bottom: 0.5px solid rgba(255, 255, 255, 0.08) !important;
+      border-bottom: 1px solid var(--glass-border) !important;
     }
     :global(.recharts-legend-item-text) {
-      color: rgba(255, 255, 255, 0.6) !important;
+      color: var(--text-secondary) !important;
     }
 
     .body {
-      padding: 48px 64px !important;
+      padding: 40px 64px !important;
     }
 
     .controlBtn {
-      background: rgba(255, 255, 255, 0.06) !important;
-      color: rgba(255, 255, 255, 0.7) !important;
+      background: rgba(0, 0, 0, 0.04) !important;
+      color: var(--text-secondary) !important;
       &:hover {
-        background: rgba(255, 255, 255, 0.15) !important;
-        color: #ffffff !important;
+        background: rgba(0, 0, 0, 0.08) !important;
+        color: var(--text-primary) !important;
       }
     }
   }
 }
 
+// Заголовок виджета
 .title {
-  font-family:
-    -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display',
-    'Helvetica Neue', Arial, sans-serif;
-  font-weight: 600;
-  font-size: 14px;
-  color: var(--text-primary, #1d1d1f);
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
   letter-spacing: -0.01em;
 }
 
+// Круглые системные кнопки (Закрыть, На весь экран, Драг)
 .controlBtn {
-  color: var(--text-secondary, #86868b) !important;
+  color: var(--text-secondary) !important;
   border-radius: 50% !important;
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   display: inline-flex !important;
   align-items: center;
   justify-content: center;
-  transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+  transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
 
   &:hover {
-    background: rgba(0, 0, 0, 0.04) !important;
+    background: rgba(0, 0, 0, 0.05) !important;
     color: #007aff !important;
-    transform: scale(1.06);
+    transform: scale(1.04);
   }
   &:active {
-    transform: scale(0.95);
-    background: rgba(0, 0, 0, 0.08) !important;
+    transform: scale(0.96);
+    background: rgba(0, 0, 0, 0.09) !important;
   }
 }
 
@@ -191,29 +193,36 @@ $inner-stroke: inset 0 1px 0 rgba(255, 255, 255, 0.4);
 .deleteIcon {
   composes: controlBtn;
   &:hover {
-    background: rgba(255, 69, 58, 0.08) !important;
-    color: #ff453a !important;
+    background: rgba(
+      255,
+      59,
+      48,
+      0.08
+    ) !important; // Системный красный Apple (Light)
+    color: #ff3b30 !important;
   }
 }
 
+// Контентная область виджета
 .body {
   flex: 1;
-  padding: 16px;
+  padding: 20px;
   overflow: auto;
   position: relative;
   display: flex;
   flex-direction: column;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-family: var(--font-family-base);
 
+  // Кастомизация скроллбара под стиль macOS (тонкий и незаметный)
   &::-webkit-scrollbar {
     width: 5px;
     height: 5px;
   }
   &::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.12);
+    background: rgba(0, 0, 0, 0.1);
     border-radius: 10px;
     &:hover {
-      background: rgba(0, 0, 0, 0.25);
+      background: rgba(0, 0, 0, 0.2);
     }
   }
 }
@@ -221,20 +230,76 @@ $inner-stroke: inset 0 1px 0 rgba(255, 255, 255, 0.4);
 .centerContainer {
   margin: auto;
   text-align: center;
-  animation: appleFadeIn 0.4s ease;
+  animation: appleFadeIn 0.4s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
+// Автоматическая инверсия оверлеев в темной теме
+body:global(.dark) {
+  .wrapper {
+    :global(.ant-select-selector),
+    :global(.ant-picker) {
+      background: rgba(255, 255, 255, 0.06) !important;
+      &:hover {
+        background: rgba(255, 255, 255, 0.1) !important;
+      }
+    }
+
+    &.isFullscreen {
+      background: rgba(
+        10,
+        10,
+        12,
+        0.85
+      ) !important; // Глубокий графитовый фон для темного фокуса
+
+      :global(.ant-select-selector),
+      :global(.ant-picker) {
+        background: rgba(255, 255, 255, 0.08) !important;
+        &:hover {
+          background: rgba(255, 255, 255, 0.12) !important;
+        }
+      }
+
+      .controlBtn {
+        background: rgba(255, 255, 255, 0.06) !important;
+        &:hover {
+          background: rgba(255, 255, 255, 0.12) !important;
+        }
+      }
+    }
+  }
+
+  .controlBtn:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: #0a84ff !important; // Нативный Apple Blue для темной темы
+  }
+
+  .deleteIcon:hover {
+    background: rgba(
+      255,
+      69,
+      58,
+      0.15
+    ) !important; // Системный красный Apple (Dark)
+    color: #ff453a !important;
+  }
+
+  .body::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    &:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+  }
+}
+
+// Анимации интерфейса
 @keyframes appleFullscreenOpen {
   from {
     opacity: 0;
-    backdrop-filter: blur(0px) saturate(100%);
-    -webkit-backdrop-filter: blur(0px) saturate(100%);
-    transform: scale(0.97);
+    transform: scale(0.96);
   }
   to {
     opacity: 1;
-    backdrop-filter: $apple-blur;
-    -webkit-backdrop-filter: $apple-blur;
     transform: scale(1);
   }
 }
@@ -242,17 +307,19 @@ $inner-stroke: inset 0 1px 0 rgba(255, 255, 255, 0.4);
 @keyframes applePulse {
   0%,
   100% {
-    border-color: rgba(0, 122, 255, 0.4);
+    border-color: rgba(0, 122, 255, 0.3);
+    box-shadow: 0 4px 24px rgba(0, 122, 255, 0.02);
   }
   50% {
-    border-color: rgba(0, 122, 255, 0.8);
+    border-color: rgba(0, 122, 255, 0.7);
+    box-shadow: 0 4px 24px rgba(0, 122, 255, 0.08);
   }
 }
 
 @keyframes appleFadeIn {
   from {
     opacity: 0;
-    transform: translateY(6px);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;

@@ -11,7 +11,7 @@ import {
   useUpdateDashboardLayout,
 } from '@entities/widget/hooks/useDashboard'
 
-import { WidgetGalleryModal } from '@features/addWidget/ui/WidgetGalleryModal/WidgetGalleryModal'
+import { WidgetConfigDrawer } from '@features/addWidget/ui/WidgetConfigDrawer/WidgetConfigDrawer'
 
 import { useAddWidgetToDashboard } from '@entities/widget/hooks/useAddWidgetToDashboard'
 import { useRemoveWidget } from '@entities/widget/hooks/useRemoveWidget'
@@ -24,14 +24,11 @@ export const DashboardPage: React.FC = () => {
   const dashboardKey = 'admin'
 
   const [isEditing, setIsEditing] = useState<boolean>(false)
-  const [isGalleryOpen, setIsGalleryOpen] = useState<boolean>(false)
+  const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false)
 
   const { data: dashboard, isLoading, error } = useDashboard(dashboardKey)
-
   const { mutateAsync: updateLayout } = useUpdateDashboardLayout(dashboardKey)
-
   const { mutateAsync: addWidget } = useAddWidgetToDashboard(dashboardKey)
-
   const { mutateAsync: removeWidget } = useRemoveWidget(dashboardKey)
 
   const handleSaveLayout = async (newLayout: Layout[]) => {
@@ -50,13 +47,10 @@ export const DashboardPage: React.FC = () => {
 
     try {
       await updateLayout(payload)
-
       message.success('Расположение успешно синхронизировано')
     } catch (err) {
       console.error(err)
-
       message.error('Не удалось сохранить сетку на сервере')
-
       throw err
     }
   }
@@ -64,40 +58,38 @@ export const DashboardPage: React.FC = () => {
   const handleRemoveWidget = async (widgetId: string) => {
     try {
       await removeWidget(widgetId)
-
       message.success('Виджет успешно удален')
     } catch (err) {
       console.error(err)
-
       message.error('Не удалось удалить виджет')
     }
   }
 
   const activeWidgets = dashboard?.widgets?.filter(w => w.isEnabled) || []
-
   const initialLayout = activeWidgets.map(w => w.layout)
 
-  const handleAddWidget = async (chosenWidget: AvailableWidgetInfo) => {
+  const handleAddWidget = async (
+    chosenWidget: AvailableWidgetInfo,
+    customSettings: any,
+  ) => {
     try {
       const currentMaxY = activeWidgets.reduce((max, w) => {
         const widgetY = w.layout?.y ?? 0
         const widgetH = w.layout?.h ?? 0
-
         return Math.max(max, widgetY + widgetH)
       }, 0)
 
       const tempId = `temp_${Date.now()}`
-
       if (!dashboard) return
 
       await addWidget({
         dashboardId: dashboard.id,
         key: chosenWidget.type,
         type: chosenWidget.type,
-        title: chosenWidget.title,
+        title: chosenWidget.title, // Название, переопределенное пользователем в форме
         isEnabled: true,
         order: dashboard.widgets.length + 1,
-
+        settings: customSettings, // Передаем сформированные настройки в базу
         layout: {
           x: 0,
           y: currentMaxY,
@@ -108,11 +100,9 @@ export const DashboardPage: React.FC = () => {
       })
 
       message.success(`Виджет "${chosenWidget.title}" добавлен`)
-
-      setIsGalleryOpen(false)
+      setIsDrawerOpen(false)
     } catch (err) {
       console.error(err)
-
       message.error('Ошибка добавления виджета')
     }
   }
@@ -148,7 +138,6 @@ export const DashboardPage: React.FC = () => {
             <Title level={2} className={styles.title}>
               {dashboard.title}
             </Title>
-
             {dashboard.description && (
               <p className={styles.description}>{dashboard.description}</p>
             )}
@@ -156,12 +145,12 @@ export const DashboardPage: React.FC = () => {
 
           <div className={styles.actions}>
             <Button
-              type="default"
+              type="primary"
               icon={<PlusOutlined />}
-              onClick={() => setIsGalleryOpen(true)}
+              onClick={() => setIsDrawerOpen(true)}
               className={styles.addButton}
             >
-              Добавить виджет
+              Конструктор доски
             </Button>
           </div>
         </div>
@@ -176,9 +165,9 @@ export const DashboardPage: React.FC = () => {
         setIsEditingExternal={setIsEditing}
       />
 
-      <WidgetGalleryModal
-        isOpen={isGalleryOpen}
-        onClose={() => setIsGalleryOpen(false)}
+      <WidgetConfigDrawer
+        isOpen={isDrawerOpen}
+        onClose={() => setIsDrawerOpen(false)}
         onAddWidget={handleAddWidget}
       />
     </div>
