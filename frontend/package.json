@@ -20,6 +20,7 @@
     "@vitejs/plugin-react-swc": "^4.2.2",
     "antd": "^5.27.4",
     "axios": "^1.12.2",
+    "classnames": "^2.5.1",
     "clsx": "^2.1.1",
     "dayjs": "^1.11.19",
     "embla-carousel-react": "^8.6.0",
@@ -28,11 +29,11 @@
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "react-grid-layout": "^1.5.2",
+    "react-resizable": "^4.0.1",
     "react-router-dom": "^7.9.3",
     "recharts": "^3.3.0",
     "zod": "^4.1.12",
-    "zustand": "^5.0.8",
-    "classnames": "^2.5.1"
+    "zustand": "^5.0.8"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",

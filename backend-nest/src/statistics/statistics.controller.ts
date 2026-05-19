@@ -1,4 +1,3 @@
-// statistics.controller.ts
 import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { Role } from '@prisma/client';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';

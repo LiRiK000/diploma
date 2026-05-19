@@ -20,7 +20,6 @@ export class StatisticsService {
     let from: Date = new Date();
     let to: Date = new Date();
 
-    // 1. Если фронт передал готовый пресет
     if (dto.range && dto.range !== DateRangePreset.CUSTOM) {
       to = now;
       if (dto.range === DateRangePreset.TODAY) {
@@ -35,7 +34,6 @@ export class StatisticsService {
       return { from, to };
     }
 
-    // 2. Если фронт передал кастомные даты (ISO строки)
     const rawTo = dto.to && dto.to.trim() !== '' ? dto.to : now;
     to = new Date(rawTo);
 
@@ -57,8 +55,6 @@ export class StatisticsService {
 
     return { from, to };
   }
-
-  // --- Твои существующие методы (Overview, Genres, Dynamics) адаптируются автоматически ---
 
   async getAdminOverview(dto: StatsRangeQueryDto) {
     const { from, to } = this.resolveRange(dto);
@@ -104,7 +100,6 @@ export class StatisticsService {
   async getAdminIssuanceByGenre(dto: StatsRangeQueryDto) {
     const { from, to } = this.resolveRange(dto);
 
-    // Prisma.sql безопасно экранирует нативные объекты Date в СУБД PostgreSQL
     const rows = await this.prisma.$queryRaw<any[]>(Prisma.sql`
       SELECT g.id, g.label, g.value,
              COALESCE(SUM(oi.quantity), 0)::int AS "totalQuantity",
@@ -159,19 +154,13 @@ export class StatisticsService {
     const { from, to } = this.resolveRange(dto);
     const now = new Date();
 
-    // Фильтруем заказы, которые должны были быть сданы в этом промежутке времени, но всё еще просрочены
     const overdueOrders = await this.prisma.order.findMany({
       where: {
         status: OrderStatus.OVERDUE,
         returnDate: null,
-        dueDate: {
-          gte: from,
-          lte: to,
-        },
+        dueDate: { gte: from, lte: to },
       },
-      select: {
-        dueDate: true,
-      },
+      select: { dueDate: true },
     });
 
     const groups = { '1-3 дн': 0, '4-7 дн': 0, '8-14 дн': 0, '14+ дн': 0 };
@@ -190,10 +179,9 @@ export class StatisticsService {
   }
 
   /**
-   * Точка входа для динамических виджетов фронтенда
+   * Централизованный маппинг для виджетов дашборда
    */
   async getDynamicWidgetData(source: string, dto: StatsRangeQueryDto) {
-    // Явно вычисляем dates, чтобы прокинуть корректные срезы дальше
     const { from, to } = this.resolveRange(dto);
     const subDto: StatsRangeQueryDto = {
       from: from.toISOString(),
@@ -201,6 +189,7 @@ export class StatisticsService {
     };
 
     switch (source) {
+      case 'top_genres':
       case 'popular_genres': {
         const result = await this.getAdminIssuanceByGenre(subDto);
         return result.genres.map((g) => ({
@@ -209,6 +198,7 @@ export class StatisticsService {
         }));
       }
 
+      case 'overdue_trend':
       case 'workload': {
         const result = await this.getAdminLibraryDynamics(subDto);
         return result.data.map((d) => ({
@@ -219,14 +209,7 @@ export class StatisticsService {
         }));
       }
 
-      case 'orders_status': {
-        const result = await this.getAdminOverview(subDto);
-        return result.ordersByStatus.map((row) => ({
-          name: row.status,
-          value: row.count,
-        }));
-      }
-
+      case 'librarian_kpi':
       case 'overview_activity': {
         const result = await this.getAdminOverview(subDto);
         return [
@@ -235,6 +218,30 @@ export class StatisticsService {
           { name: 'Выдачи', value: result.orderItemsQuantitySum },
           { name: 'Отзывы', value: result.reviewsInRange },
         ];
+      }
+
+      case 'recent_orders': {
+        const recentOrders = await this.prisma.order.findMany({
+          where: { orderDate: { gte: from, lte: to } },
+          orderBy: { orderDate: 'desc' },
+          take: 5,
+          include: { user: true },
+        });
+
+        return recentOrders.map((o) => ({
+          id: o.id,
+          name: `${o.user.surname} ${o.user.name.charAt(0)}.`,
+          value: o.status,
+          date: o.orderDate,
+        }));
+      }
+
+      case 'orders_status': {
+        const result = await this.getAdminOverview(subDto);
+        return result.ordersByStatus.map((row) => ({
+          name: row.status,
+          value: row.count,
+        }));
       }
 
       case 'overdue': {
@@ -266,13 +273,14 @@ export class StatisticsService {
       }
 
       default:
-        throw new BadRequestException('Неизвестный источник данных виджета');
+        throw new BadRequestException(
+          `Неизвестный источник данных виджета: "${source}". Проверьте поле key или settings.dataSource в БД.`,
+        );
     }
   }
 
   async getAdminShiftKpi(dto: StatsRangeQueryDto) {
     const { from, to } = this.resolveRange(dto);
-
     const activeStatuses: OrderStatus[] = [
       OrderStatus.PENDING,
       OrderStatus.APPROVED,

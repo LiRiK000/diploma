@@ -565,6 +565,8 @@ async function clean() {
     prisma.author.deleteMany(),
     prisma.genre.deleteMany(),
     prisma.user.deleteMany(),
+    prisma.dashboardWidget.deleteMany(),
+    prisma.dashboard.deleteMany(),
   ]);
 
   logDone('База очищена');
@@ -579,6 +581,46 @@ async function main() {
   await prisma.levelConfig.createMany({ data: levelsData });
   await prisma.achievement.createMany({ data: achievementsData });
   logDone('Справочники готовы');
+  // ================= DASHBOARDS =================
+  logStep('Создание dashboard...');
+
+  const dashboards = await Promise.all(
+    dashboardsData.map((dashboard) =>
+      prisma.dashboard.create({
+        data: dashboard,
+      }),
+    ),
+  );
+
+  const adminDashboard = dashboards.find((d) => d.key === 'admin');
+
+  if (!adminDashboard) {
+    throw new Error('Admin dashboard not found');
+  }
+
+  logDone('Dashboard создан');
+
+  // ================= DASHBOARD WIDGETS =================
+  logStep('Создание dashboard widgets...');
+
+  await prisma.dashboardWidget.createMany({
+    data: defaultWidgets.map((widget) => ({
+      dashboardId: adminDashboard.id,
+
+      key: widget.key,
+      type: widget.type,
+      title: widget.title,
+
+      isEnabled: true,
+
+      order: widget.order,
+
+      layout: widget.layout,
+      settings: widget.settings,
+    })),
+  });
+
+  logDone(`Dashboard widgets созданы (${defaultWidgets.length})`);
 
   // ================= ЖАНРЫ =================
   logStep('Создание жанров...');
@@ -755,6 +797,96 @@ async function main() {
 
   logStep('✅ МАСШТАБНЫЙ СИД УСПЕШНО ЗАВЕРШЕН!');
 }
+
+const dashboardsData = [
+  {
+    key: 'admin',
+    title: 'Admin Dashboard',
+    description: 'Главная панель библиотекаря',
+  },
+];
+
+const defaultWidgets = [
+  {
+    key: 'librarian_kpi',
+    type: 'librarian_kpi',
+    title: 'KPI библиотеки',
+
+    order: 0,
+
+    layout: {
+      x: 0,
+      y: 0,
+      w: 12,
+      h: 4,
+      minW: 6,
+      minH: 3,
+    },
+
+    settings: {
+      showTrends: true,
+    },
+  },
+
+  {
+    key: 'overdue_trend',
+    type: 'overdue_trend',
+    title: 'Просрочки',
+
+    order: 1,
+
+    layout: {
+      x: 0,
+      y: 4,
+      w: 6,
+      h: 5,
+      minW: 4,
+      minH: 4,
+    },
+
+    settings: {},
+  },
+
+  {
+    key: 'top_genres',
+    type: 'top_genres',
+    title: 'Популярные жанры',
+
+    order: 2,
+
+    layout: {
+      x: 6,
+      y: 4,
+      w: 6,
+      h: 5,
+      minW: 4,
+      minH: 4,
+    },
+
+    settings: {},
+  },
+
+  {
+    key: 'recent_orders',
+    type: 'recent_orders',
+    title: 'Последние заказы',
+
+    order: 3,
+
+    layout: {
+      x: 0,
+      y: 9,
+      w: 12,
+      h: 6,
+      minW: 6,
+      minH: 4,
+    },
+
+    settings: {
+      limit: 10,
+    },
+  },
+];
 
 main()
   .catch((e) => {

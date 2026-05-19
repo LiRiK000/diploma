@@ -19,7 +19,11 @@ export const loadLayoutsFromStorage = (): Layouts | null => {
     const raw = localStorage.getItem(LAYOUTS_STORAGE_KEY + GRID_ID)
     if (raw) {
       const parsed: unknown = JSON.parse(raw)
-      if (parsed && typeof parsed === 'object' && Array.isArray((parsed as Layouts).lg)) {
+      if (
+        parsed &&
+        typeof parsed === 'object' &&
+        Array.isArray((parsed as Layouts).lg)
+      ) {
         return sanitizeLayouts(parsed as Layouts)
       }
     }
@@ -27,9 +31,16 @@ export const loadLayoutsFromStorage = (): Layouts | null => {
     const legacy = localStorage.getItem(LEGACY_STORAGE_KEY)
     if (legacy) {
       const parsed: unknown = JSON.parse(legacy)
-      if (parsed && typeof parsed === 'object' && Array.isArray((parsed as Layouts).lg)) {
+      if (
+        parsed &&
+        typeof parsed === 'object' &&
+        Array.isArray((parsed as Layouts).lg)
+      ) {
         const layouts = sanitizeLayouts(parsed as Layouts)
-        localStorage.setItem(LAYOUTS_STORAGE_KEY + GRID_ID, JSON.stringify(layouts))
+        localStorage.setItem(
+          LAYOUTS_STORAGE_KEY + GRID_ID,
+          JSON.stringify(layouts),
+        )
         localStorage.removeItem(LEGACY_STORAGE_KEY)
         return layouts
       }

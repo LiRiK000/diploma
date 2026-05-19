@@ -16,6 +16,7 @@ import { GamificationModule } from './gamification/gamification.module';
 import { CollectionModule } from './collection/collection.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { StatisticsModule } from './statistics/statistics.module';
+import { DashboardWidgetsModule } from './dashboard-widgets/dashboard-widgets.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { StatisticsModule } from './statistics/statistics.module';
     GamificationModule,
     NotificationsModule,
     StatisticsModule,
+    DashboardWidgetsModule,
   ],
 })
 export class AppModule {}

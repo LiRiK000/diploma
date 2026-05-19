@@ -1,0 +1,261 @@
+@use '@shared/styles/variables' as *;
+
+$apple-transition: 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+$apple-blur: blur(20px) saturate(190%);
+$light-shadow:
+  0 4px 30px rgba(0, 0, 0, 0.03),
+  0 1px 3px rgba(0, 0, 0, 0.02);
+$inner-stroke: inset 0 1px 0 rgba(255, 255, 255, 0.4);
+
+.wrapper {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+
+  background: var(--glass-bg, rgba(255, 255, 255, 0.6)) !important;
+  backdrop-filter: $apple-blur !important;
+  -webkit-backdrop-filter: $apple-blur !important;
+  border: 0.5px solid var(--glass-border, rgba(0, 0, 0, 0.08)) !important;
+  border-radius: 16px !important;
+  box-shadow: $light-shadow, $inner-stroke !important;
+  overflow: hidden;
+  transition:
+    transform $apple-transition,
+    box-shadow $apple-transition,
+    background-color 0.3s ease,
+    border-color 0.3s ease !important;
+
+  &:hover {
+    box-shadow:
+      0 8px 40px rgba(0, 0, 0, 0.06),
+      $inner-stroke !important;
+  }
+
+  :global(.ant-card-head) {
+    min-height: 48px !important;
+    padding: 0 16px !important;
+    border-bottom: 0.5px solid var(--glass-border, rgba(0, 0, 0, 0.06)) !important;
+    background: transparent !important;
+  }
+
+  :global(.ant-card-head-title) {
+    padding: 12px 0 !important;
+  }
+
+  :global(.ant-card-extra) {
+    padding: 12px 0 !important;
+  }
+
+  :global(.ant-select-selector),
+  :global(.ant-picker) {
+    background: rgba(0, 0, 0, 0.04) !important;
+    border: none !important;
+    border-radius: 8px !important;
+    transition: background 0.2s ease !important;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.07) !important;
+    }
+  }
+
+  &.isEditing {
+    border-style: dashed !important;
+    border-color: #007aff !important;
+    background: rgba(0, 122, 255, 0.01) !important;
+    box-shadow: 0 4px 20px rgba(0, 122, 255, 0.03) !important;
+    animation: applePulse 2.5s infinite ease-in-out;
+  }
+
+  &.isFullscreen {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 999999 !important;
+    border-radius: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+
+    background: rgba(10, 10, 12, 0.85) !important;
+    backdrop-filter: blur(50px) saturate(210%) !important;
+    -webkit-backdrop-filter: blur(50px) saturate(210%) !important;
+
+    animation: appleFullscreenOpen 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+
+    :global(.ant-card-head) {
+      padding: 0 48px !important;
+      min-height: 80px !important;
+      border-bottom: 0.5px solid rgba(255, 255, 255, 0.08) !important;
+    }
+
+    :global(.ant-card-head-title) .title {
+      font-size: 22px !important;
+      font-weight: 700;
+      color: #ffffff !important;
+      letter-spacing: -0.02em;
+    }
+
+    :global(.ant-select-selector),
+    :global(.ant-picker) {
+      background: rgba(255, 255, 255, 0.08) !important;
+      color: #ffffff !important;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.15) !important;
+      }
+      :global(.ant-select-selection-item),
+      :global(.ant-picker-input > input) {
+        color: #ffffff !important;
+      }
+      :global(.ant-select-arrow),
+      :global(.ant-picker-suffix) {
+        color: rgba(255, 255, 255, 0.4) !important;
+      }
+    }
+
+    :global(.ant-empty-description) {
+      color: rgba(255, 255, 255, 0.5) !important;
+    }
+    :global(.ant-result-title) {
+      color: #ffffff !important;
+    }
+    :global(.widget-text-primary) {
+      color: #ffffff !important;
+    }
+    :global(.widget-text-secondary) {
+      color: rgba(255, 255, 255, 0.45) !important;
+    }
+    :global(.ant-list-item) {
+      border-bottom: 0.5px solid rgba(255, 255, 255, 0.08) !important;
+    }
+    :global(.recharts-legend-item-text) {
+      color: rgba(255, 255, 255, 0.6) !important;
+    }
+
+    .body {
+      padding: 48px 64px !important;
+    }
+
+    .controlBtn {
+      background: rgba(255, 255, 255, 0.06) !important;
+      color: rgba(255, 255, 255, 0.7) !important;
+      &:hover {
+        background: rgba(255, 255, 255, 0.15) !important;
+        color: #ffffff !important;
+      }
+    }
+  }
+}
+
+.title {
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display',
+    'Helvetica Neue', Arial, sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text-primary, #1d1d1f);
+  letter-spacing: -0.01em;
+}
+
+.controlBtn {
+  color: var(--text-secondary, #86868b) !important;
+  border-radius: 50% !important;
+  width: 28px;
+  height: 28px;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.04) !important;
+    color: #007aff !important;
+    transform: scale(1.06);
+  }
+  &:active {
+    transform: scale(0.95);
+    background: rgba(0, 0, 0, 0.08) !important;
+  }
+}
+
+.dragIcon {
+  composes: controlBtn;
+  cursor: grab !important;
+  &:active {
+    cursor: grabbing !important;
+  }
+}
+
+.deleteIcon {
+  composes: controlBtn;
+  &:hover {
+    background: rgba(255, 69, 58, 0.08) !important;
+    color: #ff453a !important;
+  }
+}
+
+.body {
+  flex: 1;
+  padding: 16px;
+  overflow: auto;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+
+  &::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.12);
+    border-radius: 10px;
+    &:hover {
+      background: rgba(0, 0, 0, 0.25);
+    }
+  }
+}
+
+.centerContainer {
+  margin: auto;
+  text-align: center;
+  animation: appleFadeIn 0.4s ease;
+}
+
+@keyframes appleFullscreenOpen {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0px) saturate(100%);
+    -webkit-backdrop-filter: blur(0px) saturate(100%);
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: $apple-blur;
+    -webkit-backdrop-filter: $apple-blur;
+    transform: scale(1);
+  }
+}
+
+@keyframes applePulse {
+  0%,
+  100% {
+    border-color: rgba(0, 122, 255, 0.4);
+  }
+  50% {
+    border-color: rgba(0, 122, 255, 0.8);
+  }
+}
+
+@keyframes appleFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

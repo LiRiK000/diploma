@@ -1,15 +1,18 @@
-// stats-range-query.dto.ts
-import { IsOptional, IsString, IsEnum } from 'class-validator';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
 
 export enum DateRangePreset {
-  TODAY = 'today',
-  WEEK = 'week',
-  MONTH = 'month',
-  YEAR = 'year',
-  CUSTOM = 'custom',
+  TODAY = 'TODAY',
+  WEEK = 'WEEK',
+  MONTH = 'MONTH',
+  YEAR = 'YEAR',
+  CUSTOM = 'CUSTOM',
 }
 
 export class StatsRangeQueryDto {
+  @IsOptional()
+  @IsEnum(DateRangePreset)
+  range?: DateRangePreset;
+
   @IsOptional()
   @IsString()
   from?: string;
@@ -17,8 +20,4 @@ export class StatsRangeQueryDto {
   @IsOptional()
   @IsString()
   to?: string;
-
-  @IsOptional()
-  @IsEnum(DateRangePreset)
-  range?: DateRangePreset;
 }

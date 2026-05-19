@@ -250,6 +250,82 @@ model Achievement {
   @@map("achievements")
 }
 
+
+model Dashboard {
+  id          String   @id @default(uuid())
+
+  key         String   @unique
+  title       String
+
+  description String?
+
+  widgets     DashboardWidget[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("dashboards")
+}
+
+
+model DashboardWidget {
+  id          String   @id @default(uuid())
+
+  dashboard   Dashboard @relation(fields: [dashboardId], references: [id], onDelete: Cascade)
+  dashboardId String
+
+  /**
+   * Уникальный ключ виджета внутри dashboard
+   * Например:
+   * librarians_kpi
+   * overdue_chart
+   */
+  key         String
+
+  /**
+   * Тип виджета.
+   * Используется на frontend для registry mapping
+   */
+  type        String
+
+  /**
+   * Отображаемое название
+   */
+  title       String
+
+  /**
+   * Включен ли виджет
+   */
+  isEnabled   Boolean  @default(true)
+
+  /**
+   * Порядок отображения
+   */
+  order       Int      @default(0)
+
+  /**
+   * Layout/grid config
+   * react-grid-layout compatible
+   */
+  layout      Json
+
+  /**
+   * Настройки конкретного виджета
+   * filters/chart settings/etc
+   */
+  settings    Json?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+
+  @@index([dashboardId])
+  @@index([type])
+
+  @@map("dashboard_widgets")
+}
+
+
 model UserAchievement {
   id            String   @id @default(uuid())
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
