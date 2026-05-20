@@ -2,14 +2,12 @@ import { Button, Tooltip, Divider } from 'antd'
 import { BookMarked, CheckCircle, RotateCcw } from 'lucide-react'
 import { LibrarianSettings } from '@features/librarian-settings'
 import { ThemeToggle } from '@features/theme-toggle/ui/ThemeToggle'
-import { WidgetBuilderTrigger } from '@features/widget-builder'
 import { ResetLayoutButton, GRID_ID } from '@entities/widgets-grid'
 import styles from './HeaderActions.module.scss'
 
 interface Props {
   isEditing: boolean
   toggleEditing: () => void
-  hasLayoutsChanged: Record<string, boolean>
   onVerifyOpen: () => void
   onReturnOpen: () => void
   setWidgetBuilderOpen: (open: boolean) => void
@@ -21,13 +19,11 @@ export const HeaderActions = ({
   hasLayoutsChanged,
   onVerifyOpen,
   onReturnOpen,
-  setWidgetBuilderOpen,
 }: Props) => {
   return (
     <div className={styles.headerActions}>
       {isEditing ? (
         <>
-          <WidgetBuilderTrigger onClick={() => setWidgetBuilderOpen(true)} />
           <Button
             type="primary"
             icon={<CheckCircle size={18} />}

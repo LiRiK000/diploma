@@ -8,11 +8,9 @@ import clsx from 'clsx'
 import { librarianMenuFields } from './constants'
 import { VerifyCodeModal } from '@features/manage-orders/ui/VerifyCodeModal'
 import { ReturnBookModal } from '@features/manage-orders/ui/ReturnBookModal'
-import { WidgetBuilderDrawer } from '@features/widget-builder/ui/WidgetBuilderDrawer/WidgetBuilderDrawer'
 import { useLibrarianSettingsStore } from '@features/librarian-settings'
 import { useLayoutStore } from '@entities/widgets-grid'
 import { GRID_ID } from '@entities/widgets-grid/constants'
-import { useWidgetBuilderStore } from '@features/widget-builder/model/useWidgetBuilderStore'
 
 import styles from './LibrarianLayout.module.scss'
 import { HeaderActions } from './components/HeaderActions/HeaderActions'
@@ -26,19 +24,10 @@ export const LibrarianLayout = () => {
   const [isVerifyModalOpen, setIsVerifyModalOpen] = useState(false)
   const [isReturnModalOpen, setIsReturnModalOpen] = useState(false)
 
-  const setWidgetBuilderOpen = useWidgetBuilderStore(state => state.setOpen)
-
   const { isEditing, toggleEditing } = useLibrarianSettingsStore(
     useShallow(s => ({
       isEditing: s.isEditing,
       toggleEditing: s.toggleEditing,
-    })),
-  )
-
-  const { hasLayoutsChanged, commitLayouts } = useLayoutStore(
-    useShallow(state => ({
-      hasLayoutsChanged: !!state.hasLayoutsChanged[GRID_ID],
-      commitLayouts: state.commitLayouts,
     })),
   )
 
@@ -50,13 +39,8 @@ export const LibrarianLayout = () => {
     return currentMenuItem?.label || 'Панель управления'
   }
 
-  const handleSaveAction = () => {
-    commitLayouts()
-    toggleEditing()
-  }
-
   return (
-    <Layout className={styles.layout}>
+    <Layout className ={styles.layout}>
       <Sider
         collapsible
         collapsed={collapsed}
@@ -103,10 +87,8 @@ export const LibrarianLayout = () => {
           <HeaderActions
             isEditing={isEditing}
             toggleEditing={isEditing ? handleSaveAction : toggleEditing}
-            hasLayoutsChanged={hasLayoutsChanged}
             onVerifyOpen={() => setIsVerifyModalOpen(true)}
             onReturnOpen={() => setIsReturnModalOpen(true)}
-            setWidgetBuilderOpen={setWidgetBuilderOpen}
           />
         </Header>
 
@@ -123,7 +105,6 @@ export const LibrarianLayout = () => {
         open={isReturnModalOpen}
         onClose={() => setIsReturnModalOpen(false)}
       />
-      <WidgetBuilderDrawer />
     </Layout>
   )
 }
