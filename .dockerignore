@@ -1,20 +1,16 @@
 node_modules
 dist
+build
 .next
 .nuxt
 coverage
+
 .git
-.gitignore
-Dockerfile
-docker-compose.yml
+.env
+.env.local
+
 npm-debug.log
 pnpm-debug.log
 
 backend-nest/node_modules
-backend-nest/dist
-
 frontend/node_modules
-frontend/dist
-
-.vscode
-.idea

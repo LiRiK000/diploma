@@ -5,17 +5,18 @@ services:
     restart: always
 
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-user}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
-      POSTGRES_DB: ${POSTGRES_DB:-diploma_db}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
 
     ports:
-      - "${DB_BIND_HOST:-127.0.0.1}:${DB_PORT:-15432}:5432"
+      - "127.0.0.1:15432:5432"
 
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-user} -d ${POSTGRES_DB:-diploma_db}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -26,7 +27,6 @@ services:
       dockerfile: backend-nest/Dockerfile
 
     container_name: diploma_backend
-
     restart: always
 
     depends_on:
@@ -34,23 +34,27 @@ services:
         condition: service_healthy
 
     environment:
-      NODE_ENV: production
-      PORT: ${BACKEND_PORT:-4000}
+      DATABASE_URL: ${DATABASE_URL}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      CLIENT_URL: ${CLIENT_URL}
+      SERVER_PUBLIC_URL: ${SERVER_PUBLIC_URL}
+      NODE_ENV: ${NODE_ENV}
+      PORT: ${PORT}
+      MIGRATE_ON_START: ${MIGRATE_ON_START}
 
-      DATABASE_URL: postgresql://${POSTGRES_USER:-user}:${POSTGRES_PASSWORD:-password}@db:5432/${POSTGRES_DB:-diploma_db}?schema=public
-
-      JWT_SECRET: ${JWT_SECRET:-super-secret-key}
-      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-super-refresh-secret}
-      CLIENT_URL: ${CLIENT_URL:-http://localhost}
-      MIGRATE_ON_START: ${MIGRATE_ON_START:-true}
-
-    ports:
-      - "${BACKEND_BIND_HOST:-127.0.0.1}:${BACKEND_PORT:-4000}:4000"
+    expose:
+      - "4000"
 
     volumes:
       - ./backend-nest/uploads:/app/uploads
+
     healthcheck:
-      test: ["CMD-SHELL", "wget --spider -q http://localhost:4000/api/docs || exit 1"]
+      test:
+        [
+          "CMD-SHELL",
+          "wget --spider -q http://localhost:4000/api/docs || exit 1",
+        ]
       interval: 15s
       timeout: 5s
       retries: 8
@@ -61,7 +65,6 @@ services:
       dockerfile: frontend/Dockerfile
 
     container_name: diploma_frontend
-
     restart: always
 
     depends_on:
@@ -69,7 +72,7 @@ services:
         condition: service_healthy
 
     ports:
-      - "${FRONTEND_BIND_HOST:-0.0.0.0}:${FRONTEND_PORT:-80}:80"
+      - "80:80"
 
 volumes:
   postgres_data:
