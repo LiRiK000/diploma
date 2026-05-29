@@ -1,8 +1,9 @@
-import { Module, Global } from '@nestjs/common';
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config'; // <-- ПРОВЕРЬ ЭТОТ ИМПОРТ
 import { FileService } from './file.service';
 
-@Global() // Это сделает сервис доступным во всех модулях без лишних импортов
 @Module({
+  imports: [ConfigModule], // <-- ОБЯЗАТЕЛЬНО ДОБАВЬ СЮДА
   providers: [FileService],
   exports: [FileService],
 })
