@@ -1,4 +1,4 @@
-const DEFAULT_PORT = 4001;
+const DEFAULT_PORT = 4000;
 
 export function getStorageDriver(): 'local' | 's3' {
   return process.env.FILE_STORAGE_DRIVER === 's3' ? 's3' : 'local';
@@ -6,7 +6,12 @@ export function getStorageDriver(): 'local' | 's3' {
 
 export function getServerBaseUrl(): string {
   const configuredBase = process.env.SERVER_PUBLIC_URL?.trim();
+
   if (configuredBase) {
+    if (!configuredBase.startsWith('http')) {
+      throw new Error('SERVER_PUBLIC_URL must start with http/https');
+    }
+
     return configuredBase.replace(/\/+$/, '');
   }
 
@@ -16,16 +21,13 @@ export function getServerBaseUrl(): string {
 
 export function getPublicFileBaseUrl(): string {
   if (getStorageDriver() === 's3') {
-    const s3PublicUrl = process.env.S3_PUBLIC_URL?.trim().replace(/\/+$/, '');
-    const bucket = process.env.S3_BUCKET?.trim().replace(/^\/+|\/+$/g, '');
+    const base = process.env.S3_PUBLIC_URL?.trim()?.replace(/\/+$/, '');
 
-    if (s3PublicUrl && bucket) {
-      return `${s3PublicUrl}/${bucket}`;
+    if (!base) {
+      throw new Error('S3_PUBLIC_URL is not defined');
     }
 
-    if (s3PublicUrl) {
-      return s3PublicUrl;
-    }
+    return base;
   }
 
   return `${getServerBaseUrl()}/uploads`;

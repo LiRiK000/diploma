@@ -653,7 +653,7 @@ async function main() {
             language: book.lang,
             publisher: book.publisher,
             availableQuantity: randNum(5, 30),
-            coverImage: `https://picsum.photos/seed/${encodeURIComponent(book.title)}/300/450`,
+            coverImage: null,
             subjects: [book.genreValue, 'bestseller'],
           })),
         },
