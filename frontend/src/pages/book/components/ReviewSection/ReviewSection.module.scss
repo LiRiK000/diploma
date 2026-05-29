@@ -1,121 +1,142 @@
 @use '@shared/styles/variables' as *;
 
 .section {
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
-  background: var(--bg-content);
+  background: var(--bg-content) !important;
   border-radius: $border-radius-lg;
-  padding: 40px;
-  border: 1px solid var(--glass-border);
-  backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border) !important;
   box-shadow: $shadow-light;
+  transition: $transition-liquid;
+
+  &:hover {
+    border-color: var(--text-secondary);
+  }
+
+  :global(.ant-card-body) {
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+  }
 
   @media (max-width: $breakpoint-md) {
-    padding: 24px 16px;
+    :global(.ant-card-body) {
+      padding: 1.25rem;
+    }
   }
 }
 
 .topHeader {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
-  border-bottom: 1px solid var(--glass-border);
-  padding-bottom: 16px;
-
-  .mainTitle {
-    margin: 0 !important;
-    letter-spacing: -1px;
-  }
-
-  .countText {
-    color: var(--text-secondary);
-    font-size: 14px;
-    font-weight: 500;
-  }
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
 }
 
-.contentGrid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 32px;
+.mainTitle {
+  margin: 0 !important;
+  color: var(--text-primary) !important;
+  font-weight: $font-weight-small;
+  line-height: 1.2;
+}
+
+.countText {
+  color: var(--text-secondary);
+  font-size: 14px;
+  white-space: nowrap;
+  opacity: 0.85;
+}
+
+.divider {
+  margin: 0 0 1.5rem 0 !important;
+  border-color: var(--glass-border) !important;
+  opacity: 0.45;
+}
+
+.actionBlock {
+  margin-bottom: 2rem;
+
+  @media (max-width: $breakpoint-md) {
+    margin-bottom: 1.5rem;
+  }
 }
 
 .statusCard {
-  padding: 24px;
+  background: var(--glass-bg);
   border-radius: $border-radius-md;
-  text-align: center;
-  border: 1px solid;
-  backdrop-filter: blur(8px);
-  animation: fadeIn 0.5s ease-out;
+  border: 1px solid var(--glass-border);
+  padding: 1.25rem 1.5rem;
+  box-shadow: $shadow-light;
+}
 
-  &.auth {
-    background: rgba(24, 144, 255, 0.05);
-    border-color: rgba(24, 144, 255, 0.2);
-    color: var(--ant-primary-color);
-  }
+.auth {
+  color: var(--text-primary);
+}
 
-  &.thankYou {
-    background: rgba(82, 196, 26, 0.05);
-    border-color: rgba(82, 196, 26, 0.2);
-    color: #389e0d;
-  }
+.thankYou {
+  color: #52c41a;
+  background: rgba(82, 196, 26, 0.05);
+  border-color: rgba(82, 196, 26, 0.2);
 }
 
 .formWrapper {
   background: var(--glass-bg);
-  padding: 24px;
-  border-radius: $border-radius-md;
   border: 1px solid var(--glass-border);
+  border-radius: $border-radius-md;
+  padding: 1.5rem;
+  box-shadow: $shadow-light;
+}
 
-  h4 {
-    margin-bottom: 20px !important;
-    font-weight: 600;
-  }
+.formTitle {
+  margin: 0 0 1.25rem !important;
+  color: var(--text-primary) !important;
+  font-weight: 600;
+}
+
+.reviewsBlock {
+  width: 100%;
 }
 
 .cardsStack {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 1rem;
 }
 
-.tagsSection {
-  margin-top: 16px;
-  padding-top: 24px;
-  border-top: 1px solid var(--glass-border);
+.loader,
+.empty {
+  min-height: 180px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.tagsBlock {
+  margin-top: 2rem;
+
+  .divider {
+    margin: 0 0 1.25rem 0 !important;
+  }
 }
 
 .tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 0.5rem 0.75rem;
 }
 
 .tag {
   background: var(--glass-bg);
-  color: var(--text-secondary);
-  padding: 6px 16px;
-  border-radius: 100px; // Полные капсулы
-  font-size: 13px;
   border: 1px solid var(--glass-border);
-  transition: all 0.3s ease;
-  cursor: default;
+  border-radius: 999px;
+  padding: 0.4rem 0.85rem;
+  font-size: 13px;
+  line-height: 1;
+  color: var(--text-secondary);
+  transition: $transition-liquid;
 
   &:hover {
-    border-color: var(--ant-primary-color);
-    color: var(--ant-primary-color);
-    background: var(--bg-content);
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+    border-color: var(--text-secondary);
+    color: var(--text-primary);
+    transform: translateY(-1px);
   }
 }

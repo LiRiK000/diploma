@@ -6,6 +6,7 @@
 }
 
 .sider {
+  border-radius: 14px;
   background: var(--glass-bg) !important;
   backdrop-filter: $liquid-glass-blur;
   border-right: 1px solid var(--glass-border) !important;
@@ -30,7 +31,6 @@
     :global(.ant-menu-item-selected) {
       background: var(--glass-bg) !important;
       color: var(--header-link-hover) !important;
-      border: 1px solid var(--glass-border);
       box-shadow: $shadow-light;
     }
   }

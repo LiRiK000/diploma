@@ -1,9 +1,10 @@
-import { Typography, Spin } from 'antd'
+import { Typography } from 'antd'
 import { HomeCarousel } from './components/HomeCarousel/HomeCarousel'
 import { BookSection } from '@widgets/BookSection'
 import { useMainSections } from '@widgets/BookSection/hooks/useMainSections'
-import styles from './HomePage.module.scss'
 import { BookSkeleton } from '@widgets/BookFeed/components/BookSkeleton'
+import styles from './HomePage.module.scss'
+import { BookFeed } from '@widgets/BookFeed'
 
 export const HomePage = () => {
   const { sections, isLoading, isError } = useMainSections()
@@ -13,31 +14,41 @@ export const HomePage = () => {
       <HomeCarousel />
 
       <div className={styles.sectionsWrapper}>
-        {isLoading && <BookSkeleton count={10} />}
+        {isLoading && (
+          <div className={styles.skeletonContainer}>
+            <BookSkeleton count={10} />
+          </div>
+        )}
 
         {isError && (
-          <div style={{ textAlign: 'center', padding: '20px' }}>
-            <Typography.Text type="danger">
-              Не удалось загрузить рекомендации
+          <div className={styles.statusBlock}>
+            <Typography.Text type="danger" className={styles.errorText}>
+              Не удалось загрузить рекомендации. Пожалуйста, обновите страницу.
             </Typography.Text>
           </div>
         )}
 
         {!isLoading &&
+          !isError &&
           sections.map(section => (
-            <BookSection
-              key={section.id}
-              title={section.title}
-              books={section.items}
-              linkTo={`/catalog?collection=${section.slug}`}
-            />
+            <div key={section.id} className={styles.feedSection}>
+              <BookSection
+                title={section.title}
+                books={section.items}
+                linkTo={`/catalog?collection=${section.slug}`}
+              />
+            </div>
           ))}
 
-        {!isLoading && sections.length === 0 && (
-          <Typography.Text type="secondary">
-            Здесь пока пусто...
-          </Typography.Text>
+        {!isLoading && !isError && sections.length === 0 && (
+          <div className={styles.statusBlock}>
+            <Typography.Text type="secondary" className={styles.emptyText}>
+              Здесь пока пусто...
+            </Typography.Text>
+          </div>
         )}
+
+        <BookFeed />
       </div>
     </div>
   )

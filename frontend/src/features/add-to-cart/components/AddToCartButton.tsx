@@ -1,16 +1,28 @@
 import { Button } from 'antd'
 import { useAddToCart } from '../model/add-to-cart'
 import { AddToCartButtonProps } from './types'
-import { CheckOutlined, ShoppingCartOutlined } from '@ant-design/icons'
+import {
+  CheckOutlined,
+  ShoppingCartOutlined,
+  DeleteOutlined,
+} from '@ant-design/icons'
 import { useCart } from '@features/get-cart'
+
+import { useRemoveFromCart } from '../model/remove-from-cart'
+import { useState } from 'react'
 
 export const AddToCartButton = ({
   bookId,
   fullWidth = false,
   variant = 'default',
 }: AddToCartButtonProps) => {
-  const { mutate, isPending } = useAddToCart()
+  const { mutate: addToCart, isPending: isAdding } = useAddToCart()
+  const { mutate: removeFromCart, isPending: isRemoving } = useRemoveFromCart()
   const { data: cart, isLoading } = useCart()
+
+  const [isHovered, setIsHovered] = useState(false)
+
+  const isPending = isAdding || isRemoving
 
   if (isLoading || !cart) {
     return (
@@ -18,47 +30,55 @@ export const AddToCartButton = ({
         shape={variant === 'icon' ? 'circle' : undefined}
         block={variant === 'default' ? fullWidth : false}
         disabled
+        size="large"
       >
         ...
       </Button>
     )
   }
 
-  const isInCart = cart.items.some(item => item.bookId === bookId)
+  const cartItem = cart.items.find(item => item.bookId === bookId)
+  const isInCart = !!cartItem
   const canAddMore = cart.canAddMore ?? true
 
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    mutate(bookId)
-  }
 
-  // ---------------- ICON VARIANT ----------------
+    if (isInCart && cartItem) {
+      removeFromCart(cartItem.id)
+    } else if (canAddMore) {
+      addToCart(bookId)
+    }
+  }
 
   if (variant === 'icon') {
     return (
       <Button
         type={isInCart ? 'default' : 'primary'}
         shape="circle"
-        icon={isInCart ? <CheckOutlined /> : <ShoppingCartOutlined />}
+        danger={isInCart && isHovered}
+        icon={
+          isInCart ? (
+            isHovered ? (
+              <DeleteOutlined />
+            ) : (
+              <CheckOutlined />
+            )
+          ) : (
+            <ShoppingCartOutlined />
+          )
+        }
         loading={isPending}
-        disabled={isInCart || !canAddMore}
+        disabled={!isInCart && !canAddMore}
         onClick={handleClick}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
       />
     )
   }
 
-  // ---------------- DEFAULT VARIANT ----------------
-
-  if (isInCart) {
-    return (
-      <Button block={fullWidth} size="large" icon={<CheckOutlined />} disabled>
-        В корзине
-      </Button>
-    )
-  }
-
-  if (!canAddMore) {
+  if (!isInCart && !canAddMore) {
     return (
       <Button block={fullWidth} size="large" disabled>
         Лимит 3 книги
@@ -69,13 +89,32 @@ export const AddToCartButton = ({
   return (
     <Button
       block={fullWidth}
-      type="primary"
+      type={isInCart ? 'default' : 'primary'}
+      danger={isInCart && isHovered}
       size="large"
       loading={isPending}
-      icon={<ShoppingCartOutlined />}
+      icon={
+        isInCart ? (
+          isHovered ? (
+            <DeleteOutlined />
+          ) : (
+            <CheckOutlined />
+          )
+        ) : (
+          <ShoppingCartOutlined />
+        )
+      }
       onClick={handleClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
-      {isPending ? 'Добавляем...' : 'В корзину'}
+      {isInCart
+        ? isHovered
+          ? 'Удалить?'
+          : 'В корзине'
+        : isPending
+          ? 'Добавляем...'
+          : 'В корзину'}
     </Button>
   )
 }

@@ -1,57 +1,90 @@
 @use '@shared/styles/variables' as *;
 
 .sidebar {
+  position: relative;
+  overflow: hidden;
+
   background: var(--bg-content) !important;
   border-radius: $border-radius-lg;
   border: 1px solid var(--glass-border) !important;
+
   max-height: 420px;
+
   box-shadow: $shadow-light;
-  transition: $transition-liquid;
+
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
 
   &:hover {
-    border-color: var(--text-secondary);
+    border-color: rgba(24, 144, 255, 0.22);
+
+    box-shadow:
+      0 12px 28px rgba(0, 0, 0, 0.06),
+      0 0 0 1px rgba(24, 144, 255, 0.04);
   }
 }
 
 .heading {
-  font-weight: $font-weight-small;
-  color: var(--text-primary) !important;
   margin-bottom: $spacing-sm !important;
+
+  font-size: 20px !important;
+  line-height: 1.3;
+
+  color: var(--text-primary) !important;
+}
+
+.divider {
+  margin: 0.75rem 0 !important;
+  border-color: var(--glass-border) !important;
+  opacity: 0.65;
 }
 
 .scrollContainer {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+
   overflow-y: auto;
+
   max-height: 300px;
-  padding-right: 0.5rem;
   margin-top: $spacing-md;
+  padding-right: 6px;
+
+  scrollbar-width: thin;
+  scrollbar-color: var(--glass-border) transparent;
 
   &::-webkit-scrollbar {
-    width: 8px;
+    width: 6px;
   }
 
   &::-webkit-scrollbar-track {
     background: transparent;
+    border-radius: 999px;
   }
 
   &::-webkit-scrollbar-thumb {
     background: var(--glass-border);
-    border-radius: 10px;
+    border-radius: 999px;
+    transition: background 0.2s ease;
 
     &:hover {
       background: var(--text-secondary);
     }
   }
 
-  mask-image: linear-gradient(to bottom, black 90%, transparent 100%);
+  mask-image: linear-gradient(to bottom, black 0%, black 90%, transparent 100%);
 }
 
 @media (max-width: $breakpoint-md) {
   .sidebar {
-    padding: 0.75rem;
     max-height: 350px;
+    padding: 0.75rem;
+  }
+
+  .heading {
+    font-size: 18px !important;
   }
 
   .scrollContainer {

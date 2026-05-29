@@ -2,12 +2,16 @@
 
 .cartButton {
   &.inCart {
-    background-color: $text-success;
-    border-color: $text-success;
+    background-color: #10b981;
+    border-color: #10b981;
+    color: #ffffff !important;
 
     &:hover {
-      background-color: lighten($text-success, 10%);
-      border-color: lighten($text-success, 10%);
+      background-color: cubic-bezier(0.16, 1, 0.3, 1);
     }
+  }
+
+  &:global(.ant-btn-dangerous) {
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   }
 }

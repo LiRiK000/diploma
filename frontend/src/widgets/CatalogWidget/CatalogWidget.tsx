@@ -17,6 +17,7 @@ import { EmptyState } from '@shared/components/Empty/EmptyState'
 import { BookSkeleton } from './components/BookSkeleton/BookSkeleton'
 import { Link } from 'react-router-dom'
 import { CloseOutlined, FilterOutlined, SwapOutlined } from '@ant-design/icons'
+import { Filter } from 'lucide-react'
 
 const { Title, Text } = Typography
 
@@ -69,9 +70,6 @@ export const CatalogWidget = () => {
               </Title>
               <div className={styles.indicator}>
                 <div className={styles.dot} />
-                <Text className={styles.totalCount}>
-                  {data?.pagination.total || 0} изданий
-                </Text>
               </div>
             </div>
             {filters.collection && (
@@ -94,7 +92,7 @@ export const CatalogWidget = () => {
         <div className={styles.filterBar}>
           <div className={styles.filterGroup}>
             <div className={styles.filterLabel}>
-              <FilterOutlined /> <span>Фильтры</span>
+              <Filter /> <span>Фильтры</span>
             </div>
             <Select
               placeholder="Жанр"

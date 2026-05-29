@@ -1,0 +1,123 @@
+@use '@shared/styles/variables' as *;
+
+$apple-ease: cubic-bezier(0.25, 1, 0.5, 1);
+
+.innerForm {
+  :global(.ant-form-item-label > label) {
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    color: var(--text-secondary) !important;
+  }
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+
+  @include mobile {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}
+
+.formSecondaryGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.customInput,
+.customTextArea,
+.customInputNumber,
+.customSelect {
+  :global(.ant-input),
+  :global(.ant-input-number-input),
+  :global(.ant-select-selector) {
+    border-radius: 8px !important;
+    border-color: var(--glass-border) !important;
+    background: rgba(0, 0, 0, 0.01) !important;
+    color: var(--text-primary) !important;
+    transition: all 0.2s $apple-ease;
+
+    body:global(.dark) & {
+      background: rgba(255, 255, 255, 0.02) !important;
+    }
+  }
+
+  &:focus,
+  &:hover {
+    :global(.ant-input),
+    :global(.ant-input-number),
+    :global(.ant-select-selector) {
+      border-color: #007aff !important;
+      box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.08) !important;
+    }
+  }
+}
+
+.customInputNumber {
+  border-radius: 8px !important;
+  border-color: var(--glass-border) !important;
+  background: rgba(0, 0, 0, 0.01) !important;
+  body:global(.dark) & {
+    background: rgba(255, 255, 255, 0.02) !important;
+  }
+}
+
+.customUpload {
+  :global(.ant-upload-select) {
+    width: 100% !important;
+    height: 102px !important;
+    border-radius: 8px !important;
+    background: rgba(0, 0, 0, 0.01) !important;
+    border: 1px dashed var(--glass-border) !important;
+    margin: 0 !important;
+
+    body:global(.dark) & {
+      background: rgba(255, 255, 255, 0.02) !important;
+    }
+
+    &:hover {
+      border-color: #007aff !important;
+    }
+  }
+}
+
+.uploadPlaceholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 500;
+
+  svg {
+    color: var(--text-secondary);
+    opacity: 0.7;
+  }
+}
+
+.customDropdown {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: 10px !important;
+  box-shadow: $shadow-strong !important;
+
+  :global(.ant-select-item-option-active) {
+    background: rgba(0, 0, 0, 0.03) !important;
+    body:global(.dark) & {
+      background: rgba(255, 255, 255, 0.04) !important;
+    }
+  }
+
+  :global(.ant-select-item-option-selected) {
+    background: rgba(0, 122, 255, 0.1) !important;
+    color: #007aff !important;
+    font-weight: 500;
+  }
+}

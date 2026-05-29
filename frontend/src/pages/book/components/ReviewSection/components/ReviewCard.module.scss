@@ -1,21 +1,21 @@
 @use '@shared/styles/variables' as *;
 
 .card {
-  padding: 20px;
   background: var(--glass-bg);
-  border-radius: $border-radius-md;
   border: 1px solid var(--glass-border);
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
+  border-radius: $border-radius-md;
+  padding: 1rem 1.25rem;
+
+  transition: $transition-liquid;
+  box-shadow: $shadow-light;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.02);
-    box-shadow: $shadow-light;
+    border-color: var(--text-secondary);
+    transform: translateY(-2px);
 
     .deleteBtn {
       opacity: 1;
-      transform: scale(1) translateX(0);
+      transform: translateX(0);
     }
   }
 }
@@ -23,112 +23,79 @@
 .header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 0.9rem;
+}
+
+.avatar {
+  border: 2px solid var(--glass-border);
 }
 
 .userInfo {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-
-  .userName {
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--text-primary);
-    letter-spacing: -0.2px;
-    line-height: 1.2;
-  }
+  gap: 0.3rem;
 }
 
-.rankBadge {
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--ant-primary-color);
-  background: rgba(24, 144, 255, 0.08);
-  padding: 2px 8px;
-  border-radius: 6px;
-  border: 1px solid rgba(24, 144, 255, 0.15);
-  backdrop-filter: blur(4px);
-  text-transform: capitalize;
+.userName {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
 }
 
-.metaInfo {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-
-  .date {
-    font-size: 12px;
-    color: var(--text-secondary);
-    opacity: 0.7;
-  }
-}
-
-.deleteBtn {
-  opacity: 0;
-  transform: scale(0.9) translateX(10px);
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-
-  width: 38px !important;
-  height: 38px !important;
-  display: flex !important;
-  align-items: center;
-  justify-content: center;
-
-  background: rgba(255, 77, 79, 0.06) !important;
-  border: 1px solid rgba(255, 77, 79, 0.1) !important;
-  border-radius: 12px !important;
-  padding: 0 !important;
-  color: rgba(255, 77, 79, 0.6) !important;
-
-  &:hover {
-    background: rgba(255, 77, 79, 0.15) !important;
-    border-color: rgba(255, 77, 79, 0.4) !important;
-    transform: scale(1.05) !important;
-    color: #ff4d4f !important;
-  }
-
-  &:active {
-    transform: scale(0.95) !important;
-  }
-}
-
-.deleteIcon {
-  font-size: 18px;
+.date {
+  font-size: 12px;
+  color: var(--text-secondary);
 }
 
 .badge {
-  display: inline-block;
   background: var(--ant-primary-color);
-  color: #fff;
-  padding: 1px 8px;
-  border-radius: 10px;
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.rankBadge {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--text-secondary);
+
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
 }
 
 .content {
   margin: 0 !important;
   color: var(--text-secondary);
-  line-height: 1.6;
   font-size: 14px;
+  line-height: 1.7;
   white-space: pre-wrap;
-  word-break: break-word;
 }
 
-:global(.ant-avatar) {
-  border: 2px solid var(--glass-border);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+.deleteBtn {
+  opacity: 0;
+  transform: translateX(8px);
+  transition: $transition-liquid;
+
+  width: 36px !important;
+  height: 36px !important;
+
+  border-radius: 10px !important;
+
+  background: rgba(255, 77, 79, 0.06) !important;
 }
 
 @media (max-width: $breakpoint-md) {
   .deleteBtn {
     opacity: 1;
-    transform: scale(1) translateX(0);
-    width: 34px !important;
-    height: 34px !important;
+    transform: none;
+  }
+
+  .card {
+    padding: 1rem;
   }
 }

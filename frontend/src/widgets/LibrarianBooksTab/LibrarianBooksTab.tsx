@@ -1,11 +1,24 @@
 import { useState, useMemo } from 'react'
-import { Button, Form, Modal, Space, Table, Typography, Popconfirm } from 'antd'
+import {
+  Button,
+  Form,
+  Modal,
+  Space,
+  Table,
+  Typography,
+  Popconfirm,
+  Image,
+  Tag,
+} from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import type { UploadFile } from 'antd/es/upload/interface'
 import type { BookDto } from '@shared/services/Book/types'
+import { Plus, Edit2, Trash2, BookOpen } from 'lucide-react'
 import { useLibrarianBooks } from '@features/manage-books/hooks/useLibrarianBooks'
 import { BookFormValues } from '@features/manage-books/model/types'
 import { BookForm } from '@features/manage-books/ui/BookForm'
+import classes from './LibrarianBooksTab.module.scss'
+
 export const LibrarianBooksTab = () => {
   const {
     books,
@@ -63,46 +76,92 @@ export const LibrarianBooksTab = () => {
   const columns: ColumnsType<BookDto> = useMemo(
     () => [
       {
-        title: 'Название',
+        title: 'Обложка',
+        key: 'cover',
+        width: 80,
+        render: (_, record) => (
+          <div className={classes.tableCoverWrapper}>
+            <Image
+              src={record.coverUrl}
+              width={44}
+              height={60}
+              className={classes.tableCover}
+              fallback="https://placehold.co/44x60?text=No+Cover"
+              preview={{
+                mask: <span className={classes.previewMask}>См.</span>,
+              }}
+            />
+          </div>
+        ),
+      },
+      {
+        title: 'Название книги',
         dataIndex: 'title',
         key: 'title',
-        width: '25%',
+        width: '30%',
+        render: title => <span className={classes.bookTitle}>{title}</span>,
       },
       {
         title: 'Автор',
         dataIndex: 'author',
         key: 'author',
+        render: (author, record) => (
+          <span className={classes.metaText}>
+            {author ? `${author}` : `ID: ${record.authorId}`}
+          </span>
+        ),
       },
       {
         title: 'Жанр',
         dataIndex: 'genre',
         key: 'genre',
+        render: genre => <Tag className={classes.genreTag}>{genre || '—'}</Tag>,
       },
       {
-        title: 'В наличии',
+        title: 'Доступно',
         dataIndex: 'availableQuantity',
         key: 'availableQuantity',
         align: 'center',
+        width: 120,
+        render: qty => (
+          <span
+            className={`${classes.qtyBadge} ${qty === 0 ? classes.empty : ''}`}
+          >
+            {qty} шт.
+          </span>
+        ),
       },
       {
         title: 'Действия',
         key: 'actions',
         fixed: 'right',
-        width: 200,
+        width: 140,
+        align: 'right',
         render: (_, record) => (
-          <Space>
-            <Button size="small" onClick={() => handleOpenModal(record)}>
-              Редактировать
-            </Button>
+          <Space size={8}>
+            <Button
+              type="text"
+              size="small"
+              icon={<Edit2 size={14} />}
+              onClick={() => handleOpenModal(record)}
+              className={classes.actionEditBtn}
+            />
             <Popconfirm
-              title="Удалить книгу?"
+              title="Удалить книгу из фонда?"
+              description="Это действие нельзя будет отменить."
               onConfirm={() => deleteBook(record.id)}
-              okText="Да"
-              cancelText="Нет"
+              okText="Удалить"
+              cancelText="Отмена"
+              okButtonProps={{ danger: true }}
+              className={classes.customPopconfirm}
             >
-              <Button size="small" danger>
-                Удалить
-              </Button>
+              <Button
+                type="text"
+                size="small"
+                danger
+                icon={<Trash2 size={14} />}
+                className={classes.actionDeleteBtn}
+              />
             </Popconfirm>
           </Space>
         ),
@@ -112,48 +171,71 @@ export const LibrarianBooksTab = () => {
   )
 
   return (
-    <>
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: 20,
-        }}
-      >
-        <Typography.Title level={4} style={{ margin: 0 }}>
-          Управление фондом
-        </Typography.Title>
-        <Button type="primary" onClick={() => handleOpenModal()}>
+    <div className={classes.tabContainer}>
+      <div className={classes.tabHeader}>
+        <Space direction="vertical" size={2}>
+          <Typography.Title level={4} className={classes.tabTitle}>
+            Управление фондом
+          </Typography.Title>
+          <span className={classes.tabSubtitle}>
+            Редактирование, добавление и списание книг
+          </span>
+        </Space>
+        <Button
+          type="primary"
+          icon={<Plus size={16} />}
+          onClick={() => handleOpenModal()}
+          className={classes.addBookBtn}
+        >
           Добавить книгу
         </Button>
       </div>
 
-      <Table
-        dataSource={books}
-        columns={columns}
-        rowKey="id"
-        loading={isLoading}
-        pagination={{ pageSize: 10 }}
-      />
+      <div className={classes.tableCard}>
+        <Table
+          dataSource={books}
+          columns={columns}
+          rowKey="id"
+          loading={isLoading}
+          className={classes.customTable}
+          pagination={{
+            pageSize: 10,
+            showSizeChanger: false,
+            className: classes.customPagination,
+          }}
+        />
+      </div>
 
       <Modal
         open={isModalOpen}
-        title={editingBook ? 'Редактировать книгу' : 'Новая книга'}
+        title={
+          <Space size={8} className={classes.modalTitleWrapper}>
+            <BookOpen size={18} className={classes.modalHeaderIcon} />
+            <span>
+              {editingBook ? 'Редактирование книги' : 'Внесение новой книги'}
+            </span>
+          </Space>
+        }
         onOk={handleFinish}
         confirmLoading={isUpserting}
         onCancel={() => setIsModalOpen(false)}
         destroyOnClose
-        width={600}
+        width={580}
+        centered
+        className={classes.customModal}
+        okText={editingBook ? 'Сохранить изменения' : 'Создать запись'}
+        cancelText="Отмена"
       >
-        <BookForm
-          form={form}
-          authors={authors}
-          genres={genres}
-          fileList={fileList}
-          setFileList={setFileList}
-        />
+        <div className={classes.modalContentWrapper}>
+          <BookForm
+            form={form}
+            authors={authors}
+            genres={genres}
+            fileList={fileList}
+            setFileList={setFileList}
+          />
+        </div>
       </Modal>
-    </>
+    </div>
   )
 }

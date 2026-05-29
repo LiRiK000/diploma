@@ -27,12 +27,17 @@
 }
 
 .cover {
-  width: 100% !important;
-  height: 280px !important;
-  background: var(--glass-border) !important;
+  width: 100%;
+  height: 280px;
   border-bottom: 1px solid var(--glass-border);
   position: relative;
   overflow: hidden;
+
+  background: rgba(0, 0, 0, 0.06);
+
+  :global(.dark) & {
+    background: rgba(255, 255, 255, 0.08);
+  }
 
   &::after {
     content: '';
@@ -42,15 +47,19 @@
     background: linear-gradient(
       90deg,
       transparent,
-      rgba(255, 255, 255, 0.05),
+      rgba(255, 255, 255, 0.3),
       transparent
     );
-    animation: shimmer 1.5s infinite;
-  }
 
-  :global(.ant-skeleton-image-svg) {
-    opacity: 0.2;
-    transform: scale(1.5);
+    :global(.dark) & {
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.05),
+        transparent
+      );
+    }
+    animation: shimmer 1.5s infinite;
   }
 }
 
@@ -61,10 +70,14 @@
   gap: 8px;
 
   :global {
-    .ant-skeleton-title,
-    .ant-skeleton-paragraph > li {
-      background: var(--glass-border) !important;
-      border-radius: 4px !important;
+    .ant-skeleton .ant-skeleton-title,
+    .ant-skeleton .ant-skeleton-paragraph > li,
+    .ant-skeleton-button {
+      background: rgba(0, 0, 0, 0.1) !important;
+
+      :global(.dark) & {
+        background: rgba(255, 255, 255, 0.12) !important;
+      }
     }
   }
 }

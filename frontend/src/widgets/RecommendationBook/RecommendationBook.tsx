@@ -12,13 +12,7 @@ export const RecommendationBook = ({ books }: RecommendationBookProps) => {
         Книги в том же духе
       </Title>
 
-      <Divider
-        style={{
-          margin: '0.5rem 0',
-          borderColor: 'var(--glass-border)',
-          opacity: 0.6,
-        }}
-      />
+      <Divider className={styles.divider} />
 
       <div className={styles.scrollContainer}>
         {books.recommendedBooks.map(book => (

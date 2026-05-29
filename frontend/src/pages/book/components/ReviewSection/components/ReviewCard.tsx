@@ -12,34 +12,25 @@ interface IReviewCardProps {
   isOwn: boolean
   onDelete?: (id: string) => void
 }
+
 export const ReviewCard = ({ review, isOwn, onDelete }: IReviewCardProps) => {
   const displayUserName = review.userName || 'Читатель'
-  const firstLetter = displayUserName[0].toUpperCase()
+  const firstLetter = displayUserName[0]?.toUpperCase()
 
   return (
-    <div className={styles.card}>
+    <article className={styles.card}>
       <div className={styles.header}>
         <Space size={12} align="start">
-          <Avatar
-            size="large"
-            src={review.userAvatar}
-            style={{
-              backgroundColor: isOwn
-                ? 'var(--ant-success-color)'
-                : 'var(--ant-primary-color)',
-              flexShrink: 0,
-              marginTop: '4px',
-            }}
-          >
+          <Avatar size={46} src={review.userAvatar} className={styles.avatar}>
             {!review.userAvatar && firstLetter}
           </Avatar>
 
           <div className={styles.userInfo}>
-            <Space align="center" size={8} wrap>
-              <Text strong className={styles.userName}>
-                {displayUserName}
-              </Text>
+            <Space size={8} wrap>
+              <Text className={styles.userName}>{displayUserName}</Text>
+
               {isOwn && <span className={styles.badge}>Вы</span>}
+
               {review.userLevelTitle && (
                 <span className={styles.rankBadge}>
                   {review.userLevelTitle}
@@ -47,21 +38,19 @@ export const ReviewCard = ({ review, isOwn, onDelete }: IReviewCardProps) => {
               )}
             </Space>
 
-            <div className={styles.metaInfo}>
-              <Text className={styles.date}>
-                {dayjs(review.createdAt).locale('ru').format('D MMMM YYYY')}
-              </Text>
-            </div>
+            <Text className={styles.date}>
+              {dayjs(review.createdAt).locale('ru').format('D MMMM YYYY')}
+            </Text>
           </div>
         </Space>
 
         {isOwn && onDelete && (
-          <Tooltip title="Удалить отзыв" color="#ff4d4f">
+          <Tooltip title="Удалить отзыв">
             <Button
-              type="text"
               danger
+              type="text"
               className={styles.deleteBtn}
-              icon={<DeleteOutlined className={styles.deleteIcon} />}
+              icon={<DeleteOutlined />}
               onClick={() => onDelete(review.id)}
             />
           </Tooltip>
@@ -69,6 +58,6 @@ export const ReviewCard = ({ review, isOwn, onDelete }: IReviewCardProps) => {
       </div>
 
       <Paragraph className={styles.content}>{review.description}</Paragraph>
-    </div>
+    </article>
   )
 }

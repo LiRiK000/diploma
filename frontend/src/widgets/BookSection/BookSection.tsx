@@ -1,25 +1,30 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import useEmblaCarousel from 'embla-carousel-react'
-import { Typography, Button } from 'antd'
 import {
   ArrowRightOutlined,
   LeftOutlined,
   RightOutlined,
 } from '@ant-design/icons'
+import { ArrowUpRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { BookCard } from '@entities/book'
 import styles from './BookSection.module.scss'
 
-const { Title } = Typography
+interface Book {
+  id: string | number
+  [key: string]: any
+}
 
-export const BookSection = ({
+interface BookSectionProps {
+  title: string
+  books: Book[]
+  linkTo: string
+}
+
+export const BookSection: React.FC<BookSectionProps> = ({
   title,
   books,
   linkTo,
-}: {
-  title: string
-  books: any[]
-  linkTo: string
 }) => {
   const [emblaRef, emblaApi] = useEmblaCarousel({
     align: 'start',
@@ -54,25 +59,23 @@ export const BookSection = ({
   return (
     <section className={styles.section}>
       <div className={styles.header}>
-        <Title level={2} className={styles.title}>
-          {title}
-        </Title>
-        <Link to={linkTo}>
-          <Button type="link" icon={<ArrowRightOutlined />}>
-            Смотреть все
-          </Button>
+        <h2 className={styles.title}>{title}</h2>
+
+        <Link to={linkTo} className={styles.viewAllBtn}>
+          <span>Смотреть все</span>
+          <ArrowUpRight className={styles.viewAllIcon} />
         </Link>
       </div>
 
       <div className={styles.viewportWrapper}>
-        {prevBtnEnabled && (
-          <button
-            className={`${styles.navBtn} ${styles.prev}`}
-            onClick={scrollPrev}
-          >
-            <LeftOutlined />
-          </button>
-        )}
+        <button
+          className={`${styles.navBtn} ${styles.prev}`}
+          onClick={scrollPrev}
+          disabled={!prevBtnEnabled}
+          aria-label="Назад"
+        >
+          <LeftOutlined />
+        </button>
 
         <div className={styles.embla} ref={emblaRef}>
           <div className={styles.container}>
@@ -81,6 +84,7 @@ export const BookSection = ({
                 <BookCard book={book} />
               </div>
             ))}
+
             <div className={styles.slide}>
               <Link to={linkTo} className={styles.catalogLink}>
                 <div className={styles.catalogCard}>
@@ -92,14 +96,14 @@ export const BookSection = ({
           </div>
         </div>
 
-        {nextBtnEnabled && (
-          <button
-            className={`${styles.navBtn} ${styles.next}`}
-            onClick={scrollNext}
-          >
-            <RightOutlined />
-          </button>
-        )}
+        <button
+          className={`${styles.navBtn} ${styles.next}`}
+          onClick={scrollNext}
+          disabled={!nextBtnEnabled}
+          aria-label="Вперед"
+        >
+          <RightOutlined />
+        </button>
       </div>
     </section>
   )

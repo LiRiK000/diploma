@@ -1,6 +1,6 @@
 import React from 'react'
-import { Card, List, Typography, Image, Tag, Space } from 'antd'
-import { BookOpen, Calendar } from 'lucide-react'
+import { List, Typography, Image, Tag, Space } from 'antd'
+import { BookOpen, Calendar, Clock } from 'lucide-react'
 import dayjs from 'dayjs'
 import { OrderResponse, OrderItem } from '../../types'
 import classes from '../../OrderDetails.module.scss'
@@ -13,56 +13,87 @@ interface OrderInfoProps {
 
 export const OrderInfo: React.FC<OrderInfoProps> = ({ order }) => {
   return (
-    <Card
-      title={
-        <Space>
-          <BookOpen size={18} /> Список книг в заказе
+    <div className={classes.card}>
+      <div className={classes.cardHeader}>
+        <Space size={8}>
+          <BookOpen size={18} className={classes.headerIcon} />
+          <span className={classes.cardTitle}>Список книг в заказе</span>
         </Space>
-      }
-    >
-      <List<OrderItem>
-        itemLayout="horizontal"
-        dataSource={order.items}
-        renderItem={item => (
-          <List.Item>
-            <List.Item.Meta
-              avatar={
-                <Image
-                  src={item.book.coverUrl}
-                  width={60}
-                  fallback="https://placehold.co/60x90?text=No+Cover"
-                />
-              }
-              title={<Text strong>{item.book.title}</Text>}
-              description={
-                <Space direction="vertical" size={0}>
-                  <Text type="secondary">
-                    {item.book.author?.name ||
-                      `ID Автора: ${item.book.authorId}`}
-                  </Text>
-                  <Text style={{ fontSize: '12px' }}>
-                    Кол-во: {item.quantity} шт.
-                  </Text>
-                </Space>
-              }
-            />
-            <Tag color={item.book.availableQuantity > 0 ? 'green' : 'orange'}>
-              На складе: {item.book.availableQuantity}
-            </Tag>
-          </List.Item>
-        )}
-      />
-
-      <div className={classes.orderFooter} style={{ marginTop: 20 }}>
-        <Space size="large">
-          <Text type="secondary">
-            Создан: {dayjs(order.createdAt).format('DD.MM.YYYY')}
-          </Text>
-          <Text type="danger">
-            Вернуть до: {dayjs(order.dueDate).format('DD.MM.YYYY')}
-          </Text>
-        </Space>
+        <span className={classes.itemsCount}>
+          {order.items?.length || 0} книги
+        </span>
       </div>
-    </Card>
+
+      <div className={classes.cardBody}>
+        <List<OrderItem>
+          itemLayout="horizontal"
+          dataSource={order.items}
+          rowKey={item => item.id}
+          renderItem={item => (
+            <List.Item className={classes.bookItem}>
+              <List.Item.Meta
+                avatar={
+                  <div className={classes.coverWrapper}>
+                    <Image
+                      src={item.book?.coverUrl}
+                      width={64}
+                      height={96}
+                      className={classes.bookCover}
+                      fallback="https://placehold.co/64x96?text=No+Cover"
+                      preview={{
+                        mask: (
+                          <span className={classes.previewMask}>Открыть</span>
+                        ),
+                      }}
+                    />
+                  </div>
+                }
+                title={
+                  <span className={classes.bookTitleText}>
+                    {item.book?.title}
+                  </span>
+                }
+                description={
+                  <Space direction="vertical" size={4} style={{ marginTop: 4 }}>
+                    <Text className={classes.bookAuthorText}>
+                      {item.book?.author?.firstName || ''}{' '}
+                      {item.book?.author?.lastName ||
+                        `ID Автора: ${item.book?.authorId}`}
+                    </Text>
+                    <div className={classes.qtyBadgeContainer}>
+                      <span className={classes.qtyLabel}>Запрошено:</span>
+                      <span className={classes.qtyBadge}>
+                        {item.quantity} шт.
+                      </span>
+                    </div>
+                  </Space>
+                }
+              />
+              <Tag
+                color={item.book?.availableQuantity > 0 ? 'success' : 'warning'}
+                className={classes.warehouseTag}
+              >
+                На складе: {item.book?.availableQuantity ?? 0} шт.
+              </Tag>
+            </List.Item>
+          )}
+        />
+
+        <div className={classes.orderFooter}>
+          <div className={classes.footerTimelineItem}>
+            <Calendar size={14} />
+            <span>
+              Создан: <b>{dayjs(order.createdAt).format('DD.MM.YYYY')}</b>
+            </span>
+          </div>
+          <div className={`${classes.footerTimelineItem} ${classes.danger}`}>
+            <Clock size={14} />
+            <span>
+              Вернуть до: <b>{dayjs(order.dueDate).format('DD.MM.YYYY')}</b>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }

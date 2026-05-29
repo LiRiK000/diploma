@@ -22,6 +22,7 @@ import dayjs from 'dayjs'
 import { useUpdateMe } from '@widgets/ProfileSettings/hooks/useUpdateMe'
 import { useUpdateAvatar } from './hooks/useUpdateAvatar'
 import { useGetProfile } from './hooks/useGetProfile'
+import { Loader } from '@shared/components/Loader'
 
 const { Text } = Typography
 
@@ -51,7 +52,7 @@ export const ProfileInfoPage = () => {
   if (isLoading) {
     return (
       <div className={styles.loader}>
-        <Spin size="large" />
+        <Loader />
       </div>
     )
   }

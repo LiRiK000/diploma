@@ -23,22 +23,34 @@ export const OrderDetailsPage: React.FC = () => {
   const navigate = useNavigate()
   const { data: order, isLoading, error } = useOrderDetails(id!)
 
-  if (isLoading)
+  if (isLoading) {
     return (
       <div className={classes.loader}>
         <Spin size="large" />
         <span>Загружаем детали заказа...</span>
       </div>
     )
+  }
 
-  if (error || !order)
+  if (error || !order) {
     return (
-      <Result
-        status="404"
-        title="Заказ не найден"
-        subTitle="К сожалению, такой заказ не существует или был удален."
-      />
+      <div className={classes.errorContainer}>
+        <Result
+          status="404"
+          title="Заказ не найден"
+          subTitle="К сожалению, такой заказ не существует или был удален."
+          extra={
+            <Button
+              type="primary"
+              onClick={() => navigate('/librarian/orders')}
+            >
+              Вернуться к заказам
+            </Button>
+          }
+        />
+      </div>
     )
+  }
 
   return (
     <div className={classes.pageWrapper}>
@@ -49,43 +61,48 @@ export const OrderDetailsPage: React.FC = () => {
               {
                 title: (
                   <span
-                    style={{ cursor: 'pointer' }}
+                    className={classes.breadcrumbLink}
                     onClick={() => navigate('/librarian/orders')}
                   >
                     Заказы
                   </span>
                 ),
               },
-              { title: `Детали заказа` },
+              { title: 'Детали заказа' },
             ]}
           />
-          <Title level={4} style={{ margin: 0 }}>
+          <Title level={4} className={classes.pageTitle}>
             Заказ #{order.id.slice(0, 8).toUpperCase()}
           </Title>
         </Space>
 
-        <Space>
-          <Button icon={<Printer size={16} />}>Печать</Button>
+        <Space className={classes.headerActions}>
+          <Button icon={<Printer size={15} />} className={classes.secondaryBtn}>
+            Печать
+          </Button>
           <Button
-            type="primary"
-            ghost
-            icon={<ArrowLeft size={16} />}
+            type="text"
+            icon={<ArrowLeft size={15} />}
             onClick={() => navigate(-1)}
+            className={classes.backBtn}
           >
             Назад
           </Button>
-          <Button icon={<MoreHorizontal size={16} />} />
+          <Button
+            icon={<MoreHorizontal size={15} />}
+            className={classes.secondaryBtn}
+          />
         </Space>
       </div>
 
       <Row gutter={[24, 24]}>
-        <Col xs={24} lg={16}>
+        <Col xs={24} xl={16}>
           <div className={classes.mainContent}>
             <OrderInfo order={order} />
           </div>
         </Col>
 
-        <Col xs={24} lg={8}>
+        <Col xs={24} xl={8}>
           <div className={classes.sidebarContainer}>
             <UserSidebar order={order} />
           </div>

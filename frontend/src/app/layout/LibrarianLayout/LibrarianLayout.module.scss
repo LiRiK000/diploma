@@ -9,12 +9,10 @@
 }
 
 .sider {
-  // Используем системный бэкграунд стекла и размытие из твоего файла
   background: var(--glass-bg) !important;
   backdrop-filter: var(--header-blur);
   -webkit-backdrop-filter: var(--header-blur);
 
-  // Прилипание к экрану: сайдбар всегда растянут на всю видимую высоту
   position: sticky !important;
   top: 0;
   height: 100vh;
@@ -29,7 +27,7 @@
   :global(.ant-layout-sider-children) {
     display: flex;
     flex-direction: column;
-    background: transparent; // Прозрачный фон, чтобы работал блюр сзади
+    background: transparent;
     height: 100%;
     position: relative;
   }
@@ -44,34 +42,24 @@
     gap: 6px;
 
     :global(.ant-menu-item) {
-      border-radius: $border-radius-md !important; // 12px из твоего файла
+      border-radius: $border-radius-md !important;
       margin: 0 !important;
       width: 100% !important;
       height: 44px !important;
       line-height: 44px !important;
-      color: var(--text-secondary); // Твой токен второстепенного текста
-      font-size: var(--font-size-sm); // 14px
+      color: var(--text-secondary);
+      font-size: var(--font-size-sm);
       transition: $transition-liquid;
 
       &:hover {
-        background: rgba(
-          0,
-          113,
-          227,
-          0.05
-        ) !important; // Apple-blue с легкой прозрачностью
+        background: rgba(0, 113, 227, 0.05) !important;
         color: var(--header-link-hover) !important;
         transform: translateX(4px);
       }
 
       &:global(.ant-menu-item-selected) {
-        background: rgba(
-          0,
-          113,
-          227,
-          0.08
-        ) !important; // Выделение в стиле Apple
-        color: #0071e3 !important; // Основной синий бренд-цвет
+        background: rgba(0, 113, 227, 0.08) !important;
+        color: #0071e3 !important;
         font-weight: var(--font-weight-semibold);
 
         &::after {
@@ -86,7 +74,6 @@
   }
 }
 
-// Кастомная парящая кнопка сворачивания на границе сайдбара
 .customTrigger {
   position: absolute;
   top: 24px;
@@ -102,14 +89,9 @@
   cursor: pointer;
   box-shadow: $shadow-light;
 
-  // Интегрируем твой фирменный стеклянный миксин!
-  @include liquid-glass;
-
   &:hover {
     color: var(--text-primary);
-    transform: scale(
-      1.1
-    ); // Слегка переопределяем ховер миксина для круглой кнопки
+    transform: scale(1.1);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   }
 
@@ -142,9 +124,9 @@
 
 .logoText {
   font-weight: var(--font-weight-bold);
-  font-size: var(--font-size-md); // 16px
+  font-size: var(--font-size-md);
   letter-spacing: -0.4px;
-  color: var(--text-primary); // Системный основной цвет
+  color: var(--text-primary);
   white-space: nowrap;
   opacity: 1;
   transition: all var(--transition-speed) ease;
@@ -159,7 +141,7 @@
 .siderFooter {
   padding: 12px;
   margin: 16px;
-  border-radius: $border-radius-md; // 12px
+  border-radius: $border-radius-md;
   border: 1px solid var(--glass-border);
   background: var(--glass-bg);
   backdrop-filter: var(--header-blur);
@@ -191,7 +173,7 @@
 }
 
 .userName {
-  font-size: var(--font-size-xs); // 12px
+  font-size: var(--font-size-xs);
   font-weight: var(--font-weight-semibold);
   color: var(--text-primary);
   white-space: nowrap;
@@ -216,7 +198,6 @@
 }
 
 .header {
-  // Берем липкий полупрозрачный фон хедера из твоих настроек
   background: var(--header-bg-sticky) !important;
   backdrop-filter: var(--header-blur);
   -webkit-backdrop-filter: var(--header-blur);
@@ -234,20 +215,17 @@
 
 .title {
   margin: 0 !important;
-  font-weight: var(
-    --font-weight-display
-  ) !important; // Жирный премиальный шрифт 800
-  font-size: var(--font-size-xl) !important; // 22px
+  font-weight: var(--font-weight-display) !important;
+  font-size: var(--font-size-xl) !important;
   letter-spacing: -0.6px;
   color: var(--text-primary);
 }
 
 .content {
   padding: 32px;
-  // Верхний марджин убран, контент аккуратно стыкуется с липким хедером
   margin: 0 40px 40px 40px;
   background: var(--bg-content) !important;
-  border-radius: $border-radius-lg; // 24px из твоего файла переменных
+  border-radius: $border-radius-lg;
   border: 1px solid var(--glass-border);
   min-height: calc(100vh - 112px);
   box-shadow: $shadow-light;

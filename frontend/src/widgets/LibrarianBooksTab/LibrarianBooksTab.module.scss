@@ -1,0 +1,356 @@
+@use '@shared/styles/variables' as *;
+
+$apple-ease: cubic-bezier(0.25, 1, 0.5, 1);
+$apple-transition: 0.25s $apple-ease;
+
+.tabContainer {
+  padding: 8px 0;
+}
+
+.tabHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  gap: 16px;
+
+  @include mobile {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.tabTitle {
+  font-weight: var(--font-weight-display, 700) !important;
+  font-size: var(--font-size-lg, 18px) !important;
+  letter-spacing: -0.01em;
+  color: var(--text-primary) !important;
+  margin: 0 !important;
+}
+
+.tabSubtitle {
+  font-size: var(--font-size-xs, 12px);
+  color: var(--text-secondary);
+  opacity: 0.8;
+}
+
+.addBookBtn {
+  background: #007aff !important;
+  border: none !important;
+  border-radius: 10px !important;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.15) !important;
+
+  &:hover {
+    background: #0066d6 !important;
+    box-shadow: 0 4px 16px rgba(0, 122, 255, 0.25) !important;
+    transform: translateY(-0.5px);
+  }
+}
+
+.tableCard {
+  @include liquid-glass;
+  border-radius: var(--border-radius-primary, 16px);
+  box-shadow: $shadow-light;
+  overflow: hidden;
+  border: 1px solid var(--glass-border);
+}
+
+.customTable {
+  :global(.ant-table) {
+    background: transparent !important;
+    color: var(--text-primary);
+  }
+
+  :global(.ant-table-thead > tr > th) {
+    background: rgba(0, 0, 0, 0.01) !important;
+    border-bottom: 1px solid var(--glass-border) !important;
+    color: var(--text-secondary);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    font-weight: 600;
+
+    body:global(.dark) & {
+      background: rgba(255, 255, 255, 0.01) !important;
+    }
+  }
+
+  :global(.ant-table-tbody > tr > td) {
+    border-bottom: 1px solid var(--glass-border) !important;
+    padding: 12px 16px !important;
+    transition: background 0.2s;
+  }
+
+  :global(.ant-table-row:hover > td) {
+    background: rgba(0, 0, 0, 0.015) !important;
+    body:global(.dark) & {
+      background: rgba(255, 255, 255, 0.02) !important;
+    }
+  }
+}
+
+.tableCoverWrapper {
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--glass-border);
+  display: inline-block;
+  height: 60px;
+}
+
+.tableCover {
+  object-fit: cover;
+}
+
+.previewMask {
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.bookTitle {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.metaText {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.genreTag {
+  border: 1px solid var(--glass-border) !important;
+  background: rgba(0, 0, 0, 0.02) !important;
+  color: var(--text-secondary) !important;
+  border-radius: 6px !important;
+  font-weight: 500;
+  font-size: 12px !important;
+  padding: 2px 8px !important;
+  body:global(.dark) & {
+    background: rgba(255, 255, 255, 0.04) !important;
+  }
+}
+
+.qtyBadge {
+  background: rgba(0, 122, 255, 0.06);
+  border: 1px solid rgba(0, 122, 255, 0.12);
+  color: #007aff;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--font-family-mono, monospace);
+  display: inline-block;
+
+  &.empty {
+    background: rgba(255, 59, 48, 0.06);
+    border-color: rgba(255, 59, 48, 0.15);
+    color: #ff3b30;
+  }
+}
+
+.actionEditBtn {
+  color: var(--text-secondary) !important;
+  background: transparent !important;
+  border-radius: 6px !important;
+  &:hover {
+    color: #007aff !important;
+    background: rgba(0, 122, 255, 0.08) !important;
+  }
+}
+
+.actionDeleteBtn {
+  color: var(--text-secondary) !important;
+  border-radius: 6px !important;
+  &:hover {
+    color: #ff3b30 !important;
+    background: rgba(255, 59, 48, 0.08) !important;
+  }
+}
+
+.customPagination {
+  margin: 16px !important;
+  :global(.ant-pagination-item-active) {
+    border-color: #007aff !important;
+    a {
+      color: #007aff !important;
+    }
+  }
+}
+
+.customModal {
+  :global(.ant-modal-content) {
+    background: var(--glass-bg) !important;
+    backdrop-filter: blur(25px) !important;
+    -webkit-backdrop-filter: blur(25px) !important;
+    border: 1px solid var(--glass-border) !important;
+    border-radius: var(--border-radius-primary, 20px) !important;
+    box-shadow: $liquid-glass-shadow-light !important;
+    padding: 24px !important;
+  }
+
+  :global(.ant-modal-header) {
+    background: transparent !important;
+    border-bottom: 1px solid var(--glass-border) !important;
+    padding-bottom: 14px !important;
+    margin-bottom: 20px !important;
+  }
+
+  :global(.ant-modal-footer) {
+    border-top: 1px solid var(--glass-border) !important;
+    padding-top: 14px !important;
+    margin-top: 20px !important;
+
+    :global(.ant-btn-default) {
+      background: rgba(0, 0, 0, 0.02) !important;
+      border: 1px solid var(--glass-border) !important;
+      color: var(--text-secondary) !important;
+      border-radius: 8px;
+      body:global(.dark) & {
+        background: rgba(255, 255, 255, 0.03) !important;
+      }
+      &:hover {
+        color: var(--text-primary) !important;
+      }
+    }
+
+    :global(.ant-btn-primary) {
+      background: #007aff !important;
+      border: none;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 122, 255, 0.15);
+      &:hover {
+        background: #0066d6 !important;
+      }
+    }
+  }
+}
+
+.modalTitleWrapper {
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.modalHeaderIcon {
+  color: var(--text-secondary);
+}
+
+.innerForm {
+  :global(.ant-form-item-label > label) {
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    color: var(--text-secondary) !important;
+  }
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  @include mobile {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}
+
+.formSecondaryGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.customInput,
+.customTextArea,
+.customInputNumber,
+.customSelect {
+  :global(.ant-input),
+  :global(.ant-input-number-input),
+  :global(.ant-select-selector) {
+    border-radius: 8px !important;
+    border-color: var(--glass-border) !important;
+    background: rgba(0, 0, 0, 0.01) !important;
+    color: var(--text-primary) !important;
+    transition: all 0.2s $apple-ease;
+
+    body:global(.dark) & {
+      background: rgba(255, 255, 255, 0.02) !important;
+    }
+  }
+
+  &:focus,
+  &:hover {
+    :global(.ant-input),
+    :global(.ant-input-number),
+    :global(.ant-select-selector) {
+      border-color: #007aff !important;
+      box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.08) !important;
+    }
+  }
+}
+
+.customInputNumber {
+  border-radius: 8px !important;
+  border-color: var(--glass-border) !important;
+  background: rgba(0, 0, 0, 0.01) !important;
+  body:global(.dark) & {
+    background: rgba(255, 255, 255, 0.02) !important;
+  }
+}
+
+.customUpload {
+  :global(.ant-upload-select) {
+    width: 100% !important;
+    height: 102px !important;
+    border-radius: 8px !important;
+    background: rgba(0, 0, 0, 0.01) !important;
+    border: 1px dashed var(--glass-border) !important;
+    margin: 0 !important;
+
+    body:global(.dark) & {
+      background: rgba(255, 255, 255, 0.02) !important;
+    }
+    &:hover {
+      border-color: #007aff !important;
+    }
+  }
+}
+
+.uploadPlaceholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 500;
+  svg {
+    color: var(--text-secondary);
+    opacity: 0.7;
+  }
+}
+
+.customDropdown {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(20px) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: 10px !important;
+  box-shadow: $shadow-strong !important;
+
+  :global(.ant-select-item-option-active) {
+    background: rgba(0, 0, 0, 0.03) !important;
+    body:global(.dark) & {
+      background: rgba(255, 255, 255, 0.04) !important;
+    }
+  }
+  :global(.ant-select-item-option-selected) {
+    background: rgba(0, 122, 255, 0.1) !important;
+    color: #007aff !important;
+  }
+}

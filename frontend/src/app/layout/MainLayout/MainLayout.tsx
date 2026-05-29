@@ -1,5 +1,6 @@
-import { Layout } from 'antd'
-import { Outlet, Link, NavLink } from 'react-router-dom'
+import { Layout, Badge } from 'antd'
+import { BellOutlined } from '@ant-design/icons'
+import { Outlet, Link, NavLink, useNavigate } from 'react-router-dom'
 import { UserAvatar } from '@entities/user'
 import { CartIcon } from '@entities/cart/components'
 import { routes } from '@shared/constants'
@@ -8,10 +9,15 @@ import { Search } from '@features/search'
 import { ThemeToggle } from '@features/theme-toggle/ui/ThemeToggle'
 import styles from './MainLayout.module.scss'
 import { PullAnchor } from '@shared/components/PullAnchor'
+import { Logo } from '../../../../public/logo'
+import { useNotifications } from '@entities/notifications/hooks/useNotifications'
 
 const { Header, Content } = Layout
 
 export const MainLayout = () => {
+  const navigate = useNavigate()
+  const { unreadCount } = useNotifications()
+
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <Header className={styles.header}>
@@ -23,7 +29,7 @@ export const MainLayout = () => {
 
         <div className={styles.headerLeft}>
           <Link to={routes.home} className={styles.logo}>
-            Библиотека
+            <Logo />
           </Link>
           <nav className={styles.navLinks}>
             <NavLink
@@ -34,9 +40,14 @@ export const MainLayout = () => {
             >
               Каталог
             </NavLink>
-            <Link to={routes.orders} className={styles.link}>
+            <NavLink
+              to={routes.orders}
+              className={({ isActive }) =>
+                isActive ? `${styles.link} ${styles.liquidActive}` : styles.link
+              }
+            >
               Мои заявки
-            </Link>
+            </NavLink>
           </nav>
         </div>
 
@@ -45,6 +56,16 @@ export const MainLayout = () => {
         </div>
 
         <div className={styles.headerRight}>
+          <div
+            className={styles.notificationWrapper}
+            style={{ cursor: 'pointer' }}
+            onClick={() => void navigate(routes.notifications)}
+          >
+            <Badge count={unreadCount} size="small" offset={[-2, 2]}>
+              <BellOutlined style={{ fontSize: '20px', color: 'inherit' }} />
+            </Badge>
+          </div>
+
           <CartIcon />
           <UserAvatar />
           <ThemeToggle />

@@ -40,14 +40,14 @@ export const LibrarianLayout = () => {
   }
 
   return (
-    <Layout className ={styles.layout}>
+    <Layout className={styles.layout}>
       <Sider
         collapsible
         collapsed={collapsed}
         onCollapse={setCollapsed}
         className={styles.sider}
-        width={256} // Чуть увеличили для лучшей читаемости текста меню
-        trigger={null} // Если хочешь кастомный триггер в шапке, можно убрать, но дефолтный antd триггер снизу тоже ок
+        width={256}
+        trigger={null}
       >
         <div className={styles.logoContainer}>
           <div className={styles.logoCircle} />
@@ -63,7 +63,6 @@ export const LibrarianLayout = () => {
           onClick={({ key }) => navigate(key)}
         />
 
-        {/* Прокачанный блок профиля */}
         <div className={styles.siderFooter}>
           <Avatar
             className={styles.userAvatar}
@@ -77,7 +76,6 @@ export const LibrarianLayout = () => {
         </div>
       </Sider>
 
-      {/* margin-left убран! flex: 1 сам сделает адаптивный расчет ширины */}
       <Layout className={styles.rightLayout}>
         <Header className={styles.header}>
           <Typography.Title level={3} className={styles.title}>

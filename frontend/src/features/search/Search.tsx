@@ -21,8 +21,11 @@ interface SuggestionItem {
 export const Search = () => {
   const [value, setValue] = useState('')
   const [isFocused, setIsFocused] = useState(false)
+  const [activeIndex, setActiveIndex] = useState<number>(-1)
   const navigate = useNavigate()
+
   const blurTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const inputRef = useRef<any>(null)
 
   const debouncedSearch = useDebounce(value, 350)
   const { data: suggestions = [] as SuggestionItem[], isLoading } =
@@ -30,9 +33,17 @@ export const Search = () => {
       data: SuggestionItem[]
       isLoading: boolean
     }
+
+  useEffect(() => {
+    setActiveIndex(-1)
+  }, [suggestions])
+
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setIsFocused(false)
+      if (e.key === 'Escape') {
+        setIsFocused(false)
+        if (inputRef.current) inputRef.current.blur()
+      }
     }
     window.addEventListener('keydown', handleEsc)
     return () => window.removeEventListener('keydown', handleEsc)
@@ -41,12 +52,21 @@ export const Search = () => {
   const handleClear = () => {
     setValue('')
     setIsFocused(false)
+    setActiveIndex(-1)
   }
 
   const handleSearch = (query: string) => {
+    if (activeIndex >= 0 && suggestions[activeIndex]) {
+      navigateToItem(suggestions[activeIndex])
+      return
+    }
+
     const trimmed = query.trim()
     if (!trimmed) return
     void navigate(`/search?q=${encodeURIComponent(trimmed)}`)
+
+    if (inputRef.current) inputRef.current.blur()
+
     setIsFocused(false)
     setValue('')
   }
@@ -55,8 +75,27 @@ export const Search = () => {
     const path =
       item.type === 'author' ? `/author/${item.id}` : `/book/${item.id}`
     void navigate(path)
+
+    if (inputRef.current) inputRef.current.blur()
+
     setValue('')
     setIsFocused(false)
+    setActiveIndex(-1)
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!showDropdown || suggestions.length === 0) return
+
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault()
+        setActiveIndex(prev => (prev < suggestions.length - 1 ? prev + 1 : 0))
+        break
+      case 'ArrowUp':
+        e.preventDefault()
+        setActiveIndex(prev => (prev > 0 ? prev - 1 : suggestions.length - 1))
+        break
+    }
   }
 
   const showDropdown = isFocused && value.trim().length >= 2
@@ -67,7 +106,10 @@ export const Search = () => {
         createPortal(
           <div
             className={`${styles.overlay} ${styles.overlayVisible}`}
-            onClick={() => setIsFocused(false)}
+            onClick={() => {
+              setIsFocused(false)
+              if (inputRef.current) inputRef.current.blur()
+            }}
           />,
           document.body,
         )}
@@ -77,6 +119,7 @@ export const Search = () => {
       >
         <div className={styles.searchContainer}>
           <AntdSearch
+            ref={inputRef}
             placeholder="Поиск книг или авторов..."
             size="large"
             value={value}
@@ -88,6 +131,7 @@ export const Search = () => {
                 200,
               )
             }}
+            onKeyDown={handleKeyDown}
             onSearch={handleSearch}
             className={styles.searchInput}
             allowClear
@@ -102,63 +146,61 @@ export const Search = () => {
               ) : suggestions.length > 0 ? (
                 <List
                   dataSource={suggestions}
-                  renderItem={(item: SuggestionItem) => (
-                    <List.Item
-                      className={styles.listItem}
-                      onMouseDown={e => {
-                        e.preventDefault()
-                        navigateToItem(item)
-                      }}
-                    >
-                      <div className={styles.suggestionItem}>
-                        <div className={styles.imageWrapper}>
-                          <img
-                            src={
-                              item.image ||
-                              (item.type === 'author'
-                                ? '/author.png'
-                                : '/book.png')
-                            }
-                            alt={item.title}
-                            className={`${styles.suggestionImage} ${
-                              item.type === 'author'
-                                ? styles.authorImg
-                                : styles.bookImg
-                            }`}
-                            onError={e => {
-                              const target = e.target as HTMLImageElement
-                              target.src =
-                                item.type === 'author'
+                  renderItem={(item: SuggestionItem, index: number) => {
+                    const isActive = index === activeIndex
+                    return (
+                      <List.Item
+                        className={`${styles.listItem} ${isActive ? styles.activeListItem : ''}`}
+                        onMouseDown={e => {
+                          e.preventDefault()
+                          navigateToItem(item)
+                        }}
+                      >
+                        <div className={styles.suggestionItem}>
+                          <div className={styles.imageWrapper}>
+                            <img
+                              src={
+                                item.image ||
+                                (item.type === 'author'
                                   ? '/author.png'
-                                  : '/book.png'
-                            }}
-                          />
-                        </div>
+                                  : '/book.png')
+                              }
+                              alt={item.title}
+                              className={`${styles.suggestionImage} ${
+                                item.type === 'author'
+                                  ? styles.authorImg
+                                  : styles.bookImg
+                              }`}
+                              onError={e => {
+                                const target = e.target as HTMLImageElement
+                                target.src =
+                                  item.type === 'author'
+                                    ? '/author.png'
+                                    : '/book.png'
+                              }}
+                            />
+                          </div>
 
-                        <div className={styles.suggestionText}>
-                          <Text strong className={styles.itemTitle}>
-                            {item.title}
-                          </Text>
-                          {item.author && (
-                            <Text
-                              className={styles.authorName}
-                              type="secondary"
-                            >
-                              {item.author}
+                          <div className={styles.suggestionText}>
+                            <Text strong className={styles.itemTitle}>
+                              {item.title}
                             </Text>
-                          )}
+                            {item.author && (
+                              <Text
+                                className={styles.authorName}
+                                type="secondary"
+                              >
+                                {item.author}
+                              </Text>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    </List.Item>
-                  )}
+                      </List.Item>
+                    )
+                  }}
                 />
               ) : (
                 <div className={styles.infoState}>
-                  {/* <Empty
-                    image={Empty.PRESENTED_IMAGE_SIMPLE}
-                    description="Ничего не нашли"
-                  /> */}
-
                   <EmptyState onAction={handleClear} />
                 </div>
               )}

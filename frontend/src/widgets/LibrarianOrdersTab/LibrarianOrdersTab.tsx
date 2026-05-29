@@ -1,6 +1,6 @@
 import { Table } from 'antd'
 import { useMemo } from 'react'
-import { useNavigate } from 'react-router-dom' // Предполагаем использование роутинга
+import { useNavigate } from 'react-router-dom'
 import { getTableColumns, getPagination } from './utils'
 import { useLibrarianOrders } from '@features/manage-orders/hooks/use-librarian-orders'
 import { useOrderActions } from '@features/manage-orders/hooks/use-orders-management'
@@ -31,8 +31,9 @@ export const LibrarianOrdersTab = () => {
         dataSource={orders}
         columns={columns}
         rowKey="id"
-        scroll={{ x: 1000 }}
+        scroll={{ x: 1100 }}
         pagination={pagination}
+        className={classes.customTable}
       />
     </div>
   )

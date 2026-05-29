@@ -56,7 +56,13 @@ export const WidgetWrapper: React.FC<WidgetWrapperProps> = ({
       <Space
         size={6}
         onClick={e => e.stopPropagation()}
-        onMouseDown={e => e.stopPropagation()}
+        onMouseDown={e => {
+          const target = e.target as HTMLElement
+          if (target.closest('.react-grid-dragHandle-wrapper')) {
+            return
+          }
+          e.stopPropagation()
+        }}
       >
         <Tooltip
           title={isFullscreen ? 'Свернуть (Esc)' : 'Развернуть'}
@@ -79,11 +85,12 @@ export const WidgetWrapper: React.FC<WidgetWrapperProps> = ({
         {isEditing && !isFullscreen && (
           <>
             <Tooltip title="Перетащить виджет" placement="bottom">
-              <Button
-                type="text"
+              <div
                 className={`${styles.dragIcon} react-grid-dragHandle-wrapper`}
-                icon={<DragOutlined style={{ fontSize: 13 }} />}
-              />
+                onClick={e => e.stopPropagation()}
+              >
+                <DragOutlined style={{ fontSize: 13 }} />
+              </div>
             </Tooltip>
 
             {onSettingsClick && (

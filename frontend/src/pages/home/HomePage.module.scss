@@ -4,49 +4,64 @@
   background-color: transparent;
   max-width: 1400px;
   margin: 0 auto;
-  padding: 60px 24px;
+  padding: 40px 24px 60px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
 
   color: var(--text-primary);
   transition: color var(--transition-speed) ease;
 }
 
-.sectionTitle {
-  color: var(--text-primary) !important;
-  font-size: 32px !important;
-  font-weight: 600 !important;
-  letter-spacing: -0.02em !important;
-  margin-bottom: 8px !important;
-}
-
-.sectionDesc {
-  color: var(--text-secondary) !important;
-  font-size: 16px;
-  display: block;
+.sectionsWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 64px;
 }
 
 .feedSection {
-  animation: fadeIn 0.8s ease-out;
-}
-.sectionHeader {
-  margin-bottom: 40px;
+  animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+
+  @for $i from 1 through 5 {
+    &:nth-child(#{$i}) {
+      animation-delay: #{$i * 0.1}s;
+    }
+  }
 }
 
-.sectionTitle {
-  font-size: 32px !important;
-  font-weight: 600 !important;
-  letter-spacing: -0.02em !important;
-  margin-bottom: 8px !important;
+.skeletonContainer {
+  animation: fadeIn 0.4s ease-out;
 }
 
-.sectionDesc {
+.statusBlock {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  padding: 40px;
+  text-align: center;
+  background: var(--bg-content);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: var(--header-blur);
+  border-radius: var(--border-radius-primary);
+  box-shadow: var(--header-shadow);
+  animation: fadeIn 0.5s ease-out;
+}
+
+.errorText {
   font-size: 16px;
-  display: block;
+  font-weight: 500;
+}
+
+.emptyText {
+  font-size: 16px;
+  font-style: italic;
 }
 
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(16px);
   }
   to {
     opacity: 1;
@@ -55,13 +70,18 @@
 }
 
 @media (max-width: 768px) {
-  .mainTitle {
-    font-size: 40px !important;
-  }
   .container {
-    padding: 40px 16px;
+    padding: 20px 16px 40px 16px;
+    gap: 32px;
   }
-  .hero {
-    margin-bottom: 48px;
+
+  .sectionsWrapper {
+    gap: 40px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .feedSection {
+    animation: none;
   }
 }

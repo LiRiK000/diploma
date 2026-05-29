@@ -4,12 +4,18 @@ import styles from './ToShareButton.module.scss'
 import { ShareButtonProps } from './type'
 
 export const ToShareButton = ({ title }: ShareButtonProps) => {
-  const handleClick = () => {
-    console.log(title)
+  const handleClick = async () => {
+    try {
+      await navigator.clipboard.writeText(title)
+    } catch {
+      console.log(title)
+    }
   }
+
   return (
     <Tooltip title="Поделиться">
       <Button
+        type="text"
         icon={<ShareAltOutlined />}
         onClick={handleClick}
         size="large"

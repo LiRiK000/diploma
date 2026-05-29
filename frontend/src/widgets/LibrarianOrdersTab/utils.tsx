@@ -1,5 +1,5 @@
-import { Button, Tag, Space, Popover, Tooltip, TableProps } from 'antd'
-import { Check, X, Book, Eye, ChevronRight } from 'lucide-react'
+import { Button, Tag, Space, Popover, Tooltip, TableProps, Avatar } from 'antd'
+import { Check, X, Book, Eye, Calendar, Clock, User } from 'lucide-react'
 import dayjs from 'dayjs'
 import { STATUS_CONFIG } from '@entities/order/consts/statusConfig'
 import classes from './OrderTable.module.scss'
@@ -14,7 +14,7 @@ export const getTableColumns = (
     {
       title: 'ID',
       dataIndex: 'id',
-      width: 100,
+      width: 95,
       render: (id: string) => (
         <span className={classes.idBadge}>#{id.slice(0, 6).toUpperCase()}</span>
       ),
@@ -22,24 +22,32 @@ export const getTableColumns = (
     {
       title: 'Пользователь',
       key: 'user',
-      width: 200,
+      width: 220,
       render: (_, record) => (
-        <div className={classes.userInfo}>
-          <div className={classes.userName}>
-            {record.user ? `${record.user.name} ${record.user.surname}` : '—'}
+        <Space size={10}>
+          <Avatar
+            src={record.user?.avatar}
+            icon={<User size={13} />}
+            className={classes.userAvatar}
+          />
+          <div className={classes.userInfo}>
+            <span className={classes.userName}>
+              {record.user ? `${record.user.name} ${record.user.surname}` : '—'}
+            </span>
+            <span className={classes.userSub}>{record.user?.email || '—'}</span>
           </div>
-          <div className={classes.userSub}>{record.user?.email}</div>
-        </div>
+        </Space>
       ),
     },
     {
       title: 'Состав заказа',
       dataIndex: 'items',
       render: (items: OrderItem[]) => (
-        <Space wrap size={[4, 4]}>
-          {items?.slice(0, 3).map(item => (
+        <Space wrap size={[6, 6]}>
+          {items?.slice(0, 2).map(item => (
             <Popover
               key={item.id}
+              overlayClassName={classes.popoverOverlay}
               content={
                 <div className={classes.popoverCard}>
                   <div className={classes.popoverHeader}>
@@ -49,47 +57,50 @@ export const getTableColumns = (
                   </div>
                   <div className={classes.popoverMetaRow}>
                     <span>Автор:</span>
-                    <span>
-                      {item.book?.author?.firstName}{' '}
+                    <span className={classes.popoverMetaValue}>
+                      {item.book?.author?.firstName || ''}{' '}
                       {item.book?.author?.lastName || '—'}
                     </span>
                   </div>
                   <div className={classes.popoverFooter}>
                     Количество:{' '}
-                    <span style={{ color: '#1890ff' }}>
+                    <span className={classes.popoverQtyHighlight}>
                       {item.quantity} шт.
                     </span>
                   </div>
                 </div>
               }
               trigger="hover"
+              mouseEnterDelay={0.15}
             >
               <div className={classes.bookCardMini}>
-                <Book size={14} className={classes.miniIcon} />
+                <Book size={13} className={classes.miniIcon} />
                 <span className={classes.miniTitle}>{item.book?.title}</span>
-                <span className={classes.miniQty}>x{item.quantity}</span>
+                <span className={classes.miniQty}>×{item.quantity}</span>
               </div>
             </Popover>
           ))}
-          {items?.length > 3 && (
-            <Tag color="default" style={{ cursor: 'default' }}>
-              +{items.length - 3} еще
-            </Tag>
+          {items?.length > 2 && (
+            <span className={classes.moreItemsBadge}>
+              +{items.length - 2} ещё
+            </span>
           )}
         </Space>
       ),
     },
     {
-      title: 'Дата',
+      title: 'Дата создания',
       dataIndex: 'orderDate',
-      width: 130,
+      width: 140,
       render: (date: string) => (
-        <div style={{ lineHeight: '1.2' }}>
-          <div style={{ fontSize: '13px' }}>
-            {dayjs(date).format('DD.MM.YYYY')}
+        <div className={classes.dateContainer}>
+          <div className={classes.dateRow}>
+            <Calendar size={12} className={classes.dateIcon} />
+            <span>{dayjs(date).format('DD.MM.YYYY')}</span>
           </div>
-          <div style={{ color: '#bfbfbf', fontSize: '11px' }}>
-            {dayjs(date).format('HH:mm')}
+          <div className={classes.timeRow}>
+            <Clock size={12} className={classes.dateIcon} />
+            <span>{dayjs(date).format('HH:mm')}</span>
           </div>
         </div>
       ),
@@ -97,7 +108,7 @@ export const getTableColumns = (
     {
       title: 'Статус',
       dataIndex: 'status',
-      width: 140,
+      width: 130,
       render: (status: string) => {
         const config = STATUS_CONFIG[status as any] || {
           label: status,
@@ -114,41 +125,39 @@ export const getTableColumns = (
       title: 'Действия',
       key: 'actions',
       fixed: 'right',
-      width: 120,
+      width: 130,
+      align: 'right',
       render: (_, record) => (
         <div className={classes.actionButtons}>
-          <Space size={4}>
-            <Tooltip title="Открыть детали">
-              <Button
-                type="text"
-                shape="circle"
-                icon={<Eye size={18} color="#1890ff" />}
-                onClick={() => onDetails(record.id)}
-              />
-            </Tooltip>
+          <Tooltip title="Открыть детали" placement="top">
+            <Button
+              type="text"
+              icon={<Eye size={15} />}
+              onClick={() => onDetails(record.id)}
+              className={classes.viewBtn}
+            />
+          </Tooltip>
 
-            {record.status === 'PENDING' && (
-              <>
-                <Tooltip title="Одобрить">
-                  <Button
-                    type="text"
-                    shape="circle"
-                    onClick={() => onApprove(record.id)}
-                    icon={<Check size={18} color="#52c41a" />}
-                  />
-                </Tooltip>
-                <Tooltip title="Отклонить">
-                  <Button
-                    type="text"
-                    danger
-                    shape="circle"
-                    onClick={() => onReject(record.id)}
-                    icon={<X size={18} />}
-                  />
-                </Tooltip>
-              </>
-            )}
-          </Space>
+          {record.status === 'PENDING' && (
+            <>
+              <Tooltip title="Одобрить заявку" placement="top">
+                <Button
+                  type="text"
+                  onClick={() => onApprove(record.id)}
+                  className={classes.approveBtn}
+                  icon={<Check size={15} />}
+                />
+              </Tooltip>
+              <Tooltip title="Отклонить" placement="top">
+                <Button
+                  type="text"
+                  onClick={() => onReject(record.id)}
+                  className={classes.rejectBtn}
+                  icon={<X size={15} />}
+                />
+              </Tooltip>
+            </>
+          )}
         </div>
       ),
     },
@@ -161,5 +170,6 @@ export const getPagination = (data: OrderResponse[]) => {
     pageSize: 10,
     position: ['bottomRight'] as const,
     size: 'small' as const,
+    hideOnSinglePage: true,
   }
 }

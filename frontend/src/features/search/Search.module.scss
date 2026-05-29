@@ -132,11 +132,18 @@
   margin: 0 8px;
   border-radius: 10px;
   cursor: pointer;
+  transition: background-color 0.15s ease;
 
   &:hover {
     background: var(--glass-bg) !important;
     filter: brightness(0.95);
   }
+}
+
+.activeListItem {
+  background: var(--glass-bg) !important;
+  filter: brightness(0.92);
+  outline: 1px solid var(--header-link-hover);
 }
 
 .suggestionItem {

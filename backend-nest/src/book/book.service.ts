@@ -132,6 +132,40 @@ export class BookService {
 
     if (!book) throw new NotFoundException('Книга не найдена');
 
+    let finalRecommendations = book.recommendedBooks;
+    if (!finalRecommendations || finalRecommendations.length === 0) {
+      finalRecommendations = await this.prisma.book.findMany({
+        where: {
+          id: { not: id },
+          OR: [{ genreId: book.genreId }, { authorId: book.authorId }],
+        },
+        take: 3,
+        include: {
+          author: { select: { firstName: true, lastName: true } },
+        },
+      });
+    }
+
+    let finalReviews = book.reviews.map((r) => ({
+      id: r.id,
+      text: r.description,
+      createdAt: r.createdAt.toISOString(),
+      userName: `${r.user.name} ${r.user.surname}`,
+      userId: r.user.id,
+    }));
+
+    if (finalReviews.length === 0) {
+      finalReviews = [
+        {
+          id: 'mock-review-id',
+          text: 'Станьте первым, кто прочитает эту книгу и оставит свое честное мнение!',
+          createdAt: new Date().toISOString(),
+          userName: 'Система Литрес',
+          userId: 'system',
+        },
+      ];
+    }
+
     return {
       ...book,
       author: `${book.author.firstName} ${book.author.lastName}`,
@@ -153,18 +187,12 @@ export class BookService {
         genre: book.genre.label,
       },
       tags: book.subjects || [],
-      recommendedBooks: book.recommendedBooks.map((r) => ({
+      recommendedBooks: finalRecommendations.map((r) => ({
         ...r,
         author: `${r.author.firstName} ${r.author.lastName}`,
         coverUrl: r.coverImage,
       })),
-      reviews: book.reviews.map((r) => ({
-        id: r.id,
-        text: r.description,
-        createdAt: r.createdAt.toISOString(),
-        userName: `${r.user.name} ${r.user.surname}`,
-        userId: r.user.id,
-      })),
+      reviews: finalReviews,
     };
   }
   async createBook(dto: CreateBookDto) {
