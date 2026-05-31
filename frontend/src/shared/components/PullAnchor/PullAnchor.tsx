@@ -1,39 +1,67 @@
-import { useState, useEffect } from 'react'
-import { motion, useScroll } from 'framer-motion'
+import { useState } from 'react'
+import {
+  motion,
+  AnimatePresence,
+  useScroll,
+  useMotionValueEvent,
+} from 'framer-motion'
+import { ChevronUp } from 'lucide-react'
 import styles from './PullAnchor.module.scss'
 
 export const PullAnchor = () => {
-  const [isVisible, setIsVisible] = useState(false)
   const { scrollY } = useScroll()
+  const [visible, setVisible] = useState(false)
 
-  useEffect(() => {
-    return scrollY.onChange(latest => {
-      setIsVisible(latest > 300)
+  useMotionValueEvent(scrollY, 'change', latest => {
+    const next = latest > 400
+
+    setVisible(prev => (prev !== next ? next : prev))
+  })
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
     })
-  }, [scrollY])
-
-  const handlePull = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   return (
-    <motion.div
-      className={styles.anchorWrapper}
-      initial={{ y: -100 }}
-      animate={{ y: isVisible ? 0 : -200 }}
-      transition={{ type: 'spring', stiffness: 100, damping: 15 }}
-    >
-      <motion.div
-        className={styles.ropeContainer}
-        whileHover={{ y: 20 }}
-        whileTap={{ y: 50, scaleY: 1.2 }}
-        onClick={handlePull}
-      >
-        <div className={styles.ropeLine} />
-        <div className={styles.handle}>
-          <div className={styles.ring} />
-        </div>
-      </motion.div>
-    </motion.div>
+    <AnimatePresence>
+      {visible && (
+        <motion.button
+          type="button"
+          onClick={scrollToTop}
+          className={styles.anchor}
+          aria-label="Scroll to top"
+          initial={{
+            opacity: 0,
+            scale: 0.82,
+            y: 20,
+          }}
+          animate={{
+            opacity: 1,
+            scale: 1,
+            y: 0,
+          }}
+          exit={{
+            opacity: 0,
+            scale: 0.88,
+            y: 14,
+          }}
+          transition={{
+            duration: 0.32,
+            ease: [0.16, 1, 0.3, 1],
+          }}
+          whileHover={{
+            y: -4,
+          }}
+          whileTap={{
+            scale: 0.94,
+          }}
+        >
+          <ChevronUp size={18} strokeWidth={2.2} />
+        </motion.button>
+      )}
+    </AnimatePresence>
   )
 }

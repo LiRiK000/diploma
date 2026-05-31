@@ -33,12 +33,8 @@ export const ProgressBar: FC<ProgressBarProps> = ({
         <Progress
           percent={percent}
           showInfo={false}
-          strokeColor={{
-            '0%': '#1890ff',
-            '100%': '#7dcb07',
-          }}
-          trailColor="rgba(255, 255, 255, 0.05)"
-          size={{ height: 12 }}
+          trailColor="var(--progress-trail)"
+          size={{ height: 10 }}
           className={styles.antdProgress}
         />
       </div>

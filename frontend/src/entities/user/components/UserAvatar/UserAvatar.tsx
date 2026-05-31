@@ -1,46 +1,33 @@
-import { Avatar, Badge, Dropdown, Space } from 'antd'
+import { Avatar, Dropdown } from 'antd'
 import { useNavigate } from 'react-router-dom'
+import { UserOutlined } from '@ant-design/icons'
+
 import { getDropdownItems } from './utils'
 import { routes } from '@shared/constants'
-import { USER_ROLES } from '../../constants'
-import { UserOutlined } from '@ant-design/icons'
+import { useGetMe } from '@app/providers/AuthProvider/hooks/useGetMe'
+import styles from './UserAvatar.module.scss'
+import { User } from 'lucide-react'
+
 export const UserAvatar = ({ mobile }: { mobile?: boolean }) => {
   const navigate = useNavigate()
-  const dropdownItems = getDropdownItems(navigate, USER_ROLES.LIBRARIAN)
-
-  const avatarStyle = {
-    background: 'var(--glass-bg)',
-    border: '1px solid var(--glass-border)',
-    color: 'var(--text-primary)',
-    cursor: 'pointer',
-  }
+  const { data: me } = useGetMe()
+  const dropdownItems = getDropdownItems(navigate, me?.role)
 
   if (mobile) {
     return (
       <Avatar
         onClick={() => void navigate(routes.profile)}
-        icon={<UserOutlined style={{ color: 'var(--text-primary)' }} />}
-        style={avatarStyle}
+        icon={<User />}
+        className={styles.mobileAvatar}
       />
     )
   }
 
   return (
-    <Space size={24} style={{ cursor: 'pointer' }}>
-      <Badge count={1} size="small">
-        <Dropdown
-          trigger={['click']}
-          menu={{
-            items: dropdownItems,
-          }}
-        >
-          <Avatar
-            shape="square"
-            icon={<UserOutlined style={{ color: 'var(--text-primary)' }} />}
-            style={avatarStyle}
-          />
-        </Dropdown>
-      </Badge>
-    </Space>
+    <Dropdown trigger={['click']} menu={{ items: dropdownItems }}>
+      <div className={styles.avatarWrapper}>
+        <Avatar shape="square" icon={<UserOutlined />} />
+      </div>
+    </Dropdown>
   )
 }

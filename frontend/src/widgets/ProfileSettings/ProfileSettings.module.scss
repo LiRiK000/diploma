@@ -1,6 +1,13 @@
 @use '@shared/styles/variables' as *;
 
+$tablet: 768px;
+
 .wrapper {
+  --card-bg: var(--glass-bg, rgba(255, 255, 255, 0.45));
+  --card-border: var(--glass-border, rgba(0, 0, 0, 0.08));
+  --row-border: rgba(0, 0, 0, 0.05);
+  --switch-active: var(--header-link-hover, #007aff);
+
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -8,10 +15,19 @@
   align-items: stretch;
 }
 
+:global(body.dark) {
+  .wrapper {
+    --card-bg: rgba(22, 28, 45, 0.4);
+    --card-border: rgba(255, 255, 255, 0.08);
+    --row-border: rgba(255, 255, 255, 0.06);
+    --switch-active: #0b84ff;
+  }
+}
+
 .settingsRow {
-  padding: 12px 0;
-  border-bottom: 1px solid var(--glass-border);
-  transition: $transition-liquid;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--row-border);
+  width: 100%;
 
   &:last-child {
     border-bottom: none;
@@ -23,47 +39,64 @@
   }
 }
 
+.rowTitle {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary) !important;
+}
+
 .description {
   font-size: 13px;
   color: var(--text-secondary);
+  opacity: 0.75;
   margin-top: 4px;
   line-height: 1.4;
 }
 
-.card {
-  animation: slideIn 0.4s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+.notificationGroup {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 }
 
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
+.customSwitch {
+  background: rgba(0, 0, 0, 0.15) !important;
 
-:global(.ant-switch) {
-  background: var(--glass-border);
+  :global(body.dark) & {
+    background: rgba(255, 255, 255, 0.15) !important;
+  }
 
   &:global(.ant-switch-checked) {
-    background: var(--header-link-hover);
+    background: var(--switch-active) !important;
   }
 }
 
-.settingsCardCustom {
-  background: var(--glass-bg) !important;
-  backdrop-filter: $liquid-glass-blur;
-  border: 1px solid var(--glass-border) !important;
-  border-radius: $border-radius-lg;
-  box-shadow: $liquid-glass-shadow-light;
-  transition: $transition-liquid;
+.settingsCardCustom,
+:global(.ant-card) {
+  background: var(--card-bg) !important;
+  backdrop-filter: $liquid-glass-blur !important;
+  border: 1px solid var(--card-border) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.01) !important;
+  transition: border-color 0.25s ease !important;
+  animation: slideIn 0.35s cubic-bezier(0.215, 0.61, 0.355, 1) forwards;
 
   &:hover {
-    border-color: color-mix(in srgb, var(--header-link-hover) 35%, transparent) !important;
-    box-shadow: $shadow-medium;
+    border-color: rgba(0, 122, 255, 0.2) !important;
+  }
+
+  @media (max-width: $tablet) {
+    background: transparent !important;
+    border: none !important;
+    backdrop-filter: none !important;
+    box-shadow: none !important;
+
+    :global(.ant-card-body) {
+      padding: 12px 4px !important;
+    }
+    :global(.ant-card-head) {
+      padding: 0 4px !important;
+    }
   }
 
   :global(.ant-card-body) {
@@ -71,26 +104,25 @@
   }
 
   :global(.ant-card-head) {
-    border-bottom: 1px solid var(--glass-border);
-    background: transparent;
+    border-bottom: 1px solid var(--row-border) !important;
+    background: transparent !important;
 
     :global(.ant-card-head-title) {
-      color: var(--text-primary);
-      font-weight: 700;
+      color: var(--text-primary) !important;
+      font-weight: 700 !important;
+      font-size: 16px !important;
+      letter-spacing: -0.01em;
     }
   }
 }
 
-.description {
-  font-size: 13px;
-  color: var(--text-secondary);
-  opacity: 0.8;
-  margin-top: 4px;
-}
-
-.formActions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  margin-top: 8px;
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

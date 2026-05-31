@@ -13,7 +13,6 @@ export const NotificationsPage = () => {
           className={styles.breadcrumb}
           items={[
             { title: <Link to="/">Главная</Link> },
-            { title: 'Профиль' },
             { title: 'Уведомления' },
           ]}
         />

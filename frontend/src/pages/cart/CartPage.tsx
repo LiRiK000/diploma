@@ -20,6 +20,7 @@ import {
 } from '@shared/utils/pluralize'
 import { useCreateOrder } from '@features/create-order/hooks/useCreateOrder'
 import styles from './CartPage.module.scss'
+
 const { Title, Text } = Typography
 
 export const CartPage = () => {
@@ -109,6 +110,7 @@ export const CartPage = () => {
               </Title>
 
               <Divider
+                className={styles.orderDivider}
                 style={{ margin: '16px 0', borderColor: 'var(--glass-border)' }}
               />
 
@@ -127,6 +129,7 @@ export const CartPage = () => {
               </div>
 
               <Divider
+                className={styles.orderDivider}
                 style={{ margin: '16px 0', borderColor: 'var(--glass-border)' }}
               />
 

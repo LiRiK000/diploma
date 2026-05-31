@@ -13,11 +13,15 @@ export const ProfileSettings = () => {
         className={styles.settingsCardCustom}
         title="Настройки интерфейса"
       >
-        <Row align="middle" justify="space-between">
-          <Col>
-            <Text strong>Цветовая тема</Text>
+        <Row
+          align="middle"
+          justify="space-between"
+          className={styles.settingsRow}
+        >
+          <Col xs={18} sm={20}>
+            <Text className={styles.rowTitle}>Цветовая тема</Text>
             <div className={styles.description}>
-              Выберите между светлым и темным оформлением
+              Выберите между светлым и темным оформлением приложения
             </div>
           </Col>
           <Col>
@@ -25,26 +29,53 @@ export const ProfileSettings = () => {
           </Col>
         </Row>
       </SettingsCard>
+
       <SettingsCard title="Уточнить предпочтения">
         <PreferenceSelector />
       </SettingsCard>
+
       <SettingsCard title="Уведомления">
-        <Row align="middle" justify="space-between">
-          <Col>
-            <Text>Подтверждение заявки</Text>
-          </Col>
-          <Col>
-            <Switch size="small" defaultChecked />
-          </Col>
-        </Row>
-        <Row align="middle" justify="space-between">
-          <Col>
-            <Text>Напоминание о возврате</Text>
-          </Col>
-          <Col>
-            <Switch size="small" defaultChecked />
-          </Col>
-        </Row>
+        <div className={styles.notificationGroup}>
+          <Row
+            align="middle"
+            justify="space-between"
+            className={styles.settingsRow}
+          >
+            <Col xs={18} sm={20}>
+              <Text className={styles.rowTitle}>Подтверждение заявки</Text>
+              <div className={styles.description}>
+                Мгновенные push-уведомления о статусе ваших заявок
+              </div>
+            </Col>
+            <Col>
+              <Switch
+                size="default"
+                defaultChecked
+                className={styles.customSwitch}
+              />
+            </Col>
+          </Row>
+
+          <Row
+            align="middle"
+            justify="space-between"
+            className={styles.settingsRow}
+          >
+            <Col xs={18} sm={20}>
+              <Text className={styles.rowTitle}>Напоминание о возврате</Text>
+              <div className={styles.description}>
+                Уведомлять за 3 дня до окончания срока сдачи книги
+              </div>
+            </Col>
+            <Col>
+              <Switch
+                size="default"
+                defaultChecked
+                className={styles.customSwitch}
+              />
+            </Col>
+          </Row>
+        </div>
       </SettingsCard>
     </div>
   )

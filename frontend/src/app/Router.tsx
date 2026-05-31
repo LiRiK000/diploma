@@ -28,13 +28,13 @@ import { AchievementsPage } from '@pages/profile/AchievementsPage'
 import { Loader } from '@shared/components/Loader'
 import { App as AntApp } from 'antd'
 import { OrderDetailsPage } from '@pages/OrderDetailsPage/OrderDetailsPage'
-import { LibrarianDashboardTab } from '@widgets/LibrarianDashboardTab'
 import { LibrarianOrdersTab } from '@widgets/LibrarianOrdersTab'
 import { LibrarianBooksTab } from '@widgets/LibrarianBooksTab'
 import { LibrarianAuthorsTab } from '@widgets/LibrarianAuthorsTab'
 import { LibrarianRecommendationsTab } from '@widgets/LibrarianRecommendationsTab'
 import { NotificationsPage } from '@pages/NotificationsPage/NotificationPage'
 import { DashboardPage } from '@pages/dashboard'
+import { SecurePage } from '@pages/profile/ui/SecurePage/SecurePage'
 export const Router = () => {
   const init = useCookieConsentStore(useShallow(state => state.init))
 
@@ -169,10 +169,7 @@ export const Router = () => {
                       path={routes.achievements}
                       element={<AchievementsPage />}
                     />
-                    <Route
-                      path={routes.secure}
-                      element={<div>Безопасность (В разработке)</div>}
-                    />
+                    <Route path={routes.secure} element={<SecurePage />} />
                   </Route>
                 </Route>
 

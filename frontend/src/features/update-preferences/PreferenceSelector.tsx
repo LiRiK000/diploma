@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
 import { Button, Col, Input, Row } from 'antd'
-import { SearchOutlined } from '@ant-design/icons'
+import { Search } from 'lucide-react'
 import { ArtistItem } from '@features/update-preferences/ui/AuthorItem'
 import styles from './PreferenceSelector.module.scss'
 import { usePreferenceAuthors } from './hooks/usePreferences'
@@ -47,19 +47,19 @@ export const PreferenceSelector = () => {
       <Input
         size="large"
         placeholder="Поиск любимых авторов..."
-        prefix={<SearchOutlined />}
+        prefix={<Search size={18} className={styles.searchIcon} />}
         className={styles.searchInput}
         onChange={e => setSearch(e.target.value)}
         allowClear
       />
 
       <div className={styles.gridWrapper}>
-        <Row gutter={[16, 40]} justify="start">
+        <Row gutter={[16, 24]} justify="start" className={styles.artistsRow}>
           {filteredArtists.map(artist => (
             <Col
               key={artist.id}
-              xs={12}
-              sm={8}
+              xs={8}
+              sm={6}
               md={6}
               lg={4}
               className={styles.artistCol}
@@ -78,7 +78,6 @@ export const PreferenceSelector = () => {
       <div className={styles.footer}>
         <Button
           type="primary"
-          danger
           block
           size="large"
           className={styles.submitBtn}
@@ -86,7 +85,7 @@ export const PreferenceSelector = () => {
           disabled={selectedIds.length === 0}
           onClick={handleSubmit}
         >
-          ПОДТВЕРДИТЬ ВЫБОР{' '}
+          Подтвердить выбор{' '}
           {selectedIds.length > 0 && `(${selectedIds.length})`}
         </Button>
       </div>

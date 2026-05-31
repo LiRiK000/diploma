@@ -1,22 +1,25 @@
 @use '@shared/styles/variables' as *;
 
+$mobile-breakpoint: 768px;
+
 .carouselWrapper {
   margin-bottom: 48px;
-  border-radius: 32px;
+  border-radius: 28px;
   overflow: hidden;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-  border: 1px solid var(--glass-border);
-  background: var(--bg-content);
+  box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--bg-content, #ffffff);
   position: relative;
+  transform: translateZ(0);
 }
 
 .slide {
-  height: 460px;
+  height: 500px;
   position: relative;
   display: flex !important;
   align-items: center;
   justify-content: space-between;
-  padding: 0 100px;
+  padding: 0 10%;
   overflow: hidden;
   z-index: 1;
 
@@ -25,81 +28,163 @@
     position: absolute;
     inset: 0;
     z-index: -1;
-    opacity: 0.15;
+    opacity: 0.07;
     transition: all 0.8s ease;
   }
 
   &.classic::before {
     background-image: radial-gradient(
       circle at 2px 2px,
-      currentColor 1px,
+      currentColor 1.5px,
       transparent 0
     );
-    background-size: 40px 40px;
-    mask-image: radial-gradient(circle at center, black, transparent 90%);
+    background-size: 32px 32px;
+    mask-image: radial-gradient(circle at center, black 30%, transparent 80%);
   }
 
   &.tech::before {
-    background-size: 30px 30px;
+    background-size: 40px 40px;
     background-image:
       linear-gradient(to right, currentColor 1px, transparent 1px),
       linear-gradient(to bottom, currentColor 1px, transparent 1px);
-    mask-image: linear-gradient(to right, black, transparent);
+    mask-image: radial-gradient(circle at 70% 50%, black 10%, transparent 90%);
   }
 
   &.fantasy::before {
     background-image: radial-gradient(
       circle at center,
-      white 1.5px,
+      currentColor 1px,
       transparent 1.5px
     );
-    background-size: 60px 60px;
-    filter: blur(1px);
+    background-size: 24px 24px;
   }
 
-  @include mobile {
-    height: 400px;
-    padding: 40px 24px;
+  @media (max-width: $mobile-breakpoint) {
+    height: auto;
+    min-height: 540px;
+    padding: 60px 24px 80px 24px;
     flex-direction: column;
+    justify-content: center;
     text-align: center;
   }
 }
 
 .content {
   z-index: 10;
-  max-width: 600px;
+  max-width: 580px;
+  display: flex;
+  flex-direction: column;
 
   h3 {
-    color: var(--text-primary);
-    font-size: clamp(34px, 5vw, 56px);
-    font-weight: 400 !important;
-    line-height: 1;
-    margin-bottom: 20px;
-    letter-spacing: -0.04em;
+    color: var(--text-primary, #111);
+    font-size: clamp(32px, 4.5vw, 52px);
+    font-weight: 600 !important;
+    line-height: 1.1;
+    margin-bottom: 16px;
+    letter-spacing: -0.03em;
   }
 
   p {
-    color: var(--text-secondary);
-    font-size: 20px;
-    margin-bottom: 44px;
-    font-weight: 500;
-    line-height: 1.4;
+    color: var(--text-secondary, #666);
+    font-size: clamp(16px, 2vw, 19px);
+    margin-bottom: 40px;
+    font-weight: 400;
+    line-height: 1.45;
+    letter-spacing: -0.01em;
+    max-width: 90%;
+
+    @media (max-width: $mobile-breakpoint) {
+      max-width: 100%;
+    }
+  }
+
+  @media (max-width: $mobile-breakpoint) {
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.btnContainer {
+  display: inline-block;
+  width: fit-content;
+
+  @media (max-width: $mobile-breakpoint) {
+    width: 100%;
+  }
+}
+
+.appleBtn {
+  height: 58px !important;
+  padding: 0 36px !important;
+  border-radius: 18px !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  background: var(--slide-color) !important;
+  border: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px;
+  color: #fff !important;
+  box-shadow: 0 16px 32px -8px var(--shadow-color) !important;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  transform: translateZ(0);
+
+  .arrowIcon {
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  &:hover {
+    transform: scale(1.03) translateY(-2px) !important;
+    box-shadow: 0 24px 40px -6px var(--shadow-color) !important;
+    opacity: 0.95;
+
+    .arrowIcon {
+      transform: translateX(5px);
+    }
+  }
+
+  &:active {
+    transform: scale(0.98) translateY(0px) !important;
+  }
+
+  @media (max-width: $mobile-breakpoint) {
+    width: 100% !important;
+    height: 54px !important;
   }
 }
 
 .floatingIconWrapper {
   position: absolute;
-  right: 12%;
+  right: 14%;
   z-index: 2;
   pointer-events: none;
   display: flex;
   align-items: center;
   justify-content: center;
 
-  @include mobile {
+  .lucideIcon {
+    width: 280px;
+    height: 280px;
+    stroke-width: 0.75;
+    color: var(--current-color);
+    opacity: 0.15;
+    filter: drop-shadow(0 0 50px var(--current-color));
+  }
+
+  @media (max-width: $mobile-breakpoint) {
     right: auto;
-    top: 15%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) !important;
     opacity: 0.4;
+
+    .lucideIcon {
+      width: 240px;
+      height: 240px;
+      opacity: 0.08;
+      filter: blur(2px) drop-shadow(0 0 40px var(--current-color));
+    }
   }
 }
 
@@ -108,37 +193,57 @@
   right: -5%;
   top: 50%;
   transform: translateY(-50%);
-  width: 550px;
-  height: 550px;
+  width: 600px;
+  height: 600px;
   border-radius: 50%;
-  filter: blur(140px);
-  opacity: 0.3;
+  filter: blur(130px);
+  opacity: 0.25;
   z-index: 0;
+  pointer-events: none;
+  transition: all 1s ease;
+
+  @media (max-width: $mobile-breakpoint) {
+    top: 50%;
+    left: 50%;
+    right: auto;
+    transform: translate(-50%, -50%);
+    width: 320px;
+    height: 320px;
+    filter: blur(80px);
+    opacity: 0.35;
+  }
 }
 
-:global {
-  .ant-carousel .slick-dots {
-    bottom: 40px !important;
-    padding-left: 100px;
-    justify-content: flex-start;
+.customDots {
+  bottom: 35px !important;
+  padding-left: 10% !important;
+  justify-content: flex-start !important;
 
-    @include mobile {
-      padding-left: 0;
-      justify-content: center;
-    }
+  @media (max-width: $mobile-breakpoint) {
+    padding-left: 0 !important;
+    justify-content: center !important;
+    bottom: 25px !important;
+  }
 
+  :global {
     li {
+      margin: 0 4px !important;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+
       button {
-        height: 6px !important;
-        border-radius: 3px !important;
-        background: var(--text-primary) !important;
-        opacity: 0.2;
+        height: 5px !important;
+        border-radius: 10px !important;
+        background: var(--text-primary, #111) !important;
+        opacity: 0.15 !important;
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
       }
+
       &.slick-active {
-        width: 40px !important;
+        width: 32px !important;
+
         button {
-          opacity: 1;
-          background: var(--header-link-hover) !important;
+          opacity: 0.8 !important;
+          background: var(--text-primary, #111) !important;
         }
       }
     }

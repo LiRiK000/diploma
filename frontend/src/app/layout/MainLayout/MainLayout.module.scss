@@ -1,5 +1,9 @@
 @use '@shared/styles/variables' as *;
 
+$desktop-lg: 992px;
+$tablet: 768px;
+$mobile-nav-height: 64px;
+
 .header {
   background: var(--header-bg);
   backdrop-filter: blur(25px) saturate(180%);
@@ -17,6 +21,62 @@
   box-shadow: var(--header-shadow);
 }
 
+.headerAction {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--border-radius-primary, 8px);
+  color: var(--header-link-color, var(--text-secondary));
+  font-size: 20px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  background: transparent;
+
+  :global(.ant-avatar) {
+    background: transparent !important;
+    border: none !important;
+    color: inherit !important;
+    font-size: 20px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: inherit;
+
+    span,
+    svg {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+
+  &:hover {
+    color: var(--header-link-hover);
+    transform: translateY(-1px);
+    background: var(--glass-bg, rgba(255, 255, 255, 0.06));
+  }
+
+  &:active {
+    transform: translateY(0) scale(0.96);
+  }
+}
+
+.headerActionActive {
+  color: var(--header-link-hover) !important;
+  background: var(--glass-bg, rgba(255, 255, 255, 0.1));
+}
+
+.badge {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
 .backgroundWrapper {
   position: absolute;
   inset: 0;
@@ -30,11 +90,9 @@
   .backgroundWrapper {
     display: block;
   }
-
   .blob {
     opacity: 0.5;
   }
-
   .blobOne {
     background: radial-gradient(
       circle,
@@ -42,7 +100,6 @@
       transparent 75%
     );
   }
-
   .blobTwo {
     background: radial-gradient(
       circle,
@@ -50,7 +107,6 @@
       transparent 75%
     );
   }
-
   .blobThree {
     background: radial-gradient(
       circle,
@@ -116,7 +172,6 @@
     transform: translate3d(18vw, 12px, 0) scale(1.14);
   }
 }
-
 @keyframes blobFloatTwo {
   0% {
     transform: translate3d(0, 0, 0) scale(1);
@@ -125,7 +180,6 @@
     transform: translate3d(-14vw, 10px, 0) scale(1.18);
   }
 }
-
 @keyframes blobFloatThree {
   0% {
     transform: translate3d(0, 0, 0) scale(0.96);
@@ -151,12 +205,10 @@
     fill: currentColor;
     transition: fill 0.25s ease;
   }
-
   &:hover {
     opacity: 0.85;
     transform: scale(1.02);
   }
-
   &:active {
     transform: scale(0.98);
   }
@@ -194,6 +246,17 @@
   transition:
     background 0.3s ease,
     color 0.3s ease;
+
+  @media (max-width: $tablet) {
+    margin: 0;
+    padding: 16px 16px 0 16px;
+    border-radius: 0;
+
+    padding-bottom: calc(
+      #{$mobile-nav-height} + 16px + env(safe-area-inset-bottom)
+    );
+    min-height: calc(100vh - 56px);
+  }
 }
 
 .headerLeft,
@@ -204,16 +267,13 @@
   position: relative;
   z-index: 1;
 }
-
 .headerLeft {
   gap: 32px;
   flex-shrink: 0;
 }
-
 .navLinks {
   gap: 24px;
 }
-
 .headerCenter {
   flex: 1;
   max-width: 600px;
@@ -222,7 +282,6 @@
   position: relative;
   z-index: 1;
 }
-
 .headerRight {
   gap: 16px;
   flex-shrink: 0;
@@ -232,7 +291,6 @@
   .navLinks {
     display: none;
   }
-
   .headerCenter {
     max-width: 350px;
   }
@@ -243,30 +301,73 @@
   .headerRight {
     display: none;
   }
-
   .header {
     justify-content: center;
-    height: auto;
-    padding: 10px;
+    height: 56px;
+    padding: 0 12px;
   }
-
+  .content {
+    margin: 0;
+    padding: 12px;
+    border-radius: 0;
+    min-height: calc(100vh - 56px);
+  }
   .blob {
     filter: blur(34px);
     opacity: 0.28;
   }
+}
 
-  .blobTwo {
-    right: -8%;
+.headerLeft,
+.navLinks,
+.headerRight {
+  display: flex;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+.headerLeft {
+  gap: 32px;
+  flex-shrink: 0;
+}
+.navLinks {
+  gap: 24px;
+}
+.headerCenter {
+  flex: 1;
+  max-width: 600px;
+  display: flex;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+}
+.headerRight {
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 1024px) {
+  .navLinks {
+    display: none;
   }
-
-  .blobThree {
-    right: -18%;
-    bottom: -82px;
+  .headerCenter {
+    max-width: 350px;
   }
+}
 
-  .content {
-    margin: 8px;
-    min-height: 0;
+@media (max-width: 768px) {
+  .headerLeft,
+  .headerRight {
+    display: none;
+  }
+  .header {
+    justify-content: center;
+    height: 56px;
+    padding: 0 12px;
+  }
+  .blob {
+    filter: blur(34px);
+    opacity: 0.28;
   }
 }
 

@@ -1,39 +1,60 @@
 @use '@shared/styles/variables' as *;
 
 .card {
-  padding: $spacing-lg;
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  border-radius: $border-radius-md;
+  --card-bg: var(--glass-bg, rgba(255, 255, 255, 0.45));
+  --card-border: var(--glass-border, rgba(0, 0, 0, 0.08));
+  --badge-xp-bg: rgba(0, 122, 255, 0.08);
+  --badge-xp-text: var(--header-link-hover, #007aff);
+  --progress-trail: rgba(0, 0, 0, 0.04);
+  --progress-active: var(--header-link-hover, #007aff);
+  --completed-color: #34c759;
+
+  padding: 20px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
   backdrop-filter: $liquid-glass-blur;
-  transition: $transition-liquid;
   display: flex;
   flex-direction: column;
-  gap: $spacing-md;
+  gap: 14px;
   position: relative;
-  overflow: hidden;
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
 
   &:hover {
-    transform: translateY(-4px);
-    background: color-mix(in srgb, var(--bg-content) 72%, transparent);
-    border-color: color-mix(in srgb, var(--header-link-hover) 35%, transparent);
-    box-shadow: 0 12px 24px rgba(15, 23, 42, 0.14);
+    border-color: rgba(0, 122, 255, 0.2);
   }
 
+  // Стилизация выполненной карточки (без выжигающих градиентов)
   &.completed {
-    border-color: color-mix(in srgb, #34c759 35%, transparent);
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      right: 0;
-      width: 40px;
-      height: 40px;
-      background: linear-gradient(
-        135deg,
-        transparent 50%,
-        rgba(82, 196, 26, 0.1) 50%
-      );
+    --progress-active: #34c759;
+    --badge-xp-bg: rgba(52, 199, 89, 0.1);
+    --badge-xp-text: #34c759;
+    border-color: rgba(52, 199, 89, 0.25);
+    background: linear-gradient(
+      180deg,
+      var(--card-bg) 0%,
+      rgba(52, 199, 89, 0.02) 100%
+    );
+  }
+}
+
+:global(body.dark) {
+  .card {
+    --card-bg: rgba(22, 28, 45, 0.4);
+    --card-border: rgba(255, 255, 255, 0.08);
+    --badge-xp-bg: rgba(11, 132, 255, 0.15);
+    --badge-xp-text: #0b84ff;
+    --progress-trail: rgba(255, 255, 255, 0.05);
+    --progress-active: #0b84ff;
+    --completed-color: #30d158;
+
+    &.completed {
+      --progress-active: #30d158;
+      --badge-xp-bg: rgba(48, 209, 88, 0.12);
+      --badge-xp-text: #30d158;
+      border-color: rgba(48, 209, 88, 0.2);
     }
   }
 }
@@ -41,55 +62,92 @@
 .header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
 }
 
 .iconWrapper {
   position: relative;
-  font-size: 32px;
+  font-size: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-  .checkIcon {
-    position: absolute;
-    bottom: -2px;
-    right: -4px;
-    font-size: 16px;
-    color: #52c41a;
-    background: white;
-    border-radius: 50%;
-  }
+.checkBadge {
+  position: absolute;
+  bottom: -4px;
+  right: -6px;
+  color: var(--completed-color);
+  background: var(--card-bg);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .expBadge {
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-bold);
-  color: var(--header-link-hover);
-  background: color-mix(in srgb, var(--header-link-hover) 12%, transparent);
-  padding: 2px 8px;
-  border-radius: $border-radius-sm;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--badge-xp-text);
+  background: var(--badge-xp-bg);
+  padding: 3px 10px;
+  border-radius: 8px;
 }
 
 .content {
   display: flex;
   flex-direction: column;
+  gap: 4px;
+
   .title {
-    font-weight: var(--font-weight-bold);
-    font-size: var(--font-size-md);
-    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--text-primary) !important;
+    line-height: 1.3;
   }
+
   .description {
-    font-size: var(--font-size-xs);
-    color: var(--text-secondary);
-    line-height: var(--line-height-body);
+    font-size: 13px;
+    color: var(--text-secondary) !important;
+    opacity: 0.8;
+    line-height: 1.4;
   }
+}
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: auto; // Прижимает прогресс к низу, если описания разной длины
 }
 
 .progressInfo {
   display: flex;
   justify-content: space-between;
-  margin-top: $spacing-xs;
+  align-items: center;
+
   .values,
-  .percent {
-    font-size: var(--font-size-xs);
-    color: var(--text-secondary);
+  .percentText {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary) !important;
+  }
+
+  .separator {
+    opacity: 0.4;
+    margin: 0 2px;
+  }
+}
+
+.cardProgress {
+  margin: 0 !important;
+
+  :global {
+    .ant-progress-inner {
+      background: var(--progress-trail) !important;
+    }
+    .ant-progress-bg {
+      background: var(--progress-active) !important;
+    }
   }
 }

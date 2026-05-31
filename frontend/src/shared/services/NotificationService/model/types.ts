@@ -32,4 +32,5 @@ export interface QueryNotificationsDto {
   limit?: number
   type?: NotificationType
   isViewed?: boolean
+  unreadCount?: number
 }

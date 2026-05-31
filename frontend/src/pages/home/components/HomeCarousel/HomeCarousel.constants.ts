@@ -1,6 +1,17 @@
 import { Sparkles, BookOpen, Terminal } from 'lucide-react'
 
-export const SLIDES = [
+export interface SlideItem {
+  id: number
+  title: string
+  desc: string
+  buttonText: string
+  color: string
+  type: 'fantasy' | 'classic' | 'tech'
+  Icon: React.ComponentType<any>
+  slug: string
+}
+
+export const SLIDES: SlideItem[] = [
   {
     id: 1,
     title: 'Мир фэнтези ждет вас',
@@ -9,6 +20,7 @@ export const SLIDES = [
     color: '#6366f1',
     type: 'fantasy',
     Icon: Sparkles,
+    slug: '/catalog',
   },
   {
     id: 2,
@@ -18,6 +30,7 @@ export const SLIDES = [
     color: '#92400e',
     type: 'classic',
     Icon: BookOpen,
+    slug: '/catalog',
   },
   {
     id: 3,
@@ -27,5 +40,6 @@ export const SLIDES = [
     color: '#06b6d4',
     type: 'tech',
     Icon: Terminal,
+    slug: '/catalog',
   },
 ]

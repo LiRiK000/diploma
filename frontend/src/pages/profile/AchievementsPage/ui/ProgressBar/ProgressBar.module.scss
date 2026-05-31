@@ -1,17 +1,33 @@
 @use '@shared/styles/variables' as *;
 
 .container {
-  width: 100%;
-  padding: $spacing-lg;
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  border-radius: $border-radius-md;
-  backdrop-filter: $liquid-glass-blur;
-  box-shadow: $liquid-glass-shadow;
+  --bg-block: var(--glass-bg, rgba(255, 255, 255, 0.45));
+  --border-block: var(--glass-border, rgba(0, 0, 0, 0.08));
+  --progress-trail: rgba(0, 0, 0, 0.04);
+  --progress-fill: linear-gradient(90deg, #007aff 0%, #34c759 100%);
+  --badge-bg: var(--header-link-hover, #007aff);
+  --badge-shadow: rgba(0, 122, 255, 0.2);
 
+  width: 100%;
+  padding: 20px;
+  background: var(--bg-block);
+  border: 1px solid var(--border-block);
+  border-radius: 18px;
+  backdrop-filter: $liquid-glass-blur;
   display: flex;
   flex-direction: column;
-  gap: $spacing-md;
+  gap: 16px;
+}
+
+:global(body.dark) {
+  .container {
+    --bg-block: rgba(22, 28, 45, 0.4);
+    --border-block: rgba(255, 255, 255, 0.08);
+    --progress-trail: rgba(255, 255, 255, 0.05);
+    --progress-fill: linear-gradient(90deg, #0b84ff 0%, #30d158 100%);
+    --badge-bg: #0b84ff;
+    --badge-shadow: rgba(11, 132, 255, 0.25);
+  }
 }
 
 .info {
@@ -25,23 +41,24 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: var(--header-link-hover);
-  color: white;
-  padding: $spacing-xs $spacing-lg;
-  border-radius: $border-radius-sm;
-  box-shadow: 0 4px 12px rgba(24, 144, 255, 0.3);
+  background: var(--badge-bg);
+  color: #fff;
+  padding: 6px 16px;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px var(--badge-shadow);
 
   .levelLabel {
-    font-size: 10px;
+    font-size: 9px;
     text-transform: uppercase;
     font-weight: 700;
-    opacity: 0.9;
+    letter-spacing: 0.03em;
+    opacity: 0.85;
   }
 
   .levelValue {
-    font-size: $font-size-large;
+    font-size: 18px;
     font-weight: 800;
-    line-height: 1;
+    line-height: 1.1;
   }
 }
 
@@ -51,84 +68,60 @@
   align-items: flex-end;
 
   .statsTitle {
-    color: var(--text-secondary);
-    font-size: $font-size-small;
+    color: var(--text-secondary) !important;
+    font-size: 12px;
+    opacity: 0.8;
   }
 
   .statsValue {
-    color: var(--text-primary);
-    font-weight: $font-weight;
-    font-size: $font-size-medium;
+    color: var(--text-primary) !important;
+    font-weight: 700;
+    font-size: 15px;
   }
+}
+
+.progressWrapper {
+  position: relative;
+  width: 100%;
 }
 
 .antdProgress {
   margin: 0;
 
-  :global(.ant-progress-bg) {
-    box-shadow: 0 0 10px rgba(125, 203, 7, 0.4);
+  :global {
+    .ant-progress-inner {
+      background: var(--progress-trail) !important;
+      border-radius: 10px !important;
+      overflow: hidden;
+    }
+    .ant-progress-bg {
+      background: var(--progress-fill) !important;
+      border-radius: 10px !important;
+    }
   }
-}
-
-.footer {
-  .hint {
-    font-size: 12px;
-    color: var(--text-secondary);
-    font-style: italic;
-  }
-}
-.progressWrapper {
-  position: relative;
-  padding: $spacing-xs 0;
 }
 
 .footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: $spacing-xs;
 
   .hint {
-    font-size: 12px;
-    color: var(--text-secondary);
-    font-style: normal;
+    font-size: 13px;
+    color: var(--text-secondary) !important;
     opacity: 0.8;
   }
 
   .expCount {
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
-    color: var(--text-primary);
-    background: rgba(255, 255, 255, 0.05);
-    padding: 2px 8px;
-    border-radius: 10px;
-  }
-}
+    color: var(--text-primary) !important;
+    background: rgba(0, 0, 0, 0.04);
+    padding: 2px 10px;
+    border-radius: 20px;
 
-.antdProgress {
-  margin: 0;
-
-  :global(.ant-progress-inner) {
-    border: 1px solid var(--glass-border);
-  }
-
-  :global(.ant-progress-bg) {
-    box-shadow: 0 0 15px rgba(125, 203, 7, 0.3);
-    position: relative;
-
-    &::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: linear-gradient(
-        to bottom,
-        rgba(255, 255, 255, 0.2) 0%,
-        transparent 50%,
-        rgba(0, 0, 0, 0.1) 100%
-      );
+    :global(body.dark) & {
+      background: rgba(255, 255, 255, 0.06);
     }
   }
 }

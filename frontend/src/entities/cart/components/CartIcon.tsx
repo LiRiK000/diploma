@@ -1,6 +1,6 @@
 import { Badge, Avatar } from 'antd'
 import { ShoppingCartOutlined } from '@ant-design/icons'
-import { Link } from 'react-router-dom'
+import { NavLink, Link } from 'react-router-dom'
 import { routes } from '@shared/constants'
 import styles from './CartIcon.module.scss'
 import { useCartTotal } from '../model/useCartTotal'
@@ -13,18 +13,9 @@ interface ExtendedProps extends CartIconProps {
 export const CartIcon = ({ flag = false, noLink = false }: ExtendedProps) => {
   const { data: itemCount = 0 } = useCartTotal()
 
-  const iconContent = (
-    <Avatar
-      shape="square"
-      icon={<ShoppingCartOutlined />}
-      style={{
-        background: 'none',
-        cursor: 'pointer',
-        color: flag ? '#000' : 'inherit',
-      }}
-      className={styles.cartAvatar}
-    />
-  )
+  const iconContent = <Avatar shape="square" icon={<ShoppingCartOutlined />} />
+
+  const wrapperClass = `${styles.cartAction} ${flag ? styles.flagged : ''}`
 
   return (
     <Badge
@@ -34,7 +25,20 @@ export const CartIcon = ({ flag = false, noLink = false }: ExtendedProps) => {
       color={flag ? '#FF4D4F' : undefined}
       className={`${styles.badge} ${flag ? styles.darkMode : ''}`}
     >
-      {noLink ? iconContent : <Link to={routes.cart}>{iconContent}</Link>}
+      {noLink ? (
+        <div className={wrapperClass}>{iconContent}</div>
+      ) : (
+        <NavLink
+          to={routes.cart}
+          className={({ isActive }) => {
+            const classes = [wrapperClass]
+            if (isActive) classes.push(styles.cartActionActive)
+            return classes.join(' ')
+          }}
+        >
+          {iconContent}
+        </NavLink>
+      )}
     </Badge>
   )
 }

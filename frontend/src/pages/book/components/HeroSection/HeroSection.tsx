@@ -33,12 +33,10 @@ export const HeroSection = ({
             <h1 className={styles.title}>{title}</h1>
 
             <div className={styles.meta}>
-              <span>{author}</span>
-
+              <span className={styles.author}>{author}</span>
               <span className={styles.metaDot} aria-hidden="true">
                 •
               </span>
-
               <span>{publishYear} г.</span>
             </div>
           </header>
@@ -71,7 +69,6 @@ export const HeroSection = ({
 
             <div className={styles.secondaryActions}>
               <AddToWishlistButton id={id} variant="default" title={title} />
-
               <ToShareButton title={title} />
             </div>
           </div>

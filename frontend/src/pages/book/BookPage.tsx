@@ -10,11 +10,11 @@ import { useBook } from './model/useBook'
 
 export const BookPage = () => {
   const { book, isLoading, isError, showStickyHeader } = useBook()
-  console.log(book, 'bookwefwpmfwf')
+
   if (isLoading) return <HeroSectionSkeleton />
-  if (isError) return <div>Ошибка загрузки</div>
+  if (isError) return <div className={styles.errorState}>Ошибка загрузки</div>
   if (!book) return null
-  console.log(book.tags, 'tags')
+
   return (
     <div className={styles.page}>
       <StickyHeader
@@ -24,27 +24,33 @@ export const BookPage = () => {
         coverUrl={book.coverUrl}
         isVisible={showStickyHeader}
       />
-      <div className={styles.main}>
+
+      <main
+        className={`${styles.main} ${showStickyHeader ? styles.withStickyHeader : ''}`}
+      >
         <HeroSection {...book} />
+
         <div className={styles.container}>
           <div className={styles.grid}>
             <div className={styles.mainContent}>
               <BookContent {...book} />
             </div>
-            <div className={styles.sidebar}>
+
+            <aside className={styles.sidebar}>
               <BookSidebar
                 authorName={book.author}
                 authorBio={book.authorBio}
                 authorId={book.authorId}
               />
               <RecommendationBook books={book} />
-            </div>
+            </aside>
           </div>
+
+          <section className={styles.reviewSection}>
+            <ReviewSection bookId={book.id} tags={book.tags} />
+          </section>
         </div>
-        <div className={styles.reviewSection}>
-          <ReviewSection bookId={book.id} tags={book.tags} />
-        </div>
-      </div>
+      </main>
     </div>
   )
 }

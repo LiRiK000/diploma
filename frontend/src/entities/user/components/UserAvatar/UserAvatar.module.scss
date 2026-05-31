@@ -1,6 +1,6 @@
 @use '@shared/styles/variables' as *;
 
-.cartAction {
+.avatarWrapper {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -9,7 +9,6 @@
   border-radius: var(--border-radius-primary, 8px);
   color: var(--header-link-color, var(--text-secondary));
   font-size: 20px;
-  text-decoration: none;
   cursor: pointer;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   background: transparent;
@@ -45,25 +44,9 @@
   }
 }
 
-.cartActionActive {
-  color: var(--header-link-hover) !important;
-  background: var(--glass-bg, rgba(255, 255, 255, 0.1));
-}
-
-.flagged {
-  color: #000000 !important;
-
-  &:hover {
-    background: rgba(0, 0, 0, 0.05);
-    color: #000000;
-  }
-}
-
-.badge {
-  display: inline-flex !important;
-  align-items: center;
-  justify-content: center;
-}
-
-.darkMode {
+.mobileAvatar {
+  background: var(--glass-bg) !important;
+  border: 1px solid var(--glass-border) !important;
+  color: var(--text-primary) !important;
+  cursor: pointer;
 }

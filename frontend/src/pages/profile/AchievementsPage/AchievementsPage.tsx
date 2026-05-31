@@ -72,10 +72,12 @@ export const AchievementsPage = ({ className }: { className?: string }) => {
                 ))}
               </div>
             ) : (
-              <Empty
-                description="Пока здесь пусто"
-                image={Empty.PRESENTED_IMAGE_SIMPLE}
-              />
+              <div className={styles.emptyState}>
+                <Empty
+                  description="Пока здесь пусто"
+                  image={Empty.PRESENTED_IMAGE_SIMPLE}
+                />
+              </div>
             ),
           }))}
         />

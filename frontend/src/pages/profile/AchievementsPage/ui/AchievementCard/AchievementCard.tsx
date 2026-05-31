@@ -1,6 +1,6 @@
 import { FC } from 'react'
 import { Progress, Typography } from 'antd'
-import { CheckCircleFilled } from '@ant-design/icons'
+import { CheckCircle2 } from 'lucide-react'
 import styles from './AchievementCard.module.scss'
 import { Achievement } from '../../types'
 
@@ -30,7 +30,7 @@ export const AchievementCard: FC<AchievementCardProps> = ({ achievement }) => {
           <span className={styles.icon}>{icon}</span>
           {isCompleted && (
             <div className={styles.checkBadge}>
-              <CheckCircleFilled />
+              <CheckCircle2 size={16} strokeWidth={2.5} />
             </div>
           )}
         </div>
@@ -56,8 +56,8 @@ export const AchievementCard: FC<AchievementCardProps> = ({ achievement }) => {
           percent={percent}
           size="small"
           showInfo={false}
-          strokeColor={isCompleted ? '#52c41a' : '#1890ff'}
-          trailColor="rgba(255, 255, 255, 0.05)"
+          trailColor="var(--progress-trail)"
+          className={styles.cardProgress}
         />
       </div>
     </div>

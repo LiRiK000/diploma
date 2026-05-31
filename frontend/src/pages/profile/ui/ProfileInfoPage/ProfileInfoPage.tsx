@@ -1,12 +1,6 @@
 import { useRef, useEffect } from 'react'
-import { useRef as useReactRef } from 'react'
 import styles from './ProfileInfoPage.module.scss'
-import {
-  CameraOutlined,
-  LinkOutlined,
-  SafetyCertificateOutlined,
-  UserOutlined,
-} from '@ant-design/icons'
+import { User, Camera, ShieldAlert, Globe } from 'lucide-react'
 import {
   Button,
   Col,
@@ -102,13 +96,13 @@ export const ProfileInfoPage = () => {
                 alt="Avatar"
               />
             ) : (
-              <UserOutlined className={styles.avatarIcon} />
+              <User className={styles.avatarIcon} size={40} strokeWidth={1.5} />
             )}
           </div>
 
           {!isAvatarUpdating && (
             <div className={styles.overlay}>
-              <CameraOutlined style={{ fontSize: '20px' }} />
+              <Camera size={20} strokeWidth={2} />
               <span>Изменить</span>
             </div>
           )}
@@ -121,25 +115,29 @@ export const ProfileInfoPage = () => {
           accept="image/*"
           style={{ display: 'none' }}
         />
-
         <Text className={styles.hintText}>Нажмите, чтобы обновить фото</Text>
       </header>
 
       <section className={styles.section}>
         <div className={styles.sectionHeader}>
           <h2>
-            <SafetyCertificateOutlined />
+            <ShieldAlert size={22} className={styles.iconAccent} />
             Учётные данные
           </h2>
           <p>Личные данные для безопасности вашего аккаунта.</p>
         </div>
 
         <div className={styles.card}>
-          <Form form={form} layout="vertical" onFinish={handleFinish}>
-            <Row gutter={[16, 0]}>
+          <Form
+            form={form}
+            layout="vertical"
+            onFinish={handleFinish}
+            requiredMark={false}
+          >
+            <Row gutter={[24, 0]}>
               <Col xs={24} md={12}>
                 <Form.Item label="Email" name="email">
-                  <Input disabled />
+                  <Input disabled className={styles.disabledInput} />
                 </Form.Item>
               </Col>
               <Col xs={24} md={12}>
@@ -174,6 +172,7 @@ export const ProfileInfoPage = () => {
                 <Form.Item label="Пол" name="gender">
                   <Select
                     allowClear
+                    popupClassName={styles.selectPopup}
                     options={[
                       { value: 'MALE', label: 'Мужской' },
                       { value: 'FEMALE', label: 'Женский' },
@@ -193,14 +192,13 @@ export const ProfileInfoPage = () => {
               </Col>
             </Row>
 
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                margin: '12px 0',
-              }}
-            >
-              <Button htmlType="submit" type="primary" loading={isUpdating}>
+            <div className={styles.submitContainer}>
+              <Button
+                htmlType="submit"
+                type="primary"
+                loading={isUpdating}
+                className={styles.submitBtn}
+              >
                 Сохранить изменения
               </Button>
             </div>
@@ -211,7 +209,7 @@ export const ProfileInfoPage = () => {
       <section className={styles.section}>
         <div className={styles.sectionHeader}>
           <h2>
-            <LinkOutlined />
+            <Globe size={22} className={styles.iconAccent} />
             Публичные данные
           </h2>
           <p>Эта информация видна другим читателям.</p>
@@ -227,13 +225,20 @@ export const ProfileInfoPage = () => {
           <div className={styles.row}>
             <span>Статистика</span>
             <span className={styles.value}>
-              Прочитано: {user._count?.readBooks} | Избранное:{' '}
-              {user._count?.favoriteBooks}
+              Прочитано:{' '}
+              <strong className={styles.brandText}>
+                {user._count?.readBooks || 0}
+              </strong>
+              <span className={styles.divider}>|</span>
+              Избранное:{' '}
+              <strong className={styles.brandText}>
+                {user._count?.favoriteBooks || 0}
+              </strong>
             </span>
           </div>
           <div className={styles.row}>
             <span>Роль</span>
-            <span className={styles.value}>{user.role}</span>
+            <span className={styles.valueRole}>{user.role}</span>
           </div>
         </div>
       </section>

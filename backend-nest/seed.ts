@@ -716,31 +716,31 @@ async function main() {
 
   const collectionsData = [
     {
-      title: '🔥 Популярное в этом месяце',
+      title: 'Популярное в этом месяце',
       slug: 'popular',
       desc: 'Выбор наших читателей',
       books: popularBooks,
     },
     {
-      title: '💻 Программирование и IT',
+      title: 'Программирование и IT',
       slug: 'it-books',
       desc: 'Фундаментальная литература',
       books: itBooks,
     },
     {
-      title: '🎩 Золотая классика',
+      title: 'Золотая классика',
       slug: 'classics',
       desc: 'Книги, проверенные временем',
       books: classicBooks,
     },
     {
-      title: '🕵️ Мастера детектива',
+      title: 'Мастера детектива',
       slug: 'detectives',
       desc: 'Закрученные сюжеты и загадки',
       books: detectiveBooks,
     },
     {
-      title: '🚀 Взгляд в будущее',
+      title: 'Взгляд в будущее',
       slug: 'sci-fi',
       desc: 'Лучшая научная фантастика и антиутопии',
       books: scifiBooks,

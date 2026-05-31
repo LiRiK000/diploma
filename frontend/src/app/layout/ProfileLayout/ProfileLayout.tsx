@@ -1,6 +1,5 @@
-import { Button, Drawer, Layout, Menu } from 'antd'
-import { MenuOutlined } from '@ant-design/icons'
-import { useState } from 'react'
+import { Layout, Menu } from 'antd'
+import { Menu as LucideMenu } from 'lucide-react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import styles from './Profile.module.scss'
 import { tabs } from './const.tsx'
@@ -9,8 +8,6 @@ import Sider from 'antd/es/layout/Sider'
 const { Content } = Layout
 
 export const ProfileLayout = () => {
-  const [drawerVisible, setDrawerVisible] = useState(false)
-
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -19,13 +16,9 @@ export const ProfileLayout = () => {
       ? 'info'
       : location.pathname.split('/').pop() || 'info'
 
-  const currentTabLabel =
-    tabs.find(tab => tab.key === activeKey)?.label || 'Профиль'
-
-  const handleMenuClick = ({ key }: { key: string }) => {
+  const handleTabChange = (key: string) => {
     const path = key === 'info' ? '/profile' : `/profile/${key}`
     navigate(path)
-    setDrawerVisible(false)
   }
 
   return (
@@ -38,43 +31,32 @@ export const ProfileLayout = () => {
         trigger={null}
       >
         <div className={styles.siderHeader}>Аккаунт</div>
-
         <Menu
           mode="inline"
           selectedKeys={[activeKey]}
           items={tabs}
-          onClick={handleMenuClick}
+          onClick={({ key }) => handleTabChange(key)}
         />
       </Sider>
 
-      <Drawer
-        open={drawerVisible}
-        placement="left"
-        width={280}
-        onClose={() => setDrawerVisible(false)}
-        styles={{ body: { padding: 0 } }}
-      >
-        <Menu
-          mode="inline"
-          selectedKeys={[activeKey]}
-          items={tabs}
-          onClick={handleMenuClick}
-        />
-      </Drawer>
-
       <Layout className={styles.contentLayout}>
+        <div className={styles.mobileTabsContainer}>
+          {tabs.map(tab => {
+            const isActive = tab.key === activeKey
+            return (
+              <button
+                key={tab.key}
+                onClick={() => handleTabChange(tab.key)}
+                className={`${styles.mobileTabItem} ${isActive ? styles.mobileTabActive : ''}`}
+              >
+                {tab.icon}
+                <span>{tab.label}</span>
+              </button>
+            )
+          })}
+        </div>
+
         <Content className={styles.content}>
-          <div className={styles.mobileHeader}>
-            <Button
-              icon={<MenuOutlined />}
-              type="text"
-              onClick={() => setDrawerVisible(true)}
-              className={styles.burger}
-            />
-
-            <span className={styles.mobileTitle}>{currentTabLabel}</span>
-          </div>
-
           <div className={styles.inner}>
             <Outlet />
           </div>

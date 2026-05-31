@@ -14,7 +14,7 @@ export const BookSidebar = ({ authorName, authorId }: BookSidebarProps) => {
   }
 
   return (
-    <Card className={styles.sidebar} variant="borderless">
+    <Card className={styles.sidebar} bordered={false}>
       <div className={styles.header}>
         <div className={styles.iconWrapper}>
           <Avatar size={52} icon={<UserOutlined />} className={styles.avatar} />
@@ -22,7 +22,6 @@ export const BookSidebar = ({ authorName, authorId }: BookSidebarProps) => {
 
         <div className={styles.info}>
           <Text className={styles.label}>Автор книги</Text>
-
           <Title level={5} className={styles.name}>
             {authorName}
           </Title>
@@ -36,6 +35,7 @@ export const BookSidebar = ({ authorName, authorId }: BookSidebarProps) => {
         onClick={handleAuthorPage}
         className={styles.authorButton}
         icon={<ArrowRightOutlined />}
+        iconPosition="end"
       >
         Перейти к автору
       </Button>
