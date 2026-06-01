@@ -125,22 +125,19 @@ export class BookController {
       properties: { file: { type: 'string', format: 'binary' } },
     },
   })
-  @Get('main-sections')
-  @ApiOperation({
-    summary: 'Получить динамические коллекции для главной страницы',
-  })
   async uploadCover(
     @Param('id') id: string,
     @UploadedFile(
       new ParseFilePipe({
         validators: [
-          new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 5 }),
-          new FileTypeValidator({ fileType: '.(png|jpeg|jpg|webp)' }),
+          new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 5 }), // 5 MB
+          new FileTypeValidator({ fileType: 'image/(png|jpeg|jpg|webp)' }),
         ],
       }),
     )
     file: Express.Multer.File,
   ) {
-    return this.bookService.uploadBookCover(id, file);
+    const data = await this.bookService.uploadBookCover(id, file);
+    return { status: 'success', data };
   }
 }
