@@ -86,10 +86,10 @@ export const DashboardPage: React.FC = () => {
         dashboardId: dashboard.id,
         key: chosenWidget.type,
         type: chosenWidget.type,
-        title: chosenWidget.title, // Название, переопределенное пользователем в форме
+        title: chosenWidget.title,
         isEnabled: true,
         order: dashboard.widgets.length + 1,
-        settings: customSettings, // Передаем сформированные настройки в базу
+        settings: customSettings,
         layout: {
           x: 0,
           y: currentMaxY,
@@ -130,11 +130,9 @@ export const DashboardPage: React.FC = () => {
 
   return (
     <div className={styles.page}>
-      <div className={styles.backgroundGlow} />
-
       <header className={styles.header}>
         <div className={styles.headerContent}>
-          <div>
+          <div className={styles.titlesBlock}>
             <Title level={2} className={styles.title}>
               {dashboard.title}
             </Title>
@@ -150,20 +148,23 @@ export const DashboardPage: React.FC = () => {
               onClick={() => setIsDrawerOpen(true)}
               className={styles.addButton}
             >
-              Конструктор доски
+              Добавить виджет
             </Button>
           </div>
         </div>
       </header>
 
-      <WidgetGrid
-        widgets={activeWidgets}
-        initialLayout={initialLayout}
-        onSaveLayout={handleSaveLayout}
-        onRemoveWidget={handleRemoveWidget}
-        isEditingExternal={isEditing}
-        setIsEditingExternal={setIsEditing}
-      />
+      {/* Обертка для сетки, чтобы дать дополнительный контролируемый отступ сверху */}
+      <main className={styles.dashboardContent}>
+        <WidgetGrid
+          widgets={activeWidgets}
+          initialLayout={initialLayout}
+          onSaveLayout={handleSaveLayout}
+          onRemoveWidget={handleRemoveWidget}
+          isEditingExternal={isEditing}
+          setIsEditingExternal={setIsEditing}
+        />
+      </main>
 
       <WidgetConfigDrawer
         isOpen={isDrawerOpen}

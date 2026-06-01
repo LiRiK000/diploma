@@ -10,10 +10,15 @@ import styles from './MainLayout.module.scss'
 import { PullAnchor } from '@shared/components/PullAnchor'
 import { Logo } from '../../../../public/logo'
 import { NotificationIcon } from '@entities/notifications/ui/NotificationIcon/NotificationIcon'
+import { useGetMe } from '@app/providers/AuthProvider/hooks/useGetMe'
 
 const { Header, Content } = Layout
 
 export const MainLayout = () => {
+  const { data, isLoading } = useGetMe()
+
+  const isAuthenticated = !isLoading && data?.status === 'success'
+
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <Header className={styles.header}>
@@ -56,7 +61,8 @@ export const MainLayout = () => {
 
           <CartIcon />
 
-          <UserAvatar />
+          {/* 3. Опционально: скрываем аватар, если не авторизован */}
+          {isAuthenticated && <UserAvatar />}
 
           <ThemeToggle />
         </div>
@@ -66,7 +72,7 @@ export const MainLayout = () => {
         <Outlet />
       </Content>
 
-      <MobileNavigation />
+      {isAuthenticated && <MobileNavigation />}
 
       <PullAnchor />
     </Layout>

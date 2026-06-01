@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Layout, Menu, Typography, Avatar } from 'antd'
 import { useShallow } from 'zustand/react/shallow'
-import { LucideUser } from 'lucide-react'
+import { LucideUser, ChevronLeft } from 'lucide-react' // Добавили иконку стрелки
 import { useNavigate, useLocation, Outlet } from 'react-router-dom'
 import clsx from 'clsx'
 
@@ -9,8 +9,6 @@ import { librarianMenuFields } from './constants'
 import { VerifyCodeModal } from '@features/manage-orders/ui/VerifyCodeModal'
 import { ReturnBookModal } from '@features/manage-orders/ui/ReturnBookModal'
 import { useLibrarianSettingsStore } from '@features/librarian-settings'
-import { useLayoutStore } from '@entities/widgets-grid'
-import { GRID_ID } from '@entities/widgets-grid/constants'
 
 import styles from './LibrarianLayout.module.scss'
 import { HeaderActions } from './components/HeaderActions/HeaderActions'
@@ -46,9 +44,20 @@ export const LibrarianLayout = () => {
         collapsed={collapsed}
         onCollapse={setCollapsed}
         className={`${styles.sider} tour-step-sider-menu`}
-        width={256}
+        width={260} // Немного увеличили ширину для свободы текста
         trigger={null}
       >
+        {/* Кнопка сворачивания меню на стыке блоков */}
+        <div
+          className={clsx(
+            styles.customTrigger,
+            collapsed && styles.collapsedActive,
+          )}
+          onClick={() => setCollapsed(!collapsed)}
+        >
+          <ChevronLeft size={16} />
+        </div>
+
         <div className={styles.logoContainer}>
           <div className={styles.logoCircle} />
           <span className={clsx(styles.logoText, collapsed && styles.hidden)}>
@@ -93,6 +102,7 @@ export const LibrarianLayout = () => {
             />
           </div>
         </Header>
+
         <Content className={styles.content}>
           <Outlet />
         </Content>
