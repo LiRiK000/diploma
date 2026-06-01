@@ -25,7 +25,7 @@ export const LibrarianOrdersTab = () => {
   const pagination = useMemo(() => getPagination(orders), [orders])
 
   return (
-    <div className={classes.tableWrapper}>
+    <div className={`${classes.tableWrapper} tour-step-orders-table`}>
       <Table<OrderResponse>
         loading={isLoading || isFetching}
         dataSource={orders}

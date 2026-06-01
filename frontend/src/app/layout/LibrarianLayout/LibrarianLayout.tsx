@@ -45,7 +45,7 @@ export const LibrarianLayout = () => {
         collapsible
         collapsed={collapsed}
         onCollapse={setCollapsed}
-        className={styles.sider}
+        className={`${styles.sider} tour-step-sider-menu`}
         width={256}
         trigger={null}
       >
@@ -82,14 +82,17 @@ export const LibrarianLayout = () => {
             {getCurrentTitle()}
           </Typography.Title>
 
-          <HeaderActions
-            isEditing={isEditing}
-            toggleEditing={isEditing ? handleSaveAction : toggleEditing}
-            onVerifyOpen={() => setIsVerifyModalOpen(true)}
-            onReturnOpen={() => setIsReturnModalOpen(true)}
-          />
+          <div className="tour-step-header-actions">
+            <HeaderActions
+              isEditing={isEditing}
+              toggleEditing={
+                isEditing ? () => console.log('save') : toggleEditing
+              }
+              onVerifyOpen={() => setIsVerifyModalOpen(true)}
+              onReturnOpen={() => setIsReturnModalOpen(true)}
+            />
+          </div>
         </Header>
-
         <Content className={styles.content}>
           <Outlet />
         </Content>

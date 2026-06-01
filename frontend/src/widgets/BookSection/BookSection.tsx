@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import useEmblaCarousel from 'embla-carousel-react'
 import {
   ArrowRightOutlined,
@@ -30,31 +30,52 @@ export const BookSection: React.FC<BookSectionProps> = ({
     align: 'start',
     containScroll: 'trimSnaps',
     dragFree: true,
+    watchSlides: false,
   })
 
-  const [prevBtnEnabled, setPrevBtnEnabled] = useState(false)
-  const [nextBtnEnabled, setNextBtnEnabled] = useState(false)
+  const prevStateRef = useRef(false)
+  const nextStateRef = useRef(false)
 
-  const scrollPrev = useCallback(
-    () => emblaApi && emblaApi.scrollPrev(),
-    [emblaApi],
-  )
-  const scrollNext = useCallback(
-    () => emblaApi && emblaApi.scrollNext(),
-    [emblaApi],
-  )
+  const [buttons, setButtons] = useState({
+    prev: false,
+    next: false,
+  })
 
-  const onSelect = useCallback((api: any) => {
-    setPrevBtnEnabled(api.canScrollPrev())
-    setNextBtnEnabled(api.canScrollNext())
-  }, [])
+  const scrollPrev = useCallback(() => {
+    emblaApi?.scrollPrev()
+  }, [emblaApi])
+
+  const scrollNext = useCallback(() => {
+    emblaApi?.scrollNext()
+  }, [emblaApi])
+
+  const updateButtons = useCallback(() => {
+    if (!emblaApi) return
+
+    const prev = emblaApi.canScrollPrev()
+    const next = emblaApi.canScrollNext()
+
+    if (prev !== prevStateRef.current || next !== nextStateRef.current) {
+      prevStateRef.current = prev
+      nextStateRef.current = next
+
+      setButtons({ prev, next })
+    }
+  }, [emblaApi])
 
   useEffect(() => {
     if (!emblaApi) return
-    onSelect(emblaApi)
-    emblaApi.on('reInit', onSelect)
-    emblaApi.on('select', onSelect)
-  }, [emblaApi, onSelect])
+
+    updateButtons()
+
+    emblaApi.on('select', updateButtons)
+    emblaApi.on('reInit', updateButtons)
+
+    return () => {
+      emblaApi.off('select', updateButtons)
+      emblaApi.off('reInit', updateButtons)
+    }
+  }, [emblaApi, updateButtons])
 
   return (
     <section className={styles.section}>
@@ -69,9 +90,10 @@ export const BookSection: React.FC<BookSectionProps> = ({
 
       <div className={styles.viewportWrapper}>
         <button
+          type="button"
           className={`${styles.navBtn} ${styles.prev}`}
           onClick={scrollPrev}
-          disabled={!prevBtnEnabled}
+          disabled={!buttons.prev}
           aria-label="Назад"
         >
           <LeftOutlined />
@@ -97,10 +119,11 @@ export const BookSection: React.FC<BookSectionProps> = ({
         </div>
 
         <button
+          type="button"
           className={`${styles.navBtn} ${styles.next}`}
           onClick={scrollNext}
-          disabled={!nextBtnEnabled}
-          aria-label="Вперед"
+          disabled={!buttons.next}
+          aria-label="Вперёд"
         >
           <RightOutlined />
         </button>

@@ -14,138 +14,157 @@ export const RegisterPage = () => {
   const [currentStep, setCurrentStep] = useState(0)
   const [form] = Form.useForm()
 
-  const steps = [
-    {
-      title: 'Аккаунт',
-      fields: ['email', 'password', 'passwordConfirm'],
-      content: (
-        <>
-          <Form.Item
-            name="email"
-            label="Email"
-            rules={[
-              {
-                required: true,
-                type: 'email',
-                message: 'Введите корректный email',
-              },
-            ]}
-          >
-            <Input placeholder="example@mail.com" />
-          </Form.Item>
+  const renderStepContent = (step: number) => {
+    switch (step) {
+      case 0:
+        return (
+          <>
+            <Form.Item
+              name="email"
+              label="Email"
+              rules={[
+                { required: true, message: 'Пожалуйста, введите email' },
+                { type: 'email', message: 'Введите корректный email' },
+              ]}
+            >
+              <Input placeholder="example@mail.com" autoComplete="email" />
+            </Form.Item>
 
-          <Form.Item
-            name="password"
-            label="Пароль"
-            rules={[{ required: true, min: 8, message: 'Минимум 8 символов' }]}
-          >
-            <Input.Password placeholder="минимум 8 символов" />
-          </Form.Item>
-
-          <Form.Item
-            name="passwordConfirm"
-            label="Подтвердите пароль"
-            dependencies={['password']}
-            rules={[
-              { required: true, message: 'Подтвердите пароль' },
-              ({ getFieldValue }) => ({
-                validator(_, value) {
-                  if (!value || getFieldValue('password') === value) {
-                    return Promise.resolve()
-                  }
-                  return Promise.reject(new Error('Пароли не совпадают'))
+            <Form.Item
+              name="password"
+              label="Пароль"
+              rules={[
+                {
+                  required: true,
+                  min: 8,
+                  message: 'Пароль должен быть не менее 8 символов',
                 },
-              }),
-            ]}
-          >
-            <Input.Password placeholder="еще раз" />
-          </Form.Item>
-        </>
-      ),
-    },
-    {
-      title: 'Профиль',
-      fields: ['name', 'surname', 'displayName'],
-      content: (
-        <>
-          <Form.Item
-            name="name"
-            label="Имя"
-            rules={[{ required: true, message: 'Введите имя' }]}
-          >
-            <Input placeholder="Иван" />
-          </Form.Item>
+              ]}
+            >
+              <Input.Password
+                placeholder="Минимум 8 символов"
+                autoComplete="new-password"
+              />
+            </Form.Item>
 
-          <Form.Item
-            name="surname"
-            label="Фамилия"
-            rules={[{ required: true, message: 'Введите фамилию' }]}
-          >
-            <Input placeholder="Иванов" />
-          </Form.Item>
+            <Form.Item
+              name="passwordConfirm"
+              label="Подтвердите пароль"
+              dependencies={['password']}
+              rules={[
+                { required: true, message: 'Пожалуйста, подтвердите пароль' },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    if (!value || getFieldValue('password') === value) {
+                      return Promise.resolve()
+                    }
+                    return Promise.reject(new Error('Пароли не совпадают'))
+                  },
+                }),
+              ]}
+            >
+              <Input.Password
+                placeholder="Введите пароль еще раз"
+                autoComplete="new-password"
+              />
+            </Form.Item>
+          </>
+        )
+      case 1:
+        return (
+          <>
+            <Form.Item
+              name="name"
+              label="Имя"
+              rules={[{ required: true, message: 'Введите имя' }]}
+            >
+              <Input placeholder="Иван" />
+            </Form.Item>
 
-          <Form.Item name="displayName" label="Никнейм (необязательно)">
-            <Input placeholder="IvanCool2005" />
-          </Form.Item>
-        </>
-      ),
-    },
-    {
-      title: 'Дополнительно',
-      fields: ['phone', 'gender', 'birthDate'],
-      content: (
-        <>
-          <Form.Item
-            name="phone"
-            label="Телефон"
-            rules={[
-              {
-                pattern: /^7\d{10}$/,
-                message: 'Формат: 79991234567',
-              },
-            ]}
-          >
-            <Input placeholder="79998887766" />
-          </Form.Item>
+            <Form.Item
+              name="surname"
+              label="Фамилия"
+              rules={[{ required: true, message: 'Введите фамилию' }]}
+            >
+              <Input placeholder="Иванов" />
+            </Form.Item>
 
-          <Form.Item name="gender" label="Пол" initialValue="OTHER">
-            <Radio.Group optionType="button" buttonStyle="solid">
-              <Radio value="MALE">Мужчина</Radio>
-              <Radio value="FEMALE">Женщина</Radio>
-              <Radio value="OTHER">Другой</Radio>
-            </Radio.Group>
-          </Form.Item>
+            <Form.Item name="displayName" label="Никнейм (необязательно)">
+              <Input placeholder="IvanCool2005" />
+            </Form.Item>
+          </>
+        )
+      case 2:
+        return (
+          <>
+            <Form.Item
+              name="phone"
+              label="Телефон"
+              rules={[
+                {
+                  pattern: /^7\d{10}$/,
+                  message: 'Формат: 79991234567',
+                },
+              ]}
+            >
+              <Input placeholder="79998887766" />
+            </Form.Item>
 
-          <Form.Item name="birthDate" label="Дата рождения">
-            <DatePicker
-              style={{ width: '100%' }}
-              placeholder="Выберите дату"
-              format="DD.MM.YYYY"
-            />
-          </Form.Item>
-        </>
-      ),
-    },
+            <Form.Item name="gender" label="Пол" initialValue="OTHER">
+              <Radio.Group
+                optionType="button"
+                buttonStyle="solid"
+                className={styles.genderGroup}
+              >
+                <Radio value="MALE">Мужчина</Radio>
+                <Radio value="FEMALE">Женщина</Radio>
+                <Radio value="OTHER">Другой</Radio>
+              </Radio.Group>
+            </Form.Item>
+
+            <Form.Item name="birthDate" label="Дата рождения">
+              <DatePicker
+                className={styles.datePicker}
+                placeholder="Выберите дату"
+                format="DD.MM.YYYY"
+              />
+            </Form.Item>
+          </>
+        )
+      default:
+        return null
+    }
+  }
+
+  const stepFields = [
+    ['email', 'password', 'passwordConfirm'],
+    ['name', 'surname', 'displayName'],
+    ['phone', 'gender', 'birthDate'],
+  ]
+
+  const stepTitles = [
+    { title: 'Аккаунт' },
+    { title: 'Профиль' },
+    { title: 'Дополнительно' },
   ]
 
   const next = async () => {
     try {
-      const fields = steps[currentStep].fields
+      const fields = stepFields[currentStep]
       await form.validateFields(fields)
       setCurrentStep(prev => prev + 1)
     } catch (err) {
-      console.log('Step validation failed:', err)
+      console.log('Валидация шага не пройдена:', err)
     }
   }
 
   const prev = () => setCurrentStep(prev => prev - 1)
 
   const handleFinish = async () => {
-    if (currentStep !== steps.length - 1) return
+    if (currentStep !== stepFields.length - 1) return
 
     try {
-      await form.validateFields(steps[currentStep].fields)
-
+      await form.validateFields(stepFields[currentStep])
       const allValues = form.getFieldsValue(true)
 
       const transformedValues = {
@@ -163,15 +182,14 @@ export const RegisterPage = () => {
       )
 
       const validated = registerSchema.parse(cleanValues)
-
       const { passwordConfirm: _, ...dataToSend } = validated
 
       register(dataToSend)
     } catch (err) {
       if (err instanceof z.ZodError) {
-        console.log('Validation error:', err.flatten().fieldErrors)
+        console.log('Ошибка Zod:', err.flatten().fieldErrors)
       } else {
-        console.log('Error:', err)
+        console.log('Ошибка формы:', err)
       }
     }
   }
@@ -179,14 +197,17 @@ export const RegisterPage = () => {
   return (
     <div className={styles.container}>
       <div className={styles.formWrapper}>
-        <div className={styles.header}>
-          <Title level={3}>Регистрация</Title>
+        <header className={styles.header}>
+          <Title level={3} className={styles.title}>
+            Регистрация
+          </Title>
           <Steps
             size="small"
             current={currentStep}
-            items={steps.map(s => ({ title: s.title }))}
+            items={stepTitles}
+            className={styles.steps}
           />
-        </div>
+        </header>
 
         <Form
           form={form}
@@ -194,23 +215,34 @@ export const RegisterPage = () => {
           preserve={true}
           requiredMark={false}
           onKeyDown={e => {
-            if (e.key === 'Enter' && currentStep < steps.length - 1) {
+            if (e.key === 'Enter' && currentStep < stepFields.length - 1) {
               e.preventDefault()
               next()
             }
           }}
         >
-          <div className={styles.stepContent}>{steps[currentStep].content}</div>
+          <div className={styles.stepContent}>
+            {renderStepContent(currentStep)}
+          </div>
 
           <div className={styles.actions}>
             {currentStep > 0 && (
-              <Button onClick={prev} htmlType="button">
+              <Button
+                onClick={prev}
+                htmlType="button"
+                className={styles.backButton}
+              >
                 Назад
               </Button>
             )}
 
-            {currentStep < steps.length - 1 ? (
-              <Button type="primary" onClick={next} htmlType="button" block>
+            {currentStep < stepFields.length - 1 ? (
+              <Button
+                type="primary"
+                onClick={next}
+                htmlType="button"
+                className={styles.submitButton}
+              >
                 Далее
               </Button>
             ) : (
@@ -218,8 +250,8 @@ export const RegisterPage = () => {
                 type="primary"
                 onClick={handleFinish}
                 loading={isLoading}
-                block
                 htmlType="button"
+                className={styles.submitButton}
               >
                 Завершить
               </Button>
@@ -227,11 +259,14 @@ export const RegisterPage = () => {
           </div>
         </Form>
 
-        <div className={styles.footer} style={{ marginTop: 20 }}>
-          <Text type="secondary">
-            Уже есть аккаунт? <Link to="/login">Войти</Link>
+        <footer className={styles.footer}>
+          <Text className={styles.footerText}>
+            Уже есть аккаунт?{' '}
+            <Link to="/login" className={styles.loginLink}>
+              Войти
+            </Link>
           </Text>
-        </div>
+        </footer>
       </div>
     </div>
   )

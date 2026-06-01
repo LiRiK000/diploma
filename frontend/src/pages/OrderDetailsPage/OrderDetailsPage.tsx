@@ -97,7 +97,7 @@ export const OrderDetailsPage: React.FC = () => {
 
       <Row gutter={[24, 24]}>
         <Col xs={24} xl={16}>
-          <div className={classes.mainContent}>
+          <div className={`${classes.mainContent} tour-step-order-info`}>
             <OrderInfo order={order} />
           </div>
         </Col>

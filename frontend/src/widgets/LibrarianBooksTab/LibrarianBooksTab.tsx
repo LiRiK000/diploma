@@ -185,7 +185,7 @@ export const LibrarianBooksTab = () => {
           type="primary"
           icon={<Plus size={16} />}
           onClick={() => handleOpenModal()}
-          className={classes.addBookBtn}
+          className={`${classes.addBookBtn} tour-step-add-book-btn`}
         >
           Добавить книгу
         </Button>

@@ -132,7 +132,11 @@ export const LibrarianAuthorsTab = () => {
           marginBottom: 20,
         }}
       >
-        <Typography.Title level={4} style={{ margin: 0 }}>
+        <Typography.Title
+          level={4}
+          style={{ margin: 0 }}
+          className="tour-step-authors-title"
+        >
           Управление авторами
         </Typography.Title>
         <Button type="primary" onClick={() => handleOpenModal()}>

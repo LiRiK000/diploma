@@ -71,7 +71,6 @@
   border-radius: 50%;
   border: 1px solid var(--glass-border);
   background: var(--bg-content);
-  backdrop-filter: blur(12px);
   color: var(--text-primary);
   display: flex;
   align-items: center;
@@ -111,7 +110,6 @@
   flex: 1;
   overflow: hidden;
   padding: 8px 2px;
-  mask-image: linear-gradient(to right, #000 0%, #000 85%, transparent 98%);
 }
 
 .container {
@@ -121,7 +119,6 @@
 .slide {
   flex: 0 0 260px;
   margin-right: 24px;
-  will-change: transform;
 }
 
 .catalogLink {
@@ -167,6 +164,26 @@
   }
 }
 
+@media (min-width: 769px) {
+  .navBtn {
+    backdrop-filter: blur(12px);
+  }
+
+  .viewportWrapper {
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 50px;
+      background: linear-gradient(to right, transparent, rgba(0, 0, 0, 0.03));
+      pointer-events: none;
+      z-index: 20;
+    }
+  }
+}
+
 @media (max-width: 768px) {
   .header {
     margin-bottom: 16px;
@@ -175,7 +192,6 @@
     display: none;
   }
   .embla {
-    mask-image: none;
     padding: 4px 0;
   }
   .slide {

@@ -1,21 +1,182 @@
 @use '@shared/styles/variables' as *;
 
-.formWrapper {
+$mobile-breakpoint: 480px;
+$transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+$transition-fast:
+  transform 0.1s ease,
+  opacity 0.2s ease;
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 85vh;
+  padding: 16px;
   width: 100%;
-  max-width: 500px;
-  background: var(--bg-content);
-  padding: 32px;
-  border-radius: 24px;
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--shadow-medium);
+}
+
+.formWrapper {
+  --auth-bg: #ffffff;
+  --auth-border: rgba(0, 0, 0, 0.08);
+  --auth-shadow: rgba(0, 0, 0, 0.04);
+  --auth-radius: 20px;
+  --auth-padding: 32px 24px;
+
+  --input-bg-empty: #f8f9fa;
+  --input-bg-filled: #ffffff;
+  --input-border-default: #e9ecef;
+  --input-border-filled: rgba(0, 0, 0, 0.15);
+  --input-border-focus: #1677ff;
+  --input-shadow-focus: rgba(22, 119, 255, 0.12);
+  --input-text: #212529;
+  --input-placeholder: #adb5bd;
+  --input-radius: 10px;
+
+  width: 100%;
+  max-width: 480px;
+  background: var(--auth-bg);
+  padding: var(--auth-padding);
+  border-radius: var(--auth-radius);
+  border: 1px solid var(--auth-border);
+  box-shadow: 0 12px 36px var(--auth-shadow);
+  transition: $transition-smooth;
+
+  @media (min-width: $mobile-breakpoint) {
+    --auth-radius: 24px;
+    --auth-padding: 40px 36px;
+  }
+}
+
+:global(body.dark) {
+  .formWrapper {
+    --auth-bg: linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.02),
+      rgba(255, 255, 255, 0.005)
+    );
+    --auth-border: rgba(255, 255, 255, 0.06);
+    --auth-shadow: rgba(0, 0, 0, 0.2);
+
+    --input-bg-empty: rgba(255, 255, 255, 0.03);
+    --input-bg-filled: rgba(255, 255, 255, 0.01);
+    --input-border-default: rgba(255, 255, 255, 0.08);
+    --input-border-filled: rgba(255, 255, 255, 0.12);
+    --input-border-focus: #1677ff;
+    --input-shadow-focus: rgba(22, 119, 255, 0.2);
+    --input-text: #ffffff;
+    --input-placeholder: rgba(255, 255, 255, 0.35);
+  }
+}
+
+.formWrapper {
+  :global {
+    .ant-input,
+    .ant-input-affix-wrapper,
+    .ant-picker {
+      background-color: var(--input-bg-empty) !important;
+      border-color: var(--input-border-default) !important;
+      color: var(--input-text) !important;
+      border-radius: var(--input-radius) !important;
+      transition: $transition-smooth;
+
+      input::placeholder {
+        color: var(--input-placeholder) !important;
+      }
+
+      .ant-picker-input > input {
+        color: var(--input-text) !important;
+      }
+
+      .ant-picker-suffix {
+        color: var(--input-placeholder) !important;
+      }
+    }
+
+    .ant-input:not(:placeholder-shown):not(:focus),
+    .ant-input-affix-wrapper:has(input:not(:placeholder-shown)):not(
+        .ant-input-affix-wrapper-focused
+      ),
+    .ant-picker-has-feedback {
+      background-color: var(--input-bg-filled) !important;
+      border-color: var(--input-border-filled) !important;
+      box-shadow: none !important;
+    }
+
+    .ant-input-focused,
+    .ant-input-affix-wrapper-focused,
+    .ant-picker-focused {
+      border-color: var(--input-border-focus) !important;
+      box-shadow: 0 0 0 3px var(--input-shadow-focus) !important;
+      background-color: var(--input-bg-filled) !important;
+    }
+
+    .ant-radio-group-solid
+      .ant-radio-button-wrapper-checked:not(
+        .ant-radio-button-wrapper-disabled
+      ) {
+      background: var(--input-border-focus) !important;
+      border-color: var(--input-border-focus) !important;
+    }
+
+    .ant-radio-button-wrapper {
+      background: var(--input-bg-empty);
+      border-color: var(--input-border-default);
+      color: var(--input-text);
+
+      &:first-child {
+        border-radius: var(--input-radius) 0 0 var(--input-radius);
+      }
+      &:last-child {
+        border-radius: 0 var(--input-radius) var(--input-radius) 0;
+      }
+    }
+
+    .ant-form-item-label > label {
+      color: var(--text-primary) !important;
+      font-weight: 600;
+      font-size: 14px;
+    }
+  }
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.title {
+  &.ant-typography {
+    font-size: 24px !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.02em;
+    color: var(--text-primary) !important;
+    margin-bottom: 20px !important;
+  }
 }
 
 .steps {
-  margin-bottom: 32px;
+  margin-bottom: 8px;
 }
 
 .stepContent {
-  min-height: 280px;
+  min-height: 270px;
+}
+
+.datePicker {
+  width: 100%;
+  height: 40px;
+}
+
+.genderGroup {
+  width: 100%;
+  display: flex !important;
+
+  :global(.ant-radio-button-wrapper) {
+    flex: 1;
+    text-align: center;
+    height: 40px;
+    line-height: 38px;
+  }
 }
 
 .actions {
@@ -25,41 +186,49 @@
   margin-top: 24px;
 }
 
-.container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  padding: 18px;
+.backButton {
+  flex: 1;
+  height: 46px !important;
+  border-radius: var(--input-radius) !important;
+  font-weight: 500;
 }
 
-.formWrapper {
-  width: 100%;
-  max-width: 450px;
-  background: var(--bg-content);
-  padding: 20px;
-  border-radius: 24px;
-  box-shadow: 0 8px 32px rgba(2, 99, 177, 0.2);
-}
+.submitButton {
+  flex: 2;
+  height: 46px !important;
+  font-weight: 600 !important;
+  border-radius: var(--input-radius) !important;
+  transition: $transition-fast;
 
-.header {
-  text-align: center;
-  margin-bottom: 16px;
-}
-
-.title {
-  font-size: $font-size-heading;
-  color: $text-primary;
-  margin-bottom: 4px !important;
-}
-
-.subtitle {
-  font-size: $font-size-medium;
-  color: $text-secondary;
-  margin: 0;
-  line-height: 1.5;
+  &:active {
+    transform: scale(0.99);
+  }
 }
 
 .footer {
   text-align: center;
+  margin-top: 24px;
+}
+
+.footerText {
+  &.ant-typography {
+    font-size: 14px !important;
+    color: var(--text-secondary) !important;
+  }
+}
+
+.loginLink {
+  font-weight: 600;
+  color: var(--ant-primary-color, #1677ff);
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
 }

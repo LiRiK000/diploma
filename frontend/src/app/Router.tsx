@@ -4,6 +4,7 @@ import { LibrarianLayout } from './layout/LibrarianLayout/LibrarianLayout'
 import { PageProvider } from './providers/PageProvider/PageProvider'
 import { QueryProvider } from './providers/QueryProvider/QueryProvider'
 import { AuthProvider } from './providers/AuthProvider/AuthProvider'
+import { TourProvider } from './providers/TourProvider'
 import { HomePage } from '@pages/home'
 import { RegisterPage } from '@pages/register'
 import { LoginPage } from '@pages/login'
@@ -35,6 +36,7 @@ import { LibrarianRecommendationsTab } from '@widgets/LibrarianRecommendationsTa
 import { NotificationsPage } from '@pages/NotificationsPage/NotificationPage'
 import { DashboardPage } from '@pages/dashboard'
 import { SecurePage } from '@pages/profile/ui/SecurePage/SecurePage'
+
 export const Router = () => {
   const init = useCookieConsentStore(useShallow(state => state.init))
 
@@ -47,162 +49,163 @@ export const Router = () => {
       <QueryProvider>
         <ThemeProvider>
           <AntApp>
-            <Suspense fallback={<Loader />}>
-              <Routes>
-                <Route path="/" element={<MainLayout />}>
-                  <Route
-                    index
-                    element={
-                      <PageProvider>
-                        <HomePage />
-                      </PageProvider>
-                    }
-                  />
-                  <Route
-                    path={routes.register}
-                    element={
-                      <PageProvider>
-                        <RegisterPage />
-                      </PageProvider>
-                    }
-                  />
-                  <Route
-                    path={routes.login}
-                    element={
-                      <PageProvider>
-                        <LoginPage />
-                      </PageProvider>
-                    }
-                  />
-                  <Route
-                    path={routes.bookPage}
-                    element={
-                      <PageProvider>
-                        <BookPage />
-                      </PageProvider>
-                    }
-                  />
-                  <Route
-                    path={routes.order}
-                    element={
-                      <PageProvider>
-                        <OrderPage />
-                      </PageProvider>
-                    }
-                  />
-                  <Route
-                    path={routes.search}
-                    element={
-                      <PageProvider>
-                        <SearchPage />
-                      </PageProvider>
-                    }
-                  />
-                  <Route
-                    path={routes.authorPage}
-                    element={
-                      <PageProvider>
-                        <AuthorPage />
-                      </PageProvider>
-                    }
-                  />
+            <TourProvider>
+              <Suspense fallback={<Loader />}>
+                <Routes>
+                  <Route path="/" element={<MainLayout />}>
+                    <Route
+                      index
+                      element={
+                        <PageProvider>
+                          <HomePage />
+                        </PageProvider>
+                      }
+                    />
+                    <Route
+                      path={routes.register}
+                      element={
+                        <PageProvider>
+                          <RegisterPage />
+                        </PageProvider>
+                      }
+                    />
+                    <Route
+                      path={routes.login}
+                      element={
+                        <PageProvider>
+                          <LoginPage />
+                        </PageProvider>
+                      }
+                    />
+                    <Route
+                      path={routes.bookPage}
+                      element={
+                        <PageProvider>
+                          <BookPage />
+                        </PageProvider>
+                      }
+                    />
+                    <Route
+                      path={routes.order}
+                      element={
+                        <PageProvider>
+                          <OrderPage />
+                        </PageProvider>
+                      }
+                    />
+                    <Route
+                      path={routes.search}
+                      element={
+                        <PageProvider>
+                          <SearchPage />
+                        </PageProvider>
+                      }
+                    />
+                    <Route
+                      path={routes.authorPage}
+                      element={
+                        <PageProvider>
+                          <AuthorPage />
+                        </PageProvider>
+                      }
+                    />
+
+                    <Route
+                      path={routes.cart}
+                      element={
+                        <AuthProvider>
+                          <PageProvider>
+                            <CartPage />
+                          </PageProvider>
+                        </AuthProvider>
+                      }
+                    />
+                    <Route
+                      path={routes.catalog}
+                      element={
+                        <AuthProvider>
+                          <PageProvider>
+                            <CatalogPage />
+                          </PageProvider>
+                        </AuthProvider>
+                      }
+                    />
+                    <Route
+                      path={routes.orders}
+                      element={
+                        <AuthProvider>
+                          <PageProvider>
+                            <OrderList />
+                          </PageProvider>
+                        </AuthProvider>
+                      }
+                    />
+
+                    <Route
+                      path={routes.notifications}
+                      element={
+                        <AuthProvider>
+                          <PageProvider>
+                            <NotificationsPage />
+                          </PageProvider>
+                        </AuthProvider>
+                      }
+                    />
+
+                    <Route
+                      path={routes.profile}
+                      element={
+                        <AuthProvider>
+                          <PageProvider>
+                            <ProfileLayout />
+                          </PageProvider>
+                        </AuthProvider>
+                      }
+                    >
+                      <Route index element={<ProfileInfoPage />} />
+                      <Route
+                        path={routes.profileSettings}
+                        element={<ProfileSettingsPage />}
+                      />
+                      <Route
+                        path={routes.achievements}
+                        element={<AchievementsPage />}
+                      />
+                      <Route path={routes.secure} element={<SecurePage />} />
+                    </Route>
+                  </Route>
 
                   <Route
-                    path={routes.cart}
+                    path={routes.librarian}
                     element={
                       <AuthProvider>
                         <PageProvider>
-                          <CartPage />
-                        </PageProvider>
-                      </AuthProvider>
-                    }
-                  />
-                  <Route
-                    path={routes.catalog}
-                    element={
-                      <AuthProvider>
-                        <PageProvider>
-                          <CatalogPage />
-                        </PageProvider>
-                      </AuthProvider>
-                    }
-                  />
-                  <Route
-                    path={routes.orders}
-                    element={
-                      <AuthProvider>
-                        <PageProvider>
-                          <OrderList />
-                        </PageProvider>
-                      </AuthProvider>
-                    }
-                  />
-
-                  <Route
-                    path={routes.notifications}
-                    element={
-                      <AuthProvider>
-                        <PageProvider>
-                          <NotificationsPage />
-                        </PageProvider>
-                      </AuthProvider>
-                    }
-                  />
-
-                  {/* Вложенные роуты профиля */}
-                  <Route
-                    path={routes.profile}
-                    element={
-                      <AuthProvider>
-                        <PageProvider>
-                          <ProfileLayout />
+                          <LibrarianLayout />
                         </PageProvider>
                       </AuthProvider>
                     }
                   >
-                    <Route index element={<ProfileInfoPage />} />
+                    <Route index element={<DashboardPage />} />
+
+                    <Route path="orders" element={<LibrarianOrdersTab />} />
+
+                    <Route path="orders/:id" element={<OrderDetailsPage />} />
+
+                    <Route path="books" element={<LibrarianBooksTab />} />
+
+                    <Route path="authors" element={<LibrarianAuthorsTab />} />
+
                     <Route
-                      path={routes.profileSettings}
-                      element={<ProfileSettingsPage />}
+                      path="recommendations"
+                      element={<LibrarianRecommendationsTab />}
                     />
-                    <Route
-                      path={routes.achievements}
-                      element={<AchievementsPage />}
-                    />
-                    <Route path={routes.secure} element={<SecurePage />} />
                   </Route>
-                </Route>
 
-                <Route
-                  path={routes.librarian}
-                  element={
-                    <AuthProvider>
-                      <PageProvider>
-                        <LibrarianLayout />
-                      </PageProvider>
-                    </AuthProvider>
-                  }
-                >
-                  <Route index element={<DashboardPage />} />
-
-                  <Route path="orders" element={<LibrarianOrdersTab />} />
-
-                  <Route path="orders/:id" element={<OrderDetailsPage />} />
-
-                  <Route path="books" element={<LibrarianBooksTab />} />
-
-                  <Route path="authors" element={<LibrarianAuthorsTab />} />
-
-                  <Route
-                    path="recommendations"
-                    element={<LibrarianRecommendationsTab />}
-                  />
-                </Route>
-
-                <Route path={routes.privacy} element={<PrivacyPage />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </Suspense>
+                  <Route path={routes.privacy} element={<PrivacyPage />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </Suspense>
+            </TourProvider>
           </AntApp>
         </ThemeProvider>
       </QueryProvider>

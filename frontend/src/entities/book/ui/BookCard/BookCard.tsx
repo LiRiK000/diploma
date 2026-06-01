@@ -1,3 +1,4 @@
+import React, { memo } from 'react'
 import styles from './BookCard.module.scss'
 import { Typography, Space } from 'antd'
 import { StarFilled } from '@ant-design/icons'
@@ -8,13 +9,17 @@ import { AddToWishlistButton } from '@features/add-to-wishlist/components'
 
 const { Title, Text } = Typography
 
-export const BookCard = ({ book }: BookCardProps) => {
+export const BookCard = memo(({ book }: BookCardProps) => {
   const navigate = useNavigate()
 
   const handleAuthorClick = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
     void navigate(`/author/${book.authorId}`)
+  }
+
+  const handleActionsClick = (e: React.MouseEvent) => {
+    e.stopPropagation()
   }
 
   return (
@@ -53,7 +58,7 @@ export const BookCard = ({ book }: BookCardProps) => {
             <Text className={styles.count}>{book.ratingsCount || 0}</Text>
           </div>
 
-          <div className={styles.actions}>
+          <div className={styles.actions} onClick={handleActionsClick}>
             <Space size={8}>
               <AddToWishlistButton
                 title={book.title}
@@ -67,4 +72,6 @@ export const BookCard = ({ book }: BookCardProps) => {
       </div>
     </Link>
   )
-}
+})
+
+BookCard.displayName = 'BookCard'

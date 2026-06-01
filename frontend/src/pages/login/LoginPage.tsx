@@ -12,27 +12,32 @@ export const LoginPage = () => {
   const [form] = Form.useForm()
 
   const handleSubmit = (values: LoginFormValues) => {
-    const validatedValues = loginSchema.parse(values)
-    login(validatedValues)
+    try {
+      const validatedValues = loginSchema.parse(values)
+      login(validatedValues)
+    } catch (error) {
+      console.error('Ошибка валидации схемы Zod:', error)
+    }
   }
 
   return (
     <div className={styles.container}>
       <div className={styles.formWrapper}>
-        <div className={styles.header}>
+        <header className={styles.header}>
           <Title level={2} className={styles.title}>
             Вход в систему
           </Title>
           <Text className={styles.subtitle}>
             Введите свои данные для входа в систему
           </Text>
-        </div>
+        </header>
 
         <Form<LoginFormValues>
           form={form}
           layout="vertical"
           onFinish={handleSubmit}
           size="large"
+          requiredMark={false}
         >
           <Form.Item
             name="email"
@@ -42,8 +47,9 @@ export const LoginPage = () => {
               { type: 'email', message: 'Неверный формат email' },
             ]}
           >
-            <Input placeholder="Введите email" />
+            <Input placeholder="name@example.com" autoComplete="email" />
           </Form.Item>
+
           <Form.Item
             name="password"
             label="Пароль"
@@ -52,13 +58,17 @@ export const LoginPage = () => {
               { min: 8, message: 'Пароль должен быть не менее 8 символов' },
             ]}
           >
-            <Input.Password placeholder="Введите пароль" />
+            <Input.Password
+              placeholder="Введите пароль"
+              autoComplete="current-password"
+            />
           </Form.Item>
-          <Form.Item>
+
+          <Form.Item className={styles.submitItem}>
             <Button
               type="primary"
               htmlType="submit"
-              style={{ width: '100%' }}
+              className={styles.submitButton}
               size="large"
             >
               Войти
@@ -66,14 +76,14 @@ export const LoginPage = () => {
           </Form.Item>
         </Form>
 
-        <div className={styles.footer}>
-          <Text>
+        <footer className={styles.footer}>
+          <Text className={styles.footerText}>
             Нет аккаунта?{' '}
-            <Link to="/register" className={styles.loginLink}>
+            <Link to="/register" className={styles.registerLink}>
               Зарегистрироваться
             </Link>
           </Text>
-        </div>
+        </footer>
       </div>
     </div>
   )
