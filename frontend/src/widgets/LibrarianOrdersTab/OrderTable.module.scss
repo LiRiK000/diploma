@@ -4,6 +4,71 @@ $apple-speed: 0.25s;
 $apple-ease: cubic-bezier(0.25, 1, 0.5, 1);
 $inner-stroke: inset 0 1px 0 rgba(255, 255, 255, 0.4);
 
+.tableHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 16px;
+
+  @include mobile {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.tabTitle {
+  font-weight: var(--font-weight-display, 700) !important;
+  font-size: var(--font-size-lg, 18px) !important;
+  letter-spacing: -0.01em;
+  color: var(--text-primary) !important;
+  margin: 0 !important;
+}
+
+.tabSubtitle {
+  font-size: var(--font-size-xs, 12px);
+  color: var(--text-secondary);
+  opacity: 0.8;
+}
+
+.searchWrapper {
+  width: 380px;
+
+  @include mobile {
+    width: 100%;
+  }
+}
+
+.customSearchInput {
+  :global(.ant-input-affix-wrapper) {
+    border-radius: 10px !important;
+    border-color: var(--glass-border) !important;
+    background: rgba(0, 0, 0, 0.01) !important;
+    padding: 6px 12px !important;
+    transition: all 0.2s $apple-ease;
+
+    &:hover {
+      border-color: #007aff !important;
+      box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.08) !important;
+    }
+  }
+
+  :global(.ant-input-affix-wrapper-focused) {
+    border-color: #007aff !important;
+    box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.08) !important;
+  }
+
+  :global(.ant-input) {
+    background: transparent !important;
+    color: var(--text-primary) !important;
+    font-size: 14px;
+  }
+
+  :global(.ant-input-clear-icon) {
+    color: var(--text-secondary);
+  }
+}
+
 .tableWrapper {
   background: var(--glass-bg);
   backdrop-filter: var(--header-blur);
@@ -39,10 +104,6 @@ $inner-stroke: inset 0 1px 0 rgba(255, 255, 255, 0.4);
       border-bottom: 1px solid var(--glass-border) !important;
       padding: 14px 16px;
       letter-spacing: -0.01em;
-
-      body:global(.dark) & {
-        background: rgba(255, 255, 255, 0.02) !important;
-      }
     }
 
     .ant-table-tbody > tr > td {
@@ -53,10 +114,6 @@ $inner-stroke: inset 0 1px 0 rgba(255, 255, 255, 0.4);
 
     .ant-table-tbody > tr:hover > td {
       background: rgba(0, 122, 255, 0.04) !important;
-
-      body:global(.dark) & {
-        background: rgba(0, 122, 255, 0.06) !important;
-      }
     }
 
     .ant-table-cell-fix-right {
@@ -68,6 +125,7 @@ $inner-stroke: inset 0 1px 0 rgba(255, 255, 255, 0.4);
     .ant-pagination {
       margin: 14px 10px !important;
     }
+
     .ant-pagination-item {
       border-radius: 8px !important;
       border: 1px solid var(--glass-border) !important;
@@ -86,6 +144,7 @@ $inner-stroke: inset 0 1px 0 rgba(255, 255, 255, 0.4);
         }
       }
     }
+
     .ant-pagination-prev .ant-pagination-item-link,
     .ant-pagination-next .ant-pagination-item-link {
       border-radius: 8px !important;
@@ -93,6 +152,29 @@ $inner-stroke: inset 0 1px 0 rgba(255, 255, 255, 0.4);
       background: transparent !important;
       color: var(--text-secondary);
     }
+  }
+}
+
+body:global(.dark) {
+  .customTable :global {
+    .ant-table-thead > tr > th {
+      background: rgba(255, 255, 255, 0.02) !important;
+    }
+    .ant-table-tbody > tr:hover > td {
+      background: rgba(0, 122, 255, 0.06) !important;
+    }
+  }
+  .userAvatar {
+    background: rgba(255, 255, 255, 0.08);
+  }
+  .bookCardMini {
+    background: rgba(255, 255, 255, 0.04);
+  }
+  .moreItemsBadge {
+    background: rgba(255, 255, 255, 0.05);
+  }
+  .customSearchInput :global(.ant-input-affix-wrapper) {
+    background: rgba(255, 255, 255, 0.02) !important;
   }
 }
 
@@ -111,10 +193,6 @@ $inner-stroke: inset 0 1px 0 rgba(255, 255, 255, 0.4);
   border: 1px solid var(--glass-border);
   background: rgba(0, 0, 0, 0.04);
   color: var(--text-secondary);
-
-  body:global(.dark) & {
-    background: rgba(255, 255, 255, 0.08);
-  }
 }
 
 .userInfo {
@@ -145,10 +223,6 @@ $inner-stroke: inset 0 1px 0 rgba(255, 255, 255, 0.4);
   max-width: 160px;
   cursor: pointer;
   transition: all 0.2s ease;
-
-  body:global(.dark) & {
-    background: rgba(255, 255, 255, 0.04);
-  }
 
   &:hover {
     background: rgba(0, 122, 255, 0.06);
@@ -188,10 +262,6 @@ $inner-stroke: inset 0 1px 0 rgba(255, 255, 255, 0.4);
   padding: 4px 8px;
   border-radius: 6px;
   border: 1px solid var(--glass-border);
-
-  body:global(.dark) & {
-    background: rgba(255, 255, 255, 0.05);
-  }
 }
 
 .dateContainer {
@@ -262,10 +332,11 @@ $inner-stroke: inset 0 1px 0 rgba(255, 255, 255, 0.4);
   &:hover {
     background: rgba(0, 0, 0, 0.04) !important;
     color: var(--text-primary) !important;
-    body:global(.dark) & {
-      background: rgba(255, 255, 255, 0.07) !important;
-    }
   }
+}
+
+body:global(.dark) .viewBtn:hover {
+  background: rgba(255, 255, 255, 0.07) !important;
 }
 
 .approveBtn {

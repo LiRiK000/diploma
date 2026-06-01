@@ -9,11 +9,12 @@ import {
   Popconfirm,
   Image,
   Tag,
+  Input,
 } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import type { UploadFile } from 'antd/es/upload/interface'
 import type { BookDto } from '@shared/services/Book/types'
-import { Plus, Edit2, Trash2, BookOpen } from 'lucide-react'
+import { Plus, Edit2, Trash2, BookOpen, Search } from 'lucide-react'
 import { useLibrarianBooks } from '@features/manage-books/hooks/useLibrarianBooks'
 import { BookFormValues } from '@features/manage-books/model/types'
 import { BookForm } from '@features/manage-books/ui/BookForm'
@@ -34,6 +35,22 @@ export const LibrarianBooksTab = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingBook, setEditingBook] = useState<BookDto | null>(null)
   const [fileList, setFileList] = useState<UploadFile[]>([])
+
+  const [searchQuery, setSearchQuery] = useState('')
+
+  const filteredBooks = useMemo(() => {
+    if (!books) return []
+    if (!searchQuery.trim()) return books
+
+    const query = searchQuery.toLowerCase().trim()
+
+    return books.filter(book => {
+      const titleMatch = book.title?.toLowerCase().includes(query)
+      const authorMatch = book.author?.toLowerCase().includes(query)
+
+      return titleMatch || authorMatch
+    })
+  }, [books, searchQuery])
 
   const handleOpenModal = (book?: BookDto) => {
     setEditingBook(book || null)
@@ -181,19 +198,35 @@ export const LibrarianBooksTab = () => {
             Редактирование, добавление и списание книг
           </span>
         </Space>
-        <Button
-          type="primary"
-          icon={<Plus size={16} />}
-          onClick={() => handleOpenModal()}
-          className={`${classes.addBookBtn} tour-step-add-book-btn`}
-        >
-          Добавить книгу
-        </Button>
+
+        <div className={classes.searchWrapper}>
+          <Input
+            placeholder="Поиск по названию или автору..."
+            allowClear
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            prefix={
+              <Search
+                size={16}
+                style={{ color: 'var(--text-secondary)', marginRight: 4 }}
+              />
+            }
+            className={classes.customSearchInput}
+          />
+          <Button
+            type="primary"
+            icon={<Plus size={16} />}
+            onClick={() => handleOpenModal()}
+            className={`${classes.addBookBtn} tour-step-add-book-btn`}
+          >
+            Добавить книгу
+          </Button>
+        </div>
       </div>
 
       <div className={classes.tableCard}>
         <Table
-          dataSource={books}
+          dataSource={filteredBooks}
           columns={columns}
           rowKey="id"
           loading={isLoading}

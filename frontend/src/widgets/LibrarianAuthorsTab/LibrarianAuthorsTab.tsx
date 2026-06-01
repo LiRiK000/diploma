@@ -8,13 +8,16 @@ import {
   Typography,
   Popconfirm,
   Avatar,
+  Input,
 } from 'antd'
-import { UserOutlined } from '@ant-design/icons'
+import type { ColumnsType } from 'antd/es/table'
 import type { UploadFile } from 'antd/es/upload/interface'
 import dayjs from 'dayjs'
+import { Plus, Edit2, Trash2, User, Search } from 'lucide-react'
 import { Author } from '@shared/services/AuthorService'
 import { useLibrarianAuthors } from '@features/manage-authors'
 import { AuthorForm } from '@entities/author/ui/AuthorForm/AuthorForm'
+import classes from './LibrarianAuthorsTab.module.scss'
 
 export const LibrarianAuthorsTab = () => {
   const { authors, isLoading, isUpserting, deleteAuthor, upsertAuthor } =
@@ -24,6 +27,22 @@ export const LibrarianAuthorsTab = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingAuthor, setEditingAuthor] = useState<Author | null>(null)
   const [fileList, setFileList] = useState<UploadFile[]>([])
+
+  const [searchQuery, setSearchQuery] = useState('')
+
+  const filteredAuthors = useMemo(() => {
+    if (!authors) return []
+    if (!searchQuery.trim()) return authors
+
+    const query = searchQuery.toLowerCase().trim()
+
+    return authors.filter(author => {
+      const firstNameMatch = author.firstName?.toLowerCase().includes(query)
+      const lastNameMatch = author.lastName?.toLowerCase().includes(query)
+
+      return firstNameMatch || lastNameMatch
+    })
+  }, [authors, searchQuery])
 
   const handleOpenModal = (author?: Author) => {
     setEditingAuthor(author || null)
@@ -59,7 +78,6 @@ export const LibrarianAuthorsTab = () => {
   const handleFinish = async () => {
     try {
       const values = await form.validateFields()
-
       const file = fileList[0]?.originFileObj as File
 
       await upsertAuthor({
@@ -84,36 +102,67 @@ export const LibrarianAuthorsTab = () => {
     }
   }
 
-  const columns = useMemo(
+  const columns: ColumnsType<Author> = useMemo(
     () => [
       {
         title: 'Фото',
         dataIndex: 'photoUrl',
+        key: 'photoUrl',
         width: 80,
         render: (url: string) => (
-          <Avatar src={url} icon={<UserOutlined />} shape="square" size={48} />
+          <div className={classes.authorAvatarWrapper}>
+            <Avatar
+              src={url}
+              icon={<User size={20} />}
+              shape="square"
+              size={48}
+              className={classes.authorAvatar}
+            />
+          </div>
         ),
       },
-      { title: 'Имя', dataIndex: 'firstName' },
-      { title: 'Фамилия', dataIndex: 'lastName' },
+      {
+        title: 'Имя',
+        dataIndex: 'firstName',
+        key: 'firstName',
+        render: text => <span className={classes.authorNameText}>{text}</span>,
+      },
+      {
+        title: 'Фамилия',
+        dataIndex: 'lastName',
+        key: 'lastName',
+        render: text => <span className={classes.authorNameText}>{text}</span>,
+      },
       {
         title: 'Действия',
-        width: 200,
-        render: (_: any, record: Author) => (
-          <Space>
-            <Button size="small" onClick={() => handleOpenModal(record)}>
-              Редактировать
-            </Button>
+        key: 'actions',
+        fixed: 'right',
+        width: 140,
+        align: 'right',
+        render: (_, record: Author) => (
+          <Space size={8}>
+            <Button
+              type="text"
+              size="small"
+              icon={<Edit2 size={14} />}
+              onClick={() => handleOpenModal(record)}
+              className={classes.actionEditBtn}
+            />
             <Popconfirm
               title="Удалить этого автора?"
               description="Это действие нельзя будет отменить."
               onConfirm={() => deleteAuthor(record.id)}
-              okText="Да"
-              cancelText="Нет"
+              okText="Удалить"
+              cancelText="Отмена"
+              okButtonProps={{ danger: true }}
             >
-              <Button size="small" danger>
-                Удалить
-              </Button>
+              <Button
+                type="text"
+                size="small"
+                danger
+                icon={<Trash2 size={14} />}
+                className={classes.actionDeleteBtn}
+              />
             </Popconfirm>
           </Space>
         ),
@@ -123,49 +172,87 @@ export const LibrarianAuthorsTab = () => {
   )
 
   return (
-    <>
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: 20,
-        }}
-      >
-        <Typography.Title
-          level={4}
-          style={{ margin: 0 }}
-          className="tour-step-authors-title"
-        >
-          Управление авторами
-        </Typography.Title>
-        <Button type="primary" onClick={() => handleOpenModal()}>
-          Добавить автора
-        </Button>
+    <div className={classes.tabContainer}>
+      <div className={classes.tabHeader}>
+        <Space direction="vertical" size={2}>
+          <Typography.Title level={4} className={classes.tabTitle}>
+            Управление авторами
+          </Typography.Title>
+          <span className={classes.tabSubtitle}>
+            Редактирование, добавление и удаление авторов из каталога
+          </span>
+        </Space>
+
+        <div className={classes.searchWrapper}>
+          <Input
+            placeholder="Поиск по имени или фамилии..."
+            allowClear
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            prefix={
+              <Search
+                size={16}
+                style={{ color: 'var(--text-secondary)', marginRight: 4 }}
+              />
+            }
+            className={classes.customSearchInput}
+          />
+          <Button
+            type="primary"
+            icon={<Plus size={16} />}
+            onClick={() => handleOpenModal()}
+            className={classes.addAuthorBtn}
+          >
+            Добавить автора
+          </Button>
+        </div>
       </div>
 
-      <Table
-        dataSource={authors}
-        columns={columns}
-        rowKey="id"
-        loading={isLoading}
-        pagination={{ pageSize: 10 }}
-      />
+      <div className={classes.tableCard}>
+        <Table
+          dataSource={filteredAuthors}
+          columns={columns}
+          rowKey="id"
+          loading={isLoading}
+          className={classes.customTable}
+          pagination={{
+            pageSize: 10,
+            showSizeChanger: false,
+            className: classes.customPagination,
+          }}
+        />
+      </div>
 
       <Modal
         open={isModalOpen}
         confirmLoading={isUpserting}
         onOk={handleFinish}
         onCancel={() => setIsModalOpen(false)}
-        title={
-          editingAuthor ? 'Редактировать автора' : 'Добавить нового автора'
-        }
+        destroyOnClose
+        width={500}
+        centered
+        className={classes.customModal}
         okText="Сохранить"
         cancelText="Отмена"
-        destroyOnClose
+        title={
+          <Space size={8} className={classes.modalTitleWrapper}>
+            <User size={18} className={classes.modalHeaderIcon} />
+            <span>
+              {editingAuthor
+                ? 'Редактировать автора'
+                : 'Добавить нового автора'}
+            </span>
+          </Space>
+        }
       >
-        <AuthorForm form={form} fileList={fileList} setFileList={setFileList} />
+        <div className={classes.modalContentWrapper}>
+          <AuthorForm
+            form={form}
+            fileList={fileList}
+            setFileList={setFileList}
+          />
+        </div>
       </Modal>
-    </>
+    </div>
   )
 }
