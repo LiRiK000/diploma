@@ -62,4 +62,20 @@ export class OrderService {
     const { data } = await api.post('/orders/return-by-code', { code })
     return data
   }
+  async returnOrderItem(orderItemId: string): Promise<OrderResponse> {
+    const { data } = await api.patch(`/orders/items/${orderItemId}/return`)
+    return data
+  }
+
+  // Штучный возврат книги по короткому коду заказа и ID книги
+  async returnOrderItemByCode(
+    code: string,
+    bookId: string,
+  ): Promise<OrderResponse> {
+    const { data } = await api.post('/orders/return-item-by-code', {
+      code,
+      bookId,
+    })
+    return data
+  }
 }

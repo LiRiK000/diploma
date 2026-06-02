@@ -15,6 +15,7 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { ConfirmPickupDto } from './dto/confirm-pickup.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 import { Role } from '@prisma/client';
+
 @UseGuards(JwtAuthGuard)
 @Controller('orders')
 export class OrdersController {
@@ -36,6 +37,23 @@ export class OrdersController {
   returnByCode(@Body('code') code: string) {
     return this.ordersService.returnOrderByCode(code);
   }
+
+  // Сдать одну конкретную книгу по ID строки OrderItem
+  @Patch('items/:orderItemId/return')
+  @Roles(Role.LIBRARIAN)
+  @UseGuards(RolesGuard)
+  returnSpecificItem(@Param('orderItemId') orderItemId: string) {
+    return this.ordersService.returnOrderItem(orderItemId);
+  }
+
+  // Сдать одну конкретную книгу по коду заказа и ID книги
+  @Post('return-item-by-code')
+  @Roles(Role.LIBRARIAN)
+  @UseGuards(RolesGuard)
+  returnItemByCode(@Body('code') code: string, @Body('bookId') bookId: string) {
+    return this.ordersService.returnOrderItemByCode(code, bookId);
+  }
+
   @Get('admin/all')
   @Roles(Role.LIBRARIAN)
   @UseGuards(RolesGuard)

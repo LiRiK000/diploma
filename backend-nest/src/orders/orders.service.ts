@@ -13,6 +13,7 @@ import {
   User,
   Author,
   Genre,
+  AchievementCategory,
 } from '@prisma/client';
 
 import * as crypto from 'crypto';
@@ -20,7 +21,6 @@ import * as crypto from 'crypto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { GamificationService } from 'src/gamification/gamification.service';
 import { NotificationsService } from 'src/notifications/notifications.service';
-import { AchievementCategory } from '@prisma/client';
 
 import { OrderMapper } from './mappers/order.mapper';
 import { calculateDueDate } from './utils/due-date.util';
@@ -94,6 +94,7 @@ export class OrdersService {
     return response;
   }
 
+  // Возврат всего заказа по короткому коду
   async returnOrderByCode(shortCode: string) {
     const order = await this.prisma.order.findFirst({
       where: {
@@ -111,31 +112,110 @@ export class OrdersService {
       );
     }
 
-    const updated = await this.prisma.$transaction(async (tx) => {
-      for (const item of order.items) {
-        await tx.book.update({
-          where: { id: item.bookId },
-          data: { availableQuantity: { increment: item.quantity } },
+    return this.returnOrder(order.id);
+  }
+
+  /**
+   * Сдать конкретную ОДНУ книгу по ID позиции (OrderItem)
+   */
+  async returnOrderItem(orderItemId: string) {
+    const orderItem = await this.prisma.orderItem.findUnique({
+      where: { id: orderItemId },
+      include: { order: { include: { items: true } } },
+    });
+
+    if (!orderItem) throw new NotFoundException('Позиция в заказе не найдена');
+    if (orderItem.order.status !== OrderStatus.ON_HAND) {
+      throw new BadRequestException(
+        'Этот заказ не находится у читателя на руках',
+      );
+    }
+    if (orderItem.isReturned) {
+      throw new BadRequestException('Эта книга уже была сдана ранее');
+    }
+
+    const updatedOrder = await this.prisma.$transaction(async (tx) => {
+      // 1. Возвращаем книгу на склад (увеличиваем доступное количество)
+      await tx.book.update({
+        where: { id: orderItem.bookId },
+        data: { availableQuantity: { increment: orderItem.quantity } },
+      });
+
+      // 2. Помечаем саму позицию как возвращенную
+      await tx.orderItem.update({
+        where: { id: orderItemId },
+        data: { isReturned: true, returnDate: new Date() },
+      });
+
+      // 3. Проверяем, остались ли в заказе другие НЕ сданные книги
+      const allItems = orderItem.order.items;
+      const nonReturnedItems = allItems.filter(
+        (item) => item.id !== orderItemId && !item.isReturned,
+      );
+
+      // Если больше активных книг нет — закрываем весь заказ полностью
+      if (nonReturnedItems.length === 0) {
+        return tx.order.update({
+          where: { id: orderItem.orderId },
+          data: {
+            status: OrderStatus.RETURNED,
+            returnDate: new Date(),
+            pickupCode: null,
+          },
         });
       }
 
-      return tx.order.update({
-        where: { id: order.id },
-        data: {
-          status: OrderStatus.RETURNED,
-          returnDate: new Date(),
-          pickupCode: null,
-        },
-      });
+      return orderItem.order;
     });
 
+    // 4. Фиксируем, что пользователь прочитал книгу (для профиля/ачивок)
+    await this.prisma.user.update({
+      where: { id: orderItem.order.userId },
+      data: {
+        readBooks: {
+          connect: { id: orderItem.bookId },
+        },
+      },
+    });
+
+    await this.gamificationService.handleUserActivity(orderItem.order.userId, {
+      expToAdd: 20,
+      category: AchievementCategory.READING,
+      incrementValue: 1,
+    });
+
+    // 5. Отправляем уведомление
     await this.notifications.notifyOrderStatus({
-      userId: order.userId,
-      orderId: order.id,
+      userId: orderItem.order.userId,
+      orderId: orderItem.orderId,
       status: OrderStatus.RETURNED,
     });
 
-    return updated;
+    return updatedOrder;
+  }
+
+  /**
+   * Сдать конкретную ОДНУ книгу по короткому коду заказа и ID книги
+   */
+  async returnOrderItemByCode(shortCode: string, bookId: string) {
+    const order = await this.prisma.order.findFirst({
+      where: {
+        id: { startsWith: shortCode.toLowerCase() },
+        status: OrderStatus.ON_HAND,
+      },
+      include: { items: true },
+    });
+
+    if (!order) {
+      throw new NotFoundException('Заказ не найден или не находится на руках');
+    }
+
+    const targetItem = order.items.find((item) => item.bookId === bookId);
+    if (!targetItem) {
+      throw new NotFoundException('Данная книга не найдена в текущем заказе');
+    }
+
+    return this.returnOrderItem(targetItem.id);
   }
 
   async cancelOrderByUser(orderId: string, userId: string) {
@@ -205,6 +285,7 @@ export class OrdersService {
 
     return updated;
   }
+
   async rejectOrder(orderId: string) {
     const existing = await this.prisma.order.findUnique({
       where: { id: orderId },
@@ -270,6 +351,9 @@ export class OrdersService {
     return mapped;
   }
 
+  /**
+   * Общий возврат всего заказа (с учетом уже частично сданных книг)
+   */
   async returnOrder(id: string) {
     const order = await this.prisma.order.findUnique({
       where: { id },
@@ -278,20 +362,38 @@ export class OrdersService {
 
     if (!order) throw new NotFoundException('Заказ не найден');
     if (order.status !== OrderStatus.ON_HAND)
-      throw new BadRequestException('Этот заказ еще не выдан');
+      throw new BadRequestException('Этот заказ еще не выдан или уже закрыт');
 
     const updated = await this.prisma.$transaction(async (tx) => {
       for (const item of order.items) {
-        await tx.book.update({
-          where: { id: item.bookId },
-          data: { availableQuantity: { increment: item.quantity } },
-        });
+        // Возвращаем в оборот библиотеки только те книги, которые ЕЩЕ НЕ были сданы штучно
+        if (!item.isReturned) {
+          await tx.book.update({
+            where: { id: item.bookId },
+            data: { availableQuantity: { increment: item.quantity } },
+          });
+
+          await tx.orderItem.update({
+            where: { id: item.id },
+            data: { isReturned: true, returnDate: new Date() },
+          });
+        }
       }
 
       return tx.order.update({
         where: { id },
         data: { status: OrderStatus.RETURNED, returnDate: new Date() },
       });
+    });
+
+    // Привязываем все книги из заказа к прочитанным пользователем
+    await this.prisma.user.update({
+      where: { id: order.userId },
+      data: {
+        readBooks: {
+          connect: order.items.map((item) => ({ id: item.bookId })),
+        },
+      },
     });
 
     await this.notifications.notifyOrderStatus({

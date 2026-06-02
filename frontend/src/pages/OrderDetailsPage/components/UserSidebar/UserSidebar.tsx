@@ -10,8 +10,17 @@ import {
   Alert,
   Tag,
   message,
+  List,
 } from 'antd'
-import { User, Phone, Mail, ShieldAlert, Key, CheckCircle } from 'lucide-react'
+import {
+  User,
+  Phone,
+  Mail,
+  ShieldAlert,
+  Key,
+  CheckCircle,
+  RotateCcw,
+} from 'lucide-react'
 import classes from '../../OrderDetails.module.scss'
 import { OrderResponse } from '../../types'
 import { useOrderManagement } from '../../hooks/use-order-management'
@@ -23,8 +32,14 @@ export const UserSidebar: React.FC<{ order: OrderResponse }> = ({ order }) => {
   const { user } = order
   const [pickupCode, setPickupCode] = useState('')
 
-  const { verifyCode, returnOrder, isVerifying, isReturning } =
-    useOrderManagement(order.id)
+  const {
+    verifyCode,
+    returnOrder,
+    returnOrderItem,
+    isVerifying,
+    isReturning,
+    isReturningItem,
+  } = useOrderManagement(order.id)
 
   const currentStatus = useMemo(
     () => STATUS_CONFIG[order.status as OrderStatus],
@@ -133,17 +148,81 @@ export const UserSidebar: React.FC<{ order: OrderResponse }> = ({ order }) => {
             )}
 
             {(order.status === 'ON_HAND' || order.status === 'OVERDUE') && (
-              <Button
-                type="primary"
-                danger
-                block
-                size="large"
-                onClick={() => returnOrder(order.id)}
-                loading={isReturning}
-                className={classes.returnSubmitBtn}
-              >
-                Принять возврат книг
-              </Button>
+              <Space direction="vertical" size={12} style={{ width: '100%' }}>
+                <Divider
+                  orientation="left"
+                  style={{ margin: '4px 0', fontSize: 12 }}
+                >
+                  Поштучный возврат
+                </Divider>
+                <List
+                  size="small"
+                  dataSource={order.items || []}
+                  renderItem={(item: any) => {
+                    const isItemReturned = item.isReturned === true
+
+                    return (
+                      <List.Item
+                        actions={[
+                          isItemReturned ? (
+                            <Tag color="success" style={{ marginRight: 0 }}>
+                              Сдана
+                            </Tag>
+                          ) : (
+                            <Button
+                              size="small"
+                              danger
+                              type="text"
+                              icon={<RotateCcw size={14} />}
+                              loading={isReturningItem}
+                              onClick={() => returnOrderItem(item.id)}
+                            />
+                          ),
+                        ]}
+                      >
+                        <List.Item.Meta
+                          title={
+                            <span
+                              style={{
+                                fontSize: 13,
+                                textDecoration: isItemReturned
+                                  ? 'line-through'
+                                  : 'none',
+                                color: isItemReturned
+                                  ? 'var(--text-disabled, #bfbfbf)'
+                                  : 'inherit',
+                                transition: 'all 0.3s ease',
+                              }}
+                            >
+                              {item.book?.title}
+                            </span>
+                          }
+                          description={
+                            <span style={{ fontSize: 11 }}>
+                              {isItemReturned && item.returnDate
+                                ? `Возвращено: ${new Date(item.returnDate).toLocaleDateString()}`
+                                : `Кол-во: ${item.quantity} шт.`}
+                            </span>
+                          }
+                        />
+                      </List.Item>
+                    )
+                  }}
+                />
+
+                <Button
+                  type="primary"
+                  danger
+                  block
+                  size="large"
+                  onClick={() => returnOrder(order.id)}
+                  loading={isReturning}
+                  className={classes.returnSubmitBtn}
+                  style={{ marginTop: 8 }}
+                >
+                  Принять ВСЕ оставшиеся
+                </Button>
+              </Space>
             )}
           </Space>
         </div>

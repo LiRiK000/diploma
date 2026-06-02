@@ -25,58 +25,103 @@ export const OrderInfo: React.FC<OrderInfoProps> = ({ order }) => {
       </div>
 
       <div className={classes.cardBody}>
-        <List<OrderItem>
+        <List<any> // Используем any или обновленный OrderItem тип
           itemLayout="horizontal"
-          dataSource={order.items}
+          dataSource={order.items || []}
           rowKey={item => item.id}
-          renderItem={item => (
-            <List.Item className={classes.bookItem}>
-              <List.Item.Meta
-                avatar={
-                  <div className={classes.coverWrapper}>
-                    <Image
-                      src={item.book?.coverUrl}
-                      width={64}
-                      height={96}
-                      className={classes.bookCover}
-                      fallback="https://placehold.co/64x96?text=No+Cover"
-                      preview={{
-                        mask: (
-                          <span className={classes.previewMask}>Открыть</span>
-                        ),
-                      }}
-                    />
-                  </div>
-                }
-                title={
-                  <span className={classes.bookTitleText}>
-                    {item.book?.title}
-                  </span>
-                }
-                description={
-                  <Space direction="vertical" size={4} style={{ marginTop: 4 }}>
-                    <Text className={classes.bookAuthorText}>
-                      {item.book?.author?.firstName || ''}{' '}
-                      {item.book?.author?.lastName ||
-                        `ID Автора: ${item.book?.authorId}`}
-                    </Text>
-                    <div className={classes.qtyBadgeContainer}>
-                      <span className={classes.qtyLabel}>Запрошено:</span>
-                      <span className={classes.qtyBadge}>
-                        {item.quantity} шт.
-                      </span>
-                    </div>
-                  </Space>
-                }
-              />
-              <Tag
-                color={item.book?.availableQuantity > 0 ? 'success' : 'warning'}
-                className={classes.warehouseTag}
+          renderItem={item => {
+            const isItemReturned = item.isReturned === true
+            const book = item.book
+
+            // Безопасно собираем имя автора под любой ответ бэкенда
+            const authorName = book?.author?.name
+              ? book.author.name
+              : `${book?.author?.firstName || ''} ${book?.author?.lastName || ''}`.trim()
+
+            return (
+              <List.Item
+                className={classes.bookItem}
+                style={{
+                  opacity: isItemReturned ? 0.6 : 1,
+                  transition: 'opacity 0.3s ease',
+                }}
               >
-                На складе: {item.book?.availableQuantity ?? 0} шт.
-              </Tag>
-            </List.Item>
-          )}
+                <List.Item.Meta
+                  avatar={
+                    <div
+                      className={classes.coverWrapper}
+                      style={{
+                        filter: isItemReturned ? 'grayscale(1)' : 'none',
+                      }}
+                    >
+                      <Image
+                        src={book?.coverImage || book?.coverUrl} // Поддержка обоих вариантов нейминга
+                        width={64}
+                        height={96}
+                        className={classes.bookCover}
+                        fallback="https://placehold.co/64x96?text=No+Cover"
+                        preview={
+                          isItemReturned
+                            ? false
+                            : {
+                                mask: (
+                                  <span className={classes.previewMask}>
+                                    Открыть
+                                  </span>
+                                ),
+                              }
+                        }
+                      />
+                    </div>
+                  }
+                  title={
+                    <span
+                      className={classes.bookTitleText}
+                      style={{
+                        textDecoration: isItemReturned
+                          ? 'line-through'
+                          : 'none',
+                        color: isItemReturned
+                          ? 'var(--text-disabled, #bfbfbf)'
+                          : 'inherit',
+                      }}
+                    >
+                      {book?.title}
+                    </span>
+                  }
+                  description={
+                    <Space
+                      direction="vertical"
+                      size={4}
+                      style={{ marginTop: 4 }}
+                    >
+                      <Text className={classes.bookAuthorText}>
+                        {authorName || `ID Автора: ${book?.authorId}`}
+                      </Text>
+                      <div className={classes.qtyBadgeContainer}>
+                        <span className={classes.qtyLabel}>Запрошено:</span>
+                        <span className={classes.qtyBadge}>
+                          {item.quantity} шт.
+                        </span>
+                        {isItemReturned && (
+                          <Tag color="success" style={{ marginLeft: 8 }}>
+                            Сдана обратно
+                          </Tag>
+                        )}
+                      </div>
+                    </Space>
+                  }
+                />
+
+                <Tag
+                  color={book?.availableQuantity > 0 ? 'success' : 'warning'}
+                  className={classes.warehouseTag}
+                >
+                  На складе: {book?.availableQuantity ?? 0} шт.
+                </Tag>
+              </List.Item>
+            )
+          }}
         />
 
         <div className={classes.orderFooter}>

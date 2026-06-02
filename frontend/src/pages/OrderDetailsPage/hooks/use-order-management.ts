@@ -8,6 +8,8 @@ export const useOrderManagement = (orderId?: string) => {
 
   const invalidate = () => {
     queryClient.invalidateQueries({ queryKey: ['orders-all'] })
+    queryClient.invalidateQueries({ queryKey: ['orders'] })
+    queryClient.invalidateQueries({ queryKey: ['admin-stats'] })
     if (orderId) {
       queryClient.invalidateQueries({ queryKey: ['order', orderId] })
     }
@@ -45,8 +47,22 @@ export const useOrderManagement = (orderId?: string) => {
   const returnMutation = useMutation({
     mutationFn: (id: string) => orderService.returnOrder(id),
     onSuccess: () => {
-      message.success('Книги возвращены в библиотеку')
+      message.success('Все оставшиеся книги возвращены в библиотеку')
       invalidate()
+    },
+  })
+
+  // --- НОВАЯ МУТАЦИЯ ДЛЯ ЧАСТИЧНОГО ВОЗВРАТА ---
+  const returnItemMutation = useMutation({
+    mutationFn: (orderItemId: string) =>
+      orderService.returnOrderItem(orderItemId),
+    onSuccess: () => {
+      message.success('Книга успешно возвращена')
+      invalidate()
+    },
+    onError: (err: any) => {
+      const msg = err.response?.data?.message || 'Не удалось вернуть книгу'
+      message.error(msg)
     },
   })
 
@@ -59,5 +75,9 @@ export const useOrderManagement = (orderId?: string) => {
     isVerifying: verifyCodeMutation.isPending,
     returnOrder: returnMutation.mutate,
     isReturning: returnMutation.isPending,
+
+    // Экспортируем новые свойства
+    returnOrderItem: returnItemMutation.mutate,
+    isReturningItem: returnItemMutation.isPending,
   }
 }

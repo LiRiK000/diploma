@@ -42,15 +42,19 @@ export class OrderMapper {
       items: order.items.map((item) => ({
         id: item.id,
         quantity: item.quantity,
+        isReturned: item.isReturned,
+        returnDate: item.returnDate?.toISOString() ?? null,
 
         book: {
           id: item.book.id,
           title: item.book.title,
           coverImage: getFullUrl(item.book.coverImage),
+          availableQuantity: item.book.availableQuantity, // <-- Исправлено здесь согласно Prisma Schema
 
           author: {
             id: item.book.author.id,
-            name: item.book.author.firstName + ' ' + item.book.author.lastName,
+            firstName: item.book.author.firstName,
+            lastName: item.book.author.lastName,
           },
 
           genre: item.book.genre,
