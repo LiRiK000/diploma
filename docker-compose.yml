@@ -66,7 +66,7 @@ services:
       SERVER_PUBLIC_URL: http://${SERVER_IP}:4000
 
       # Оставляем порт 9000, как было у тебя изначально, но убираем дублирование бакета
-      S3_PUBLIC_URL: http://${SERVER_IP}:9000
+      S3_PUBLIC_URL: http://${SERVER_IP}
 
       NODE_ENV: development
       PORT: 4000
