@@ -10,7 +10,7 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: diploma_db
     ports:
-      - "127.0.0.1:15432:5432"
+      - "127.0.0.1:15432:5432" # Доступ к базе только локально с сервера
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -23,9 +23,7 @@ services:
     image: minio/minio
     container_name: diploma_minio
     restart: always
-    ports:
-      - "9000:9000"
-      - "9001:9001"
+    # Порты наружу больше не пробрасываем, так как Nginx (frontend) сам проксирует /covers/ на внутренний 9000 порт
     environment:
       MINIO_ROOT_USER: admin
       MINIO_ROOT_PASSWORD: password123
@@ -62,23 +60,24 @@ services:
       JWT_SECRET: dev_secret
       JWT_REFRESH_SECRET: dev_refresh_secret
 
-      # Используем динамический IP из .env для внешних ссылок
+      # Так как Nginx проксирует пути /api/ на бэк, внешние URL для клиента ведут на один и тот же 80 порт
       CLIENT_URL: http://${SERVER_IP}
-      SERVER_PUBLIC_URL: http://${SERVER_IP}:4000
-      S3_PUBLIC_URL: http://${SERVER_IP}:9000
+      SERVER_PUBLIC_URL: http://${SERVER_IP}
+
+      # Роут /covers/ в Nginx перенаправляет запросы в бакет MinIO
+      S3_PUBLIC_URL: http://${SERVER_IP}/covers
 
       NODE_ENV: development
       PORT: 4000
       MIGRATE_ON_START: "true"
       FILE_STORAGE_DRIVER: s3
 
-      # Внутренняя сеть Docker (бэк стучится напрямую в контейнер minio)
+      # Внутренние сетевые настройки для связи контейнеров
       S3_ENDPOINT: http://minio:9000
       S3_ACCESS_KEY: admin
       S3_SECRET_KEY: password123
       S3_BUCKET: covers
-    ports:
-      - "4000:4000"
+    # Порт 4000 убираем из публичного доступа, общение идет через прокси контейнера фронтенда
     volumes:
       - ./backend-nest/uploads:/app/uploads
     healthcheck:
@@ -101,7 +100,7 @@ services:
       backend:
         condition: service_healthy
     ports:
-      - "80:80"
+      - "80:80" # Твой единственный открытый порт для всего приложения
 
   prisma-studio:
     build:
@@ -112,7 +111,7 @@ services:
     environment:
       DATABASE_URL: postgresql://user:password@db:5432/diploma_db?schema=public
     ports:
-      - "127.0.0.1:5555:5555"
+      - "127.0.0.1:5555:5555" # Доступ к студии только через SSH-туннель для безопасности
     command: npx prisma studio --port 5555 --browser none
     depends_on:
       db:
