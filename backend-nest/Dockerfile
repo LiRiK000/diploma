@@ -14,7 +14,6 @@ COPY backend-nest ./backend-nest
 
 WORKDIR /app/backend-nest
 
-# Prisma must have dummy env in build time
 RUN DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy?schema=public" npx prisma generate
 
 RUN pnpm build
