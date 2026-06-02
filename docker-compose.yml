@@ -60,24 +60,19 @@ services:
       JWT_SECRET: dev_secret
       JWT_REFRESH_SECRET: dev_refresh_secret
 
-      # Так как Nginx проксирует пути /api/ на бэк, внешние URL для клиента ведут на один и тот же 80 порт
       CLIENT_URL: http://${SERVER_IP}
       SERVER_PUBLIC_URL: http://${SERVER_IP}
-
-      # Роут /covers/ в Nginx перенаправляет запросы в бакет MinIO
-      S3_PUBLIC_URL: http://${SERVER_IP}/covers
+      S3_PUBLIC_URL: http://${SERVER_IP}
 
       NODE_ENV: development
       PORT: 4000
       MIGRATE_ON_START: "true"
       FILE_STORAGE_DRIVER: s3
 
-      # Внутренние сетевые настройки для связи контейнеров
       S3_ENDPOINT: http://minio:9000
       S3_ACCESS_KEY: admin
       S3_SECRET_KEY: password123
       S3_BUCKET: covers
-    # Порт 4000 убираем из публичного доступа, общение идет через прокси контейнера фронтенда
     volumes:
       - ./backend-nest/uploads:/app/uploads
     healthcheck:
