@@ -105,9 +105,11 @@ export const Router = () => {
                     <Route
                       path={routes.authorPage}
                       element={
-                        <PageProvider>
-                          <AuthorPage />
-                        </PageProvider>
+                        <AuthProvider>
+                          <PageProvider>
+                            <AuthorPage />
+                          </PageProvider>
+                        </AuthProvider>
                       }
                     />
 
