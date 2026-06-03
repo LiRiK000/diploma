@@ -31,7 +31,7 @@ export const AuthProvider = ({ children, strictTo }: AuthProviderProps) => {
   if (data?.status !== 'success') return null
 
   // Проверка прав (например, только для библиотекаря)
-  if (strictTo && data?.data.user.role !== strictTo) {
+  if (strictTo && data?.data.role !== strictTo) {
     return <AccessDenied />
   }
 
