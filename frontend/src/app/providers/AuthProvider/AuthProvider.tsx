@@ -25,7 +25,7 @@ export const AuthProvider = ({ children, strictTo }: AuthProviderProps) => {
 
   if (isLoading) return <Loader />
 
-  if (strictTo && data?.data.user.role !== strictTo) {
+  if (strictTo && data?.data.role !== strictTo) {
     return <AccessDenied />
   }
 

@@ -36,6 +36,7 @@ import { LibrarianRecommendationsTab } from '@widgets/LibrarianRecommendationsTa
 import { NotificationsPage } from '@pages/NotificationsPage/NotificationPage'
 import { DashboardPage } from '@pages/dashboard'
 import { SecurePage } from '@pages/profile/ui/SecurePage/SecurePage'
+import { USER_ROLES } from '@entities/user'
 
 export const Router = () => {
   const init = useCookieConsentStore(useShallow(state => state.init))
@@ -178,7 +179,7 @@ export const Router = () => {
                   <Route
                     path={routes.librarian}
                     element={
-                      <AuthProvider>
+                      <AuthProvider strictTo={USER_ROLES.LIBRARIAN}>
                         <PageProvider>
                           <LibrarianLayout />
                         </PageProvider>
@@ -186,21 +187,15 @@ export const Router = () => {
                     }
                   >
                     <Route index element={<DashboardPage />} />
-
                     <Route path="orders" element={<LibrarianOrdersTab />} />
-
                     <Route path="orders/:id" element={<OrderDetailsPage />} />
-
                     <Route path="books" element={<LibrarianBooksTab />} />
-
                     <Route path="authors" element={<LibrarianAuthorsTab />} />
-
                     <Route
                       path="recommendations"
                       element={<LibrarianRecommendationsTab />}
                     />
                   </Route>
-
                   <Route path={routes.privacy} element={<PrivacyPage />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
