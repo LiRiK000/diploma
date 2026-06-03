@@ -7,12 +7,6 @@ import { routes } from '@shared/constants'
 import { USER_ROLES } from '@entities/user'
 import { AccessDenied } from '@pages/403'
 
-type UserRole = (typeof USER_ROLES)[keyof typeof USER_ROLES]
-
-interface AuthProviderProps {
-  children: React.ReactNode
-  strictTo?: UserRole
-}
 export const AuthProvider = ({ children, strictTo }: AuthProviderProps) => {
   const navigate = useNavigate()
   const location = useLocation()
@@ -22,8 +16,7 @@ export const AuthProvider = ({ children, strictTo }: AuthProviderProps) => {
     if (!isLoading && data?.status !== 'success') {
       notification.warning({
         message: 'Доступ ограничен',
-        description:
-          'Пожалуйста, авторизуйтесь, чтобы просматривать эту страницу.',
+        description: 'Пожалуйста, авторизуйтесь для продолжения.',
       })
       void navigate(routes.login, {
         state: { from: location.pathname },
@@ -34,11 +27,11 @@ export const AuthProvider = ({ children, strictTo }: AuthProviderProps) => {
 
   if (isLoading) return <Loader />
 
-  if (data?.status !== 'success') {
-    return null
-  }
+  // Блокируем рендер, если пользователь не залогинен
+  if (data?.status !== 'success') return null
 
-  if (strictTo && data?.data.role !== strictTo) {
+  // Проверка прав (например, только для библиотекаря)
+  if (strictTo && data?.data.user.role !== strictTo) {
     return <AccessDenied />
   }
 
