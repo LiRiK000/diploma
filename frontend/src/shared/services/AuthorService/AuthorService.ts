@@ -11,6 +11,7 @@ export interface AuthorBook {
 
 export interface Author {
   id: string
+  updatedAt?: string
   firstName: string
   lastName: string
   fullName: string
@@ -51,6 +52,7 @@ export class AuthorService {
       followersCount: author.followersCount ?? author._count?.followers ?? 0,
       topBooks: author.topBooks || [],
       photoUrl: author.photoUrl ?? null,
+      updatedAt: author.updatedAt,
     }
   }
 
@@ -73,10 +75,8 @@ export class AuthorService {
     file?: File,
   ): Promise<Author> {
     const fd = this.createFormData(payload, file)
-    const response = await api.put(`/authors/${id}`, fd, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    })
-    return this.mapAuthor(response.data.data || response.data)
+    const response = await api.put(`/authors/${id}`, fd)
+    return this.mapAuthor(response.data.data ?? response.data)
   }
 
   async delete(id: string): Promise<void> {
@@ -94,9 +94,14 @@ export class AuthorService {
     return data.map((author: Author) => this.mapAuthor(author))
   }
 
-  async create(payload: UpsertAuthorPayload): Promise<Author> {
-    const response = await api.post('/authors', payload)
-    return this.mapAuthor(response.data.data)
+  async create(
+    payload: UpsertAuthorPayload,
+    file?: File,
+  ): Promise<Author> {
+    const response = file
+      ? await api.post('/authors', this.createFormData(payload, file))
+      : await api.post('/authors', payload)
+    return this.mapAuthor(response.data.data ?? response.data)
   }
 
   async toggleFollow(authorId: string) {
@@ -111,12 +116,7 @@ export class AuthorService {
     const formData = new FormData()
     formData.append('file', file)
 
-    const response = await api.post(`/authors/${id}/photo`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    })
-
-    return this.mapAuthor(response.data.data)
+    const response = await api.put(`/authors/${id}`, formData)
+    return this.mapAuthor(response.data.data ?? response.data)
   }
 }

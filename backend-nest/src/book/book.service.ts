@@ -8,6 +8,7 @@ import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { FileService } from '../common/file/file.service';
 import { NotificationsService } from '../notifications/notifications.service';
+import { getFullUrl } from '../utils/getFullCoverUrl';
 
 @Injectable()
 export class BookService {
@@ -251,15 +252,20 @@ export class BookService {
   }
 
   async uploadBookCover(bookId: string, file: Express.Multer.File) {
-    const book = await this.prisma.book.findUnique({ where: { id: bookId } });
-    if (!book) throw new NotFoundException('Книга не найдена');
+    const existing = await this.prisma.book.findUnique({ where: { id: bookId } });
+    if (!existing) throw new NotFoundException('Книга не найдена');
 
     const path = await this.fileService.uploadImage(file, 'books', bookId);
 
-    return this.prisma.book.update({
+    const updated = await this.prisma.book.update({
       where: { id: bookId },
       data: { coverImage: path },
     });
+
+    return {
+      ...updated,
+      coverUrl: getFullUrl(path),
+    };
   }
 
   async addFavorite(userId: string, bookId: string) {

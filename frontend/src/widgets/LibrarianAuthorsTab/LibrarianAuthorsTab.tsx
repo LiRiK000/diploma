@@ -109,10 +109,14 @@ export const LibrarianAuthorsTab = () => {
         dataIndex: 'photoUrl',
         key: 'photoUrl',
         width: 80,
-        render: (url: string) => (
+        render: (url: string, record: Author) => (
           <div className={classes.authorAvatarWrapper}>
             <Avatar
-              src={url}
+              src={
+                url
+                  ? `${url}?v=${record.updatedAt ?? record.id}`
+                  : undefined
+              }
               icon={<User size={20} />}
               shape="square"
               size={48}

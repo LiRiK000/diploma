@@ -12,9 +12,6 @@ import {
   UploadedFile,
   UseGuards,
   ParseIntPipe,
-  ParseFilePipe,
-  MaxFileSizeValidator,
-  FileTypeValidator,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { BookService } from './book.service';
@@ -127,15 +124,7 @@ export class BookController {
   })
   async uploadCover(
     @Param('id') id: string,
-    @UploadedFile(
-      new ParseFilePipe({
-        validators: [
-          new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 5 }), // 5 MB
-          new FileTypeValidator({ fileType: 'image/(png|jpeg|jpg|webp)' }),
-        ],
-      }),
-    )
-    file: Express.Multer.File,
+    @UploadedFile() file: Express.Multer.File,
   ) {
     const data = await this.bookService.uploadBookCover(id, file);
     return { status: 'success', data };

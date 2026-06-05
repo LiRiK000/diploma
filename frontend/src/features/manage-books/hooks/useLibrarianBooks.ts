@@ -56,9 +56,7 @@ export const useLibrarianBooks = () => {
         : await bookService.create(payload)
 
       if (file) {
-        const fd = new FormData()
-        fd.append('file', file)
-        await bookService.uploadCover(book.id, fd)
+        await bookService.uploadCover(book.id, file)
       }
       return book
     },

@@ -61,7 +61,6 @@ export const MainLayout = () => {
 
           <CartIcon />
 
-          {/* 3. Опционально: скрываем аватар, если не авторизован */}
           {isAuthenticated && <UserAvatar />}
 
           <ThemeToggle />

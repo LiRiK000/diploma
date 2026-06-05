@@ -102,12 +102,11 @@ export class BookService {
   async delete(id: string): Promise<void> {
     await api.delete(`/books/${id}`)
   }
-  async uploadCover(bookId: string, formData: FormData) {
-    return api.post(`/books/${bookId}/cover`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    })
+  async uploadCover(bookId: string, file: File) {
+    const formData = new FormData()
+    formData.append('file', file)
+    const response = await api.post(`/books/${bookId}/cover`, formData)
+    return response.data.data
   }
   async toggleFavorite(bookId: string) {
     await api.post(`/books/${bookId}/favorite`)

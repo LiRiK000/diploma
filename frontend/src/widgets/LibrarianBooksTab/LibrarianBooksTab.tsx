@@ -99,7 +99,11 @@ export const LibrarianBooksTab = () => {
         render: (_, record) => (
           <div className={classes.tableCoverWrapper}>
             <Image
-              src={record.coverUrl}
+              src={
+                record.coverUrl
+                  ? `${record.coverUrl}?v=${record.updatedAt ?? record.id}`
+                  : undefined
+              }
               width={44}
               height={60}
               className={classes.tableCover}

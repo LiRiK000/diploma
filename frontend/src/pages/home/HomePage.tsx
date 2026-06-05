@@ -12,7 +12,6 @@ export const HomePage = () => {
   return (
     <div className={styles.container}>
       <HomeCarousel />
-
       <div className={styles.sectionsWrapper}>
         {isLoading && (
           <div className={styles.skeletonContainer}>
