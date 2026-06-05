@@ -68,7 +68,7 @@ services:
 
       # Указываем корень домена. При запросе картинок NestJS сформирует URL:
       # http://fed-diplom.s3rxio.lol/covers/books/...
-      S3_PUBLIC_URL: http://fed-diplom.s3rxio.lol
+      S3_PUBLIC_URL: https://fed-diplom.s3rxio.lol
 
       NODE_ENV: development
       PORT: 4000

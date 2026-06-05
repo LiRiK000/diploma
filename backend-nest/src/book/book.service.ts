@@ -252,7 +252,9 @@ export class BookService {
   }
 
   async uploadBookCover(bookId: string, file: Express.Multer.File) {
-    const existing = await this.prisma.book.findUnique({ where: { id: bookId } });
+    const existing = await this.prisma.book.findUnique({
+      where: { id: bookId },
+    });
     if (!existing) throw new NotFoundException('Книга не найдена');
 
     const path = await this.fileService.uploadImage(file, 'books', bookId);
@@ -263,6 +265,7 @@ export class BookService {
     });
 
     return {
+      status: 'success',
       ...updated,
       coverUrl: getFullUrl(path),
     };
