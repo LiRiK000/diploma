@@ -12,7 +12,7 @@ import {
   Delete,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiConsumes } from '@nestjs/swagger';
 import { AuthorsService } from './author.service';
 import { CreateAuthorDto, UpdateAuthorDto } from './dto/author.dto';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -65,26 +65,30 @@ export class AuthorsController {
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('LIBRARIAN')
-  @UseInterceptors(FileInterceptor('file'))
-  @ApiOperation({ summary: 'Создать автора с фото' })
-  create(
-    @Body() dto: CreateAuthorDto,
-    @UploadedFile() file?: Express.Multer.File,
-  ) {
-    return this.authorsService.create(dto, file);
+  @ApiOperation({ summary: 'Создать автора' })
+  create(@Body() dto: CreateAuthorDto) {
+    return this.authorsService.create(dto);
   }
 
   @Put(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('LIBRARIAN')
+  @ApiOperation({ summary: 'Обновить автора' })
+  update(@Param('id') id: string, @Body() dto: UpdateAuthorDto) {
+    return this.authorsService.update(id, dto);
+  }
+
+  @Post(':id/photo')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('LIBRARIAN')
   @UseInterceptors(FileInterceptor('file'))
-  @ApiOperation({ summary: 'Обновить автора и фото' })
-  update(
+  @ApiConsumes('multipart/form-data')
+  @ApiOperation({ summary: 'Загрузить фото автора' })
+  uploadPhoto(
     @Param('id') id: string,
-    @Body() dto: UpdateAuthorDto,
-    @UploadedFile() file?: Express.Multer.File,
+    @UploadedFile() file: Express.Multer.File,
   ) {
-    return this.authorsService.update(id, dto, file);
+    return this.authorsService.uploadPhoto(id, file);
   }
 
   @Delete(':id')

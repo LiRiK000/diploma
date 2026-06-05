@@ -252,6 +252,10 @@ export class BookService {
   }
 
   async uploadBookCover(bookId: string, file: Express.Multer.File) {
+    if (!file) {
+      throw new BadRequestException('Файл не передан');
+    }
+
     const existing = await this.prisma.book.findUnique({
       where: { id: bookId },
     });

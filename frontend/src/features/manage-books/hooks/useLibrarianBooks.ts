@@ -5,6 +5,7 @@ import { genreService } from '@shared/services/GenreService'
 import type { BookDto } from '@shared/services/Book/types'
 import type { UpsertBookPayload } from '@shared/services/BookService/BookService'
 import { message } from 'antd'
+import { AxiosError } from 'axios'
 
 const KEYS = {
   books: ['librarian-books'],
@@ -64,7 +65,11 @@ export const useLibrarianBooks = () => {
       message.success('Данные сохранены')
       queryClient.invalidateQueries({ queryKey: KEYS.books })
     },
-    onError: () => message.error('Ошибка при сохранении книги'),
+    onError: (error: AxiosError<{ message?: string }>) => {
+      message.error(
+        error.response?.data?.message || 'Ошибка при сохранении книги',
+      )
+    },
   })
 
   return {

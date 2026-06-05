@@ -15,6 +15,7 @@ import type { UploadFile } from 'antd/es/upload/interface'
 import dayjs from 'dayjs'
 import { Plus, Edit2, Trash2, User, Search } from 'lucide-react'
 import { Author } from '@shared/services/AuthorService'
+import { getFileFromUploadList } from '@shared/utils/getFileFromUploadList'
 import { useLibrarianAuthors } from '@features/manage-authors'
 import { AuthorForm } from '@entities/author/ui/AuthorForm/AuthorForm'
 import classes from './LibrarianAuthorsTab.module.scss'
@@ -78,7 +79,7 @@ export const LibrarianAuthorsTab = () => {
   const handleFinish = async () => {
     try {
       const values = await form.validateFields()
-      const file = fileList[0]?.originFileObj as File
+      const file = getFileFromUploadList(fileList)
 
       await upsertAuthor({
         id: editingAuthor?.id,

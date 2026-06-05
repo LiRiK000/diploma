@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateAuthorDto, UpdateAuthorDto } from './dto/author.dto';
 import { FileService } from 'src/common/file/file.service';
@@ -94,7 +98,7 @@ export class AuthorsService {
     };
   }
 
-  async create(dto: CreateAuthorDto, file?: Express.Multer.File) {
+  async create(dto: CreateAuthorDto) {
     const author = await this.prisma.author.create({
       data: {
         ...dto,
@@ -103,31 +107,38 @@ export class AuthorsService {
       },
     });
 
-    if (file) {
-      const path = await this.fileService.uploadImage(
-        file,
-        'authors',
-        author.id,
-      );
-      const updated = await this.prisma.author.update({
-        where: { id: author.id },
-        data: { photoUrl: path },
-      });
-      return this.formatAuthor(updated as AuthorWithRelations);
-    }
-
-    return this.formatAuthor(author as AuthorWithRelations);
+    return {
+      status: 'success',
+      data: this.formatAuthor(author as AuthorWithRelations),
+    };
   }
 
-  async update(id: string, dto: UpdateAuthorDto, file?: Express.Multer.File) {
+  async uploadPhoto(id: string, file: Express.Multer.File) {
+    if (!file) {
+      throw new BadRequestException('Файл не передан');
+    }
+
+    const existing = await this.prisma.author.findUnique({ where: { id } });
+    if (!existing) throw new NotFoundException('Автор не найден');
+
+    const path = await this.fileService.uploadImage(file, 'authors', id);
+
+    const updated = await this.prisma.author.update({
+      where: { id },
+      data: { photoUrl: path },
+    });
+
+    return {
+      status: 'success',
+      data: this.formatAuthor(updated as AuthorWithRelations),
+    };
+  }
+
+  async update(id: string, dto: UpdateAuthorDto) {
     const existing = await this.prisma.author.findUnique({ where: { id } });
     if (!existing) throw new NotFoundException('Автор не найден');
     const { dateOfBirth, dateOfDeath, ...cleanDto } = dto;
 
-    let newPhotoPath: string | undefined;
-    if (file) {
-      newPhotoPath = await this.fileService.uploadImage(file, 'authors', id);
-    }
     const updated = await this.prisma.author.update({
       where: { id },
       data: {
@@ -138,11 +149,13 @@ export class AuthorsService {
           : dateOfDeath === null
             ? null
             : undefined,
-        photoUrl: newPhotoPath ?? undefined,
       },
     });
 
-    return this.formatAuthor(updated as AuthorWithRelations);
+    return {
+      status: 'success',
+      data: this.formatAuthor(updated as AuthorWithRelations),
+    };
   }
 
   async delete(id: string) {

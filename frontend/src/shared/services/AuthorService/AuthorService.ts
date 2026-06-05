@@ -56,27 +56,19 @@ export class AuthorService {
     }
   }
 
-  private createFormData(payload: UpsertAuthorPayload, file?: File): FormData {
-    const formData = new FormData()
-    Object.entries(payload).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) {
-        formData.append(key, value)
-      }
-    })
-    if (file) {
-      formData.append('file', file)
-    }
-    return formData
-  }
-
   async update(
     id: string,
     payload: UpsertAuthorPayload,
     file?: File,
   ): Promise<Author> {
-    const fd = this.createFormData(payload, file)
-    const response = await api.put(`/authors/${id}`, fd)
-    return this.mapAuthor(response.data.data ?? response.data)
+    const response = await api.put(`/authors/${id}`, payload)
+    const author = this.mapAuthor(response.data.data ?? response.data)
+
+    if (file) {
+      return this.uploadPhoto(id, file)
+    }
+
+    return author
   }
 
   async delete(id: string): Promise<void> {
@@ -98,10 +90,14 @@ export class AuthorService {
     payload: UpsertAuthorPayload,
     file?: File,
   ): Promise<Author> {
-    const response = file
-      ? await api.post('/authors', this.createFormData(payload, file))
-      : await api.post('/authors', payload)
-    return this.mapAuthor(response.data.data ?? response.data)
+    const response = await api.post('/authors', payload)
+    const author = this.mapAuthor(response.data.data ?? response.data)
+
+    if (file) {
+      return this.uploadPhoto(author.id, file)
+    }
+
+    return author
   }
 
   async toggleFollow(authorId: string) {
@@ -116,7 +112,7 @@ export class AuthorService {
     const formData = new FormData()
     formData.append('file', file)
 
-    const response = await api.put(`/authors/${id}`, formData)
+    const response = await api.post(`/authors/${id}/photo`, formData)
     return this.mapAuthor(response.data.data ?? response.data)
   }
 }

@@ -18,6 +18,7 @@ import { Plus, Edit2, Trash2, BookOpen, Search } from 'lucide-react'
 import { useLibrarianBooks } from '@features/manage-books/hooks/useLibrarianBooks'
 import { BookFormValues } from '@features/manage-books/model/types'
 import { BookForm } from '@features/manage-books/ui/BookForm'
+import { getFileFromUploadList } from '@shared/utils/getFileFromUploadList'
 import classes from './LibrarianBooksTab.module.scss'
 
 export const LibrarianBooksTab = () => {
@@ -77,7 +78,7 @@ export const LibrarianBooksTab = () => {
   const handleFinish = async () => {
     try {
       const values = await form.validateFields()
-      const file = fileList[0]?.originFileObj as File
+      const file = getFileFromUploadList(fileList)
 
       await upsertBook({
         id: editingBook?.id,
