@@ -22,4 +22,5 @@ export const routes = {
   secure: 'secure',
   offline: '/offline',
   librarianOrderDetails: '/librarian/orders/:id',
+  librarianUsers: '/librarian/users',
 }

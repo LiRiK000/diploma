@@ -11,6 +11,7 @@ import {
 import { ApiTags, ApiOperation, ApiCookieAuth } from '@nestjs/swagger';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
+import { CheckBlockStatusGuard } from 'src/auth/guards/check-block-status.guard';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 import { ReviewService } from './reviews.service';
 import { UpdateReviewDto } from './dto/update-review.dto';
@@ -22,7 +23,7 @@ export class ReviewController {
 
   @Post()
   @ApiCookieAuth()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, CheckBlockStatusGuard)
   @ApiOperation({ summary: 'Оставить отзыв о книге' })
   async createReview(
     @CurrentUser('id') userId: string,

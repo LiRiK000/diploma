@@ -83,20 +83,57 @@ export class AuthService {
   }
 
   async getUserFullProfile(userId: string) {
-    return this.prisma.user.findUnique({
-      where: {
-        id: userId,
-      },
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
       select: {
         id: true,
         email: true,
         name: true,
+        surname: true,
         phone: true,
         birthDate: true,
         role: true,
+        isInBlacklist: true,
+        isSuspended: true,
+        suspendedUntil: true,
+        banReason: true,
         createdAt: true,
       },
     });
+
+    if (!user) return null;
+
+    const now = new Date();
+    if (
+      user.isSuspended &&
+      user.suspendedUntil &&
+      user.suspendedUntil <= now
+    ) {
+      return this.prisma.user.update({
+        where: { id: userId },
+        data: {
+          isSuspended: false,
+          suspendedUntil: null,
+          banReason: null,
+        },
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          surname: true,
+          phone: true,
+          birthDate: true,
+          role: true,
+          isInBlacklist: true,
+          isSuspended: true,
+          suspendedUntil: true,
+          banReason: true,
+          createdAt: true,
+        },
+      });
+    }
+
+    return user;
   }
 
   async refresh(refreshToken: string, res: Response) {

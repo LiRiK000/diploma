@@ -5,6 +5,6 @@ export const getPageTitle = (key: string) => {
     case 'orders':
       return 'Открытые заявки'
     case 'users':
-      return 'Users'
+      return 'Пользователи'
   }
 }

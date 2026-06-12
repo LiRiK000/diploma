@@ -13,6 +13,8 @@ import { useCart } from '@features/get-cart'
 import { routes } from '@shared/constants'
 import { AddToCartButtonProps } from './types'
 import { useGetMe } from '@app/providers/AuthProvider/hooks/useGetMe'
+import { useUserBlockStatus } from '@shared/hooks/useUserBlockStatus'
+import { getBlockActionTooltip } from '@shared/utils/userBlockStatus'
 
 export const AddToCartButton = ({
   bookId,
@@ -20,6 +22,7 @@ export const AddToCartButton = ({
   variant = 'default',
 }: AddToCartButtonProps) => {
   const { data: userData } = useGetMe()
+  const blockInfo = useUserBlockStatus()
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -30,6 +33,7 @@ export const AddToCartButton = ({
   const [isHovered, setIsHovered] = useState(false)
 
   const isAuthorized = userData?.status === 'success'
+  const isBlocked = isAuthorized && blockInfo.isBlocked
   const isPending = isAdding || isRemoving
 
   const handleClick = (e: React.MouseEvent) => {
@@ -39,6 +43,10 @@ export const AddToCartButton = ({
     if (!isAuthorized) {
       message.warning('Пожалуйста, авторизуйтесь для добавления книг в корзину')
       navigate(routes.login, { state: { from: location.pathname } })
+      return
+    }
+
+    if (isBlocked) {
       return
     }
 
@@ -82,8 +90,16 @@ export const AddToCartButton = ({
         : 'В корзине'
       : 'В корзину'
 
+  const blockTooltip = isBlocked ? getBlockActionTooltip(blockInfo) : ''
+
   return (
-    <Tooltip title={!isAuthorized ? 'Авторизуйтесь, чтобы добавить книгу' : ''}>
+    <Tooltip
+      title={
+        !isAuthorized
+          ? 'Авторизуйтесь, чтобы добавить книгу'
+          : blockTooltip
+      }
+    >
       <Button
         block={variant === 'default' ? fullWidth : false}
         shape={variant === 'icon' ? 'circle' : undefined}
@@ -91,7 +107,7 @@ export const AddToCartButton = ({
         danger={isInCart && isHovered}
         size="large"
         loading={isPending}
-        disabled={!isAuthorized ? false : !isInCart && !canAddMore}
+        disabled={!isAuthorized ? false : isBlocked || (!isInCart && !canAddMore)}
         icon={buttonIcon}
         onClick={handleClick}
         onMouseEnter={() => setIsHovered(true)}

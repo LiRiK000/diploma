@@ -12,6 +12,9 @@ export interface UserProfile {
   birthDate: string | null
   avatarUrl: string | null
   isInBlacklist: boolean
+  isSuspended: boolean
+  suspendedUntil: string | null
+  banReason: string | null
   createdAt: string
   updatedAt: string
 }

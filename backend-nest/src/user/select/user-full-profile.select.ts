@@ -11,6 +11,10 @@ export const userFullProfileSelect = Prisma.validator<Prisma.UserSelect>()({
   gender: true,
   avatarUrl: true,
   role: true,
+  isInBlacklist: true,
+  isSuspended: true,
+  suspendedUntil: true,
+  banReason: true,
   createdAt: true,
   _count: {
     select: {

@@ -14,6 +14,7 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { ConfirmPickupDto } from './dto/confirm-pickup.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
+import { CheckBlockStatusGuard } from 'src/auth/guards/check-block-status.guard';
 import { Role } from '@prisma/client';
 
 @UseGuards(JwtAuthGuard)
@@ -22,6 +23,7 @@ export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
   @Post('checkout')
+  @UseGuards(CheckBlockStatusGuard)
   checkout(@CurrentUser('id') userId: string) {
     return this.ordersService.create(userId);
   }

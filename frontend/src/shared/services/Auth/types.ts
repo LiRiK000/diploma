@@ -33,6 +33,9 @@ export interface User {
   birthDate?: string | null
   avatarUrl: string | null
   isInBlacklist: boolean
+  isSuspended?: boolean
+  suspendedUntil?: string | null
+  banReason?: string | null
   createdAt: string
   updatedAt: string
 }
@@ -41,9 +44,14 @@ export interface AuthUser {
   id: string
   email: string
   name?: string
+  surname?: string
   phone?: string | null
   birthDate?: string | null
   role: UserRole
+  isInBlacklist?: boolean
+  isSuspended?: boolean
+  suspendedUntil?: string | null
+  banReason?: string | null
   createdAt?: string
 }
 

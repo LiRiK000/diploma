@@ -13,6 +13,7 @@ import { CartService } from './cart.service';
 import { AddToCartDto } from './dto/add-to-cart.dto';
 import { UpdateCartItemDto } from './dto/update-cart-item.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
+import { CheckBlockStatusGuard } from 'src/auth/guards/check-block-status.guard';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 
 @ApiTags('Cart')
@@ -30,6 +31,7 @@ export class CartController {
   }
 
   @Post('add')
+  @UseGuards(CheckBlockStatusGuard)
   @ApiOperation({ summary: 'Добавить книгу в корзину' })
   async addToCart(
     @CurrentUser('id') userId: string,

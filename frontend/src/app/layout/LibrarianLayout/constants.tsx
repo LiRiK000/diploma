@@ -4,6 +4,7 @@ import {
   BookOpen,
   Users,
   Star,
+  UserCog,
 } from 'lucide-react'
 import { routes } from '@shared/constants'
 
@@ -27,6 +28,11 @@ export const LIBRARIAN_ROUTES = {
     key: `${routes.librarian}/authors`,
     label: 'Авторы',
     icon: <Users size={18} />,
+  },
+  users: {
+    key: routes.librarianUsers,
+    label: 'Пользователи',
+    icon: <UserCog size={18} />,
   },
   recommendations: {
     key: `${routes.librarian}/recommendations`,

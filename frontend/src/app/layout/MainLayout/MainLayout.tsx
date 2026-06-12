@@ -6,6 +6,7 @@ import { routes } from '@shared/constants'
 import { MobileNavigation } from '@widgets/MobileNavigation'
 import { Search } from '@features/search'
 import { ThemeToggle } from '@features/theme-toggle/ui/ThemeToggle'
+import { AccountBlockBanner } from '@widgets/AccountBlockBanner'
 import styles from './MainLayout.module.scss'
 import { PullAnchor } from '@shared/components/PullAnchor'
 import { Logo } from '../../../../public/logo'
@@ -65,6 +66,8 @@ export const MainLayout = () => {
           <ThemeToggle />
         </div>
       </Header>
+
+      <AccountBlockBanner />
 
       <Content className={styles.content}>
         <Outlet />

@@ -6,6 +6,7 @@ import {
   Empty,
   Result,
   Row,
+  Tooltip,
   Typography,
 } from 'antd'
 import { Link } from 'react-router-dom'
@@ -19,6 +20,8 @@ import {
   pluralizePieces,
 } from '@shared/utils/pluralize'
 import { useCreateOrder } from '@features/create-order/hooks/useCreateOrder'
+import { useUserBlockStatus } from '@shared/hooks/useUserBlockStatus'
+import { getBlockActionTooltip } from '@shared/utils/userBlockStatus'
 import styles from './CartPage.module.scss'
 
 const { Title, Text } = Typography
@@ -26,6 +29,9 @@ const { Title, Text } = Typography
 export const CartPage = () => {
   const { data: cart, isLoading, isError } = useCart()
   const { mutate: createOrder, isPending: isCreatingOrder } = useCreateOrder()
+  const blockInfo = useUserBlockStatus()
+  const isBlocked = blockInfo.isBlocked
+  const checkoutTooltip = isBlocked ? getBlockActionTooltip(blockInfo) : ''
 
   if (isLoading) return <Loader />
 
@@ -133,17 +139,19 @@ export const CartPage = () => {
                 style={{ margin: '16px 0', borderColor: 'var(--glass-border)' }}
               />
 
-              <Button
-                type="primary"
-                block
-                size="large"
-                className={styles.orderButton}
-                onClick={() => createOrder()}
-                loading={isCreatingOrder}
-                disabled={isCartEmpty}
-              >
-                ОФОРМИТЬ ВЫДАЧУ
-              </Button>
+              <Tooltip title={checkoutTooltip}>
+                <Button
+                  type="primary"
+                  block
+                  size="large"
+                  className={styles.orderButton}
+                  onClick={() => createOrder()}
+                  loading={isCreatingOrder}
+                  disabled={isCartEmpty || isBlocked}
+                >
+                  ОФОРМИТЬ ВЫДАЧУ
+                </Button>
+              </Tooltip>
 
               <Text className={styles.footerNote}>
                 Нажимая кнопку, вы бронируете книги. Код для получения придет в

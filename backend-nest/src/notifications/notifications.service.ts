@@ -242,6 +242,62 @@ export class NotificationsService {
     });
   }
 
+  async notifyAccountBlacklisted(
+    userId: string,
+    banReason: string,
+  ): Promise<void> {
+    await this.emitSafe({
+      userId,
+      type: NotificationType.SYSTEM,
+      priority: NotificationPriority.CRITICAL,
+      title: 'Ваш аккаунт заблокирован',
+      message: `Доступ к заказам и корзине ограничен. Причина: ${banReason}`,
+      payload: { kind: 'account_blacklisted' },
+    });
+  }
+
+  async notifyAccountSuspended(
+    userId: string,
+    suspendedUntil: Date,
+    banReason: string,
+  ): Promise<void> {
+    const until = suspendedUntil.toLocaleDateString('ru-RU');
+    await this.emitSafe({
+      userId,
+      type: NotificationType.SYSTEM,
+      priority: NotificationPriority.HIGH,
+      title: 'Ваш аккаунт временно заморожен',
+      message: `Заморозка действует до ${until}. Причина: ${banReason}`,
+      payload: {
+        kind: 'account_suspended',
+        suspendedUntil: suspendedUntil.toISOString(),
+      },
+    });
+  }
+
+  async notifyAccountUnblocked(
+    userId: string,
+    overdueBookTitles: string[],
+  ): Promise<void> {
+    let message = 'Вы снова можете заказывать книги.';
+
+    if (overdueBookTitles.length > 0) {
+      message += ` Пожалуйста, верните просроченные книги: ${overdueBookTitles.join(', ')}.`;
+    }
+
+    await this.emitSafe({
+      userId,
+      type: NotificationType.SYSTEM,
+      priority: NotificationPriority.MEDIUM,
+      title: 'Доступ к аккаунту восстановлен',
+      message,
+      payload: {
+        kind: 'account_unblocked',
+        overdueBookTitles,
+      },
+    });
+  }
+
   async findPageForUser(userId: string, query: QueryNotificationsDto) {
     const take = query.take ?? 20;
 

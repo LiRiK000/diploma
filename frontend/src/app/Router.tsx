@@ -33,6 +33,7 @@ import { LibrarianOrdersTab } from '@widgets/LibrarianOrdersTab'
 import { LibrarianBooksTab } from '@widgets/LibrarianBooksTab'
 import { LibrarianAuthorsTab } from '@widgets/LibrarianAuthorsTab'
 import { LibrarianRecommendationsTab } from '@widgets/LibrarianRecommendationsTab'
+import { LibrarianUsersTab } from '@widgets/LibrarianUsersTab'
 import { NotificationsPage } from '@pages/NotificationsPage/NotificationPage'
 import { DashboardPage } from '@pages/dashboard'
 import { SecurePage } from '@pages/profile/ui/SecurePage/SecurePage'
@@ -202,6 +203,7 @@ export const Router = () => {
                       <Route path="orders/:id" element={<OrderDetailsPage />} />
                       <Route path="books" element={<LibrarianBooksTab />} />
                       <Route path="authors" element={<LibrarianAuthorsTab />} />
+                      <Route path="users" element={<LibrarianUsersTab />} />
                       <Route
                         path="recommendations"
                         element={<LibrarianRecommendationsTab />}
