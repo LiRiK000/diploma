@@ -12,7 +12,6 @@ import {
   Input,
 } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
-import type { UploadFile } from 'antd/es/upload/interface'
 import type { BookDto } from '@shared/services/Book/types'
 import { Plus, Edit2, Trash2, BookOpen, Search } from 'lucide-react'
 import { useLibrarianBooks } from '@features/manage-books/hooks/useLibrarianBooks'
@@ -35,8 +34,6 @@ export const LibrarianBooksTab = () => {
   const [form] = Form.useForm<BookFormValues>()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingBook, setEditingBook] = useState<BookDto | null>(null)
-  const [fileList, setFileList] = useState<UploadFile[]>([])
-
   const [searchQuery, setSearchQuery] = useState('')
 
   const filteredBooks = useMemo(() => {
@@ -60,17 +57,31 @@ export const LibrarianBooksTab = () => {
         title: book.title,
         authorId: book.authorId,
         genreId: book.genreId,
-        availableQuantity: book.availableQuantity,
         description: book.description,
+        editions: [
+          {
+            publisher: book.publisher,
+            publishedDate: book.publishedDate
+              ? book.publishedDate.split('T')[0]
+              : undefined,
+            language: book.language,
+            pageCount: book.pageCount,
+            availableQuantity: book.availableQuantity ?? 0,
+            coverImage: book.coverUrl
+              ? [
+                  {
+                    uid: '-1',
+                    name: 'cover',
+                    status: 'done',
+                    url: book.coverUrl,
+                  },
+                ]
+              : [],
+          },
+        ],
       })
-      setFileList(
-        book.coverUrl
-          ? [{ uid: '-1', name: 'cover', status: 'done', url: book.coverUrl }]
-          : [],
-      )
     } else {
       form.resetFields()
-      setFileList([])
     }
     setIsModalOpen(true)
   }
@@ -78,16 +89,34 @@ export const LibrarianBooksTab = () => {
   const handleFinish = async () => {
     try {
       const values = await form.validateFields()
-      const file = getFileFromUploadList(fileList)
+      const firstEdition = values.editions?.[0] || { availableQuantity: 0 }
+
+      const file =
+        firstEdition.coverImage && firstEdition.coverImage.length > 0
+          ? getFileFromUploadList(firstEdition.coverImage)
+          : null
+
+      const cleanPayload = {
+        title: values.title,
+        authorId: values.authorId,
+        genreId: values.genreId,
+        description: values.description || undefined,
+        availableQuantity: firstEdition.availableQuantity,
+        publisher: firstEdition.publisher,
+        publishedDate: firstEdition.publishedDate,
+        pageCount: firstEdition.pageCount,
+        language: firstEdition.language,
+      }
 
       await upsertBook({
         id: editingBook?.id,
-        payload: values,
+        payload: cleanPayload as any,
         file,
       })
+
       setIsModalOpen(false)
     } catch (error) {
-      console.error('Validation failed:', error)
+      console.error('Submit failed:', error)
     }
   }
 
@@ -140,6 +169,14 @@ export const LibrarianBooksTab = () => {
         render: genre => <Tag className={classes.genreTag}>{genre || '—'}</Tag>,
       },
       {
+        title: 'Издательство',
+        dataIndex: 'publisher',
+        key: 'publisher',
+        render: publisher => (
+          <span className={classes.metaText}>{publisher || '—'}</span>
+        ),
+      },
+      {
         title: 'Доступно',
         dataIndex: 'availableQuantity',
         key: 'availableQuantity',
@@ -149,7 +186,7 @@ export const LibrarianBooksTab = () => {
           <span
             className={`${classes.qtyBadge} ${qty === 0 ? classes.empty : ''}`}
           >
-            {qty} шт.
+            {qty ?? 0} шт.
           </span>
         ),
       },
@@ -258,20 +295,14 @@ export const LibrarianBooksTab = () => {
         confirmLoading={isUpserting}
         onCancel={() => setIsModalOpen(false)}
         destroyOnClose
-        width={580}
+        width={620}
         centered
         className={classes.customModal}
         okText={editingBook ? 'Сохранить изменения' : 'Создать запись'}
         cancelText="Отмена"
       >
         <div className={classes.modalContentWrapper}>
-          <BookForm
-            form={form}
-            authors={authors}
-            genres={genres}
-            fileList={fileList}
-            setFileList={setFileList}
-          />
+          <BookForm form={form} authors={authors} genres={genres} />
         </div>
       </Modal>
     </div>
