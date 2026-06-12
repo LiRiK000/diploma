@@ -146,8 +146,8 @@ export class AuthService {
       },
     });
 
-    res.clearCookie('accessToken');
-    res.clearCookie('refreshToken');
+    res.clearCookie('accessToken', { path: '/' });
+    res.clearCookie('refreshToken', { path: '/' });
 
     return {
       message: 'Успешный выход',
@@ -222,16 +222,20 @@ export class AuthService {
     const isProduction =
       this.configService.get<string>('NODE_ENV') === 'production';
 
-    res.cookie('accessToken', accessToken, {
+    const cookieOptions = {
       httpOnly: true,
       secure: isProduction,
-      sameSite: 'lax',
+      sameSite: 'lax' as const,
+      path: '/',
+    };
+
+    res.cookie('accessToken', accessToken, {
+      ...cookieOptions,
+      maxAge: 15 * 60 * 1000,
     });
 
     res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: isProduction,
-      sameSite: 'lax',
+      ...cookieOptions,
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 

@@ -3,10 +3,9 @@ import { MeResponse } from '@shared/services/Auth/types'
 import { useQuery } from '@tanstack/react-query'
 
 export const useGetMe = () => {
-  const { data, isLoading } = useQuery<MeResponse>({
+  return useQuery<MeResponse>({
     queryKey: ['me'],
     queryFn: () => authService.getMe(),
+    retry: false,
   })
-
-  return { data, isLoading }
 }

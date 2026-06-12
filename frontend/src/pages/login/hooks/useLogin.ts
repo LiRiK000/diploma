@@ -3,19 +3,23 @@ import { routes } from '@shared/constants'
 import { authService } from '@shared/services/Auth'
 import { LoginFormValues } from '@shared/services/Auth/types'
 import { openNotification } from '@shared/utils/openNotification'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 
 export const useLogin = () => {
   const navigate = useNavigate()
-  const { mutate: login } = useMutation({
+  const queryClient = useQueryClient()
+
+  const { mutate: login, isPending } = useMutation({
     mutationFn: async (values: LoginFormValues) => {
       return await authService.login(values)
     },
-    onSuccess: response => {
+    onSuccess: async response => {
+      await queryClient.invalidateQueries({ queryKey: ['me'] })
       openNotification('Вход в систему прошел успешно', 'success')
+
       setTimeout(() => {
-        if (response?.data?.user?.role === USER_ROLES.LIBRARIAN) {
+        if (response?.data?.role === USER_ROLES.LIBRARIAN) {
           navigate(routes.librarian)
         } else {
           navigate(routes.home)
@@ -27,5 +31,5 @@ export const useLogin = () => {
     },
   })
 
-  return { login }
+  return { login, isPending }
 }

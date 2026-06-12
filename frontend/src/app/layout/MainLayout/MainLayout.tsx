@@ -15,9 +15,8 @@ import { useGetMe } from '@app/providers/AuthProvider/hooks/useGetMe'
 const { Header, Content } = Layout
 
 export const MainLayout = () => {
-  const { data, isLoading } = useGetMe()
-
-  const isAuthenticated = !isLoading && data?.status === 'success'
+  const { data, isLoading, isError } = useGetMe()
+  const isAuthenticated = !isLoading && !isError && data?.status === 'success'
 
   return (
     <Layout style={{ minHeight: '100vh' }}>

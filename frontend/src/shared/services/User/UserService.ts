@@ -1,5 +1,5 @@
 import { api } from '@shared/api'
-import type { GetMeResponse, UpdateMePayload, UpdateMeResponse } from './types'
+import type { UpdateMePayload, UserProfile } from './types'
 
 export interface UploadAvatarResponse {
   status: string
@@ -7,13 +7,13 @@ export interface UploadAvatarResponse {
 }
 
 export class UserService {
-  async getMe(): Promise<GetMeResponse> {
-    const { data } = await api.get<GetMeResponse>('/user/profile')
+  async getMe(): Promise<UserProfile> {
+    const { data } = await api.get<UserProfile>('/user/profile')
     return data
   }
 
-  async updateMe(payload: UpdateMePayload): Promise<UpdateMeResponse> {
-    const { data } = await api.patch<UpdateMeResponse>('/user/profile', payload)
+  async updateMe(payload: UpdateMePayload): Promise<UserProfile> {
+    const { data } = await api.patch<UserProfile>('/user/profile', payload)
     return data
   }
 

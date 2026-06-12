@@ -37,9 +37,26 @@ export interface User {
   updatedAt: string
 }
 
+export interface AuthUser {
+  id: string
+  email: string
+  name?: string
+  phone?: string | null
+  birthDate?: string | null
+  role: UserRole
+  createdAt?: string
+}
+
 export interface MeResponse {
   status: 'success' | 'error'
+  data: AuthUser
+}
+
+export interface AuthResponse {
+  status: 'success' | 'error'
   data: {
-    user: User
+    id: string
+    email: string
+    role: UserRole
   }
 }

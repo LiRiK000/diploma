@@ -3,6 +3,7 @@ import { LayoutGrid, LogOut } from 'lucide-react'
 import { Button, Dropdown, Tooltip } from 'antd'
 import { useLibrarianSettingsStore } from './model/store'
 import { useShallow } from 'zustand/react/shallow'
+import { useLogout } from '@shared/services/Auth/hooks/useLogout'
 
 export const LibrarianSettings = () => {
   const { isEditing, toggleEditing } = useLibrarianSettingsStore(
@@ -11,6 +12,7 @@ export const LibrarianSettings = () => {
       toggleEditing: store.toggleEditing,
     })),
   )
+  const { logout } = useLogout()
 
   const items = [
     {
@@ -27,6 +29,7 @@ export const LibrarianSettings = () => {
       label: 'Выйти из системы',
       icon: <LogOut size={16} strokeWidth={2} />,
       danger: true,
+      onClick: () => logout(),
     },
   ]
 

@@ -237,14 +237,14 @@ model OrderItem {
 }
 model Achievement {
   id          String   @id @default(uuid())
-  title       String  @unique  // "Книжный червь"
-  description String   // "Прочитайте 10 книг"
-  icon        String   // Эмодзи или код иконки
+  title       String  @unique  
+  description String   
+  icon        String  
   
   category    AchievementCategory @default(READING)
   
-  targetValue Int      // Сколько нужно выполнить (например, 10)
-  rewardExp   Int      // Сколько XP даем за выполнение
+  targetValue Int     
+  rewardExp   Int     
   
   users       UserAchievement[]
 
@@ -300,21 +300,9 @@ model DashboardWidget {
    */
   isEnabled   Boolean  @default(true)
 
-  /**
-   * Порядок отображения
-   */
+ 
   order       Int      @default(0)
-
-  /**
-   * Layout/grid config
-   * react-grid-layout compatible
-   */
   layout      Json
-
-  /**
-   * Настройки конкретного виджета
-   * filters/chart settings/etc
-   */
   settings    Json?
 
   createdAt   DateTime @default(now())

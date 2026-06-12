@@ -16,12 +16,6 @@ export interface UserProfile {
   updatedAt: string
 }
 
-export interface GetMeResponse {
-  status: 'success' | 'error'
-  data: {
-    user: UserProfile
-  }
-}
 export interface UpdateMePayload {
   name?: string
   surname?: string
@@ -30,11 +24,4 @@ export interface UpdateMePayload {
   gender?: Gender | null
   birthDate?: string | null
   avatarUrl?: string
-}
-
-export interface UpdateMeResponse {
-  status: 'success' | 'error'
-  data: {
-    user: UserProfile
-  }
 }

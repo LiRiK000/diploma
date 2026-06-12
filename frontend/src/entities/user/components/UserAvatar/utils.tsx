@@ -2,18 +2,21 @@ import { MenuProps } from 'antd'
 import {
   BellOutlined,
   BookOutlined,
+  LogoutOutlined,
   ShoppingCartOutlined,
   UserOutlined,
 } from '@ant-design/icons'
 import { NavigateFunction } from 'react-router-dom'
 import { routes } from '@shared/constants'
 import { USER_ROLES } from '../../constants'
+import type { UserRole } from '@shared/services/Auth/types'
 
 export const getDropdownItems = (
   navigate: NavigateFunction,
-  userRole: (typeof USER_ROLES)[keyof typeof USER_ROLES],
+  userRole?: UserRole,
+  onLogout?: () => void,
 ): MenuProps['items'] => {
-  const items = [
+  const items: MenuProps['items'] = [
     {
       key: 'profile',
       label: 'Профиль',
@@ -42,6 +45,17 @@ export const getDropdownItems = (
       onClick: () => navigate(routes.librarian),
     })
   }
+
+  items.push(
+    { type: 'divider' },
+    {
+      key: 'logout',
+      label: 'Выйти',
+      icon: <LogoutOutlined />,
+      danger: true,
+      onClick: onLogout,
+    },
+  )
 
   return items
 }

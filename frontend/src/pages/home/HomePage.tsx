@@ -32,7 +32,6 @@ export const HomePage = () => {
           sections.map(section => (
             <div key={section.id} className={styles.feedSection}>
               <BookSection
-                variant="winter"
                 title={section.title}
                 books={section.items}
                 linkTo={`/catalog?collection=${section.slug}`}

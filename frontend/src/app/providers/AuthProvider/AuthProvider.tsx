@@ -6,14 +6,22 @@ import { Loader } from '@shared/components/Loader'
 import { routes } from '@shared/constants'
 import { USER_ROLES } from '@entities/user'
 import { AccessDenied } from '@pages/403'
+import type { UserRole } from '@shared/services/Auth/types'
+
+interface AuthProviderProps {
+  children: React.ReactNode
+  strictTo?: UserRole
+}
 
 export const AuthProvider = ({ children, strictTo }: AuthProviderProps) => {
   const navigate = useNavigate()
   const location = useLocation()
-  const { data, isLoading } = useGetMe()
+  const { data, isLoading, isError } = useGetMe()
+
+  const isAuthenticated = data?.status === 'success'
 
   useEffect(() => {
-    if (!isLoading && data?.status !== 'success') {
+    if (!isLoading && (isError || !isAuthenticated)) {
       notification.warning({
         message: 'Доступ ограничен',
         description: 'Пожалуйста, авторизуйтесь для продолжения.',
@@ -23,15 +31,13 @@ export const AuthProvider = ({ children, strictTo }: AuthProviderProps) => {
         replace: true,
       })
     }
-  }, [data, isLoading, navigate, location.pathname])
+  }, [data, isLoading, isError, isAuthenticated, navigate, location.pathname])
 
   if (isLoading) return <Loader />
 
-  // Блокируем рендер, если пользователь не залогинен
-  if (data?.status !== 'success') return null
+  if (isError || !isAuthenticated) return null
 
-  // Проверка прав (например, только для библиотекаря)
-  if (strictTo && data?.data.role !== strictTo) {
+  if (strictTo && data.data.role !== strictTo) {
     return <AccessDenied />
   }
 
