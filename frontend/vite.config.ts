@@ -3,6 +3,8 @@ import react from '@vitejs/plugin-react-swc'
 import path from 'path'
 import { VitePWA } from 'vite-plugin-pwa'
 
+const PWA_THEME_COLOR = '#0f172a'
+
 export default defineConfig({
   resolve: {
     alias: {
@@ -25,29 +27,117 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: 'autoUpdate',
-      workbox: {
-        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5 МБ
-        globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
-      },
-      includeAssets: ['favicon.svg', 'robots.txt', 'apple-touch-icon.png'],
+      registerType: 'prompt',
+      injectRegister: 'auto',
+      includeAssets: [
+        'favicon.svg',
+        'offline.html',
+        'apple-touch-icon.png',
+        'icons/icon-192x192.png',
+        'icons/icon-512x512.png',
+        'icons/icon-maskable-192x192.png',
+        'icons/icon-maskable-512x512.png',
+      ],
       manifest: {
-        name: 'Библиотека',
-        short_name: 'Библиотека',
-        description: 'Сервис для поиска, заказа и получения книг из библиотеки',
-        theme_color: '#ffffff',
+        name: 'Library System',
+        short_name: 'Library',
+        description: 'Digital library management system',
+        theme_color: PWA_THEME_COLOR,
+        background_color: PWA_THEME_COLOR,
+        display: 'standalone',
+        orientation: 'portrait',
+        start_url: '/',
+        scope: '/',
         icons: [
           {
-            src: 'vite.svg',
-            sizes: 'any',
-            type: 'image/svg+xml',
+            src: 'icons/icon-192x192.png',
+            sizes: '192x192',
+            type: 'image/png',
+          },
+          {
+            src: 'icons/icon-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+          },
+          {
+            src: 'icons/icon-maskable-192x192.png',
+            sizes: '192x192',
+            type: 'image/png',
+            purpose: 'maskable',
+          },
+          {
+            src: 'icons/icon-maskable-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable',
           },
         ],
-        start_url: '/',
-        display: 'standalone',
-        background_color: '#ffffff',
-        orientation: 'portrait',
-        scope: '/',
+      },
+      workbox: {
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,jpg,jpeg,woff2}'],
+        navigateFallback: '/index.html',
+        navigateFallbackDenylist: [/^\/api\//],
+        cleanupOutdatedCaches: true,
+        clientsClaim: true,
+        skipWaiting: false,
+        runtimeCaching: [
+          {
+            urlPattern: ({ request }) => request.destination === 'script',
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'js-cache',
+              expiration: {
+                maxEntries: 60,
+                maxAgeSeconds: 60 * 60 * 24 * 30,
+              },
+            },
+          },
+          {
+            urlPattern: ({ request }) => request.destination === 'style',
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'css-cache',
+              expiration: {
+                maxEntries: 40,
+                maxAgeSeconds: 60 * 60 * 24 * 30,
+              },
+            },
+          },
+          {
+            urlPattern: ({ request }) => request.destination === 'image',
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'images-cache',
+              expiration: {
+                maxEntries: 200,
+                maxAgeSeconds: 60 * 60 * 24 * 30,
+              },
+            },
+          },
+          {
+            urlPattern: ({ request }) => request.mode === 'navigate',
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'pages-cache',
+              networkTimeoutSeconds: 3,
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 60 * 24 * 7,
+              },
+              plugins: [
+                {
+                  handlerDidError: async () =>
+                    (await caches.match('/offline.html')) ??
+                    new Response('Offline', { status: 503 }),
+                },
+              ],
+            },
+          },
+        ],
+      },
+      devOptions: {
+        enabled: false,
       },
     }),
   ],

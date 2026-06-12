@@ -1,0 +1,98 @@
+@use '@shared/styles/variables' as *;
+
+.banner {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  z-index: 9998;
+  width: min(calc(100% - 32px), 560px);
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 18px;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 20px;
+  background: rgba(15, 23, 42, 0.92);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 20px 40px rgba(2, 6, 23, 0.35);
+
+  @include mobile {
+    flex-direction: column;
+    align-items: stretch;
+    bottom: 16px;
+  }
+}
+
+.iconWrapper {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  background: rgba(56, 189, 248, 0.12);
+  color: #38bdf8;
+}
+
+.content {
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  margin: 0 0 4px;
+  font-size: $font-size-medium;
+  font-weight: $font-weight-bold;
+  color: #f8fafc;
+}
+
+.description {
+  margin: 0;
+  font-size: $font-size-small;
+  line-height: 1.5;
+  color: #94a3b8;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+
+  @include mobile {
+    width: 100%;
+  }
+}
+
+.primaryButton,
+.secondaryButton {
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: $font-size-small;
+  font-weight: $font-weight-bold;
+  cursor: pointer;
+  transition:
+    filter 0.2s ease,
+    transform 0.2s ease;
+  white-space: nowrap;
+
+  @include mobile {
+    flex: 1;
+  }
+
+  &:hover {
+    transform: translateY(-1px);
+  }
+}
+
+.primaryButton {
+  border: none;
+  color: #0f172a;
+  background: linear-gradient(135deg, #38bdf8, #818cf8);
+}
+
+.secondaryButton {
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  color: #e2e8f0;
+  background: transparent;
+}

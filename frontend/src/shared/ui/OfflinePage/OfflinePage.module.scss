@@ -1,0 +1,74 @@
+@use '@shared/styles/variables' as *;
+
+.page {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background:
+    radial-gradient(circle at top, rgba(56, 189, 248, 0.14), transparent 55%),
+    #0f172a;
+}
+
+.card {
+  width: min(100%, 440px);
+  padding: 40px 32px;
+  text-align: center;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: $border-radius-lg;
+  background: rgba(15, 23, 42, 0.78);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 24px 48px rgba(2, 6, 23, 0.35);
+}
+
+.iconWrapper {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 24px;
+  display: grid;
+  place-items: center;
+  border-radius: 20px;
+  background: rgba(56, 189, 248, 0.12);
+  color: #38bdf8;
+}
+
+.title {
+  margin: 0 0 12px;
+  font-size: 28px;
+  font-weight: $font-weight-bold;
+  color: #f8fafc;
+}
+
+.description {
+  margin: 0 0 28px;
+  font-size: $font-size-medium;
+  line-height: 1.6;
+  color: #94a3b8;
+}
+
+.retryButton {
+  min-width: 180px;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 999px;
+  font-size: $font-size-medium;
+  font-weight: $font-weight-bold;
+  color: #0f172a;
+  background: linear-gradient(135deg, #38bdf8, #818cf8);
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    filter 0.2s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.05);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
