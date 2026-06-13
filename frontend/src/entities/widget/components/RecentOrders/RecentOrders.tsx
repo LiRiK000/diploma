@@ -29,6 +29,8 @@ export const RecentOrders: React.FC<RecentOrdersProps> = React.memo(
         case 'REJECTED':
         case 'CANCELLED':
           return { color: 'red', text: 'Отклонен' }
+        case 'RETURNED':
+          return { color: 'blue', text: 'Возвращен' }
         default:
           return { color: 'blue', text: status }
       }

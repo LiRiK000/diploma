@@ -6,6 +6,6 @@ export const useOrderDetails = (orderId: string) => {
     queryKey: ['order', orderId],
     queryFn: () => orderService.getOrderById(orderId),
     enabled: !!orderId,
-    staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 5,
   })
 }
