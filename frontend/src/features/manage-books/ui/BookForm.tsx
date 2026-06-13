@@ -19,11 +19,12 @@ interface BookFormProps {
 }
 
 export const BookForm = ({ form, authors, genres }: BookFormProps) => {
+  // 1. Исправляем нормализатор файлов, чтобы он корректно обрабатывал удаление
   const normFile = (e: any) => {
     if (Array.isArray(e)) {
       return e
     }
-    return e?.fileList
+    return e?.fileList || []
   }
 
   return (
@@ -179,29 +180,47 @@ export const BookForm = ({ form, authors, genres }: BookFormProps) => {
                     </Form.Item>
                   </div>
 
+                  {/* 2. Переписываем блок Upload с использованием render-props зависимостей */}
                   <Form.Item
-                    {...restField}
-                    name={[name, 'coverImage']}
-                    label="Обложка издания (3:4)"
-                    valuePropName="fileList"
-                    getValueFromEvent={normFile}
-                    style={{ marginBottom: 0, marginTop: '12px' }}
+                    noStyle
+                    shouldUpdate={(prevValues, currentValues) =>
+                      JSON.stringify(
+                        prevValues.editions?.[name]?.coverImage,
+                      ) !==
+                      JSON.stringify(currentValues.editions?.[name]?.coverImage)
+                    }
                   >
-                    <Upload
-                      listType="picture-card"
-                      maxCount={1}
-                      beforeUpload={() => false}
-                      className={classes.customUpload}
-                    >
-                      {(!form.getFieldValue(['editions', name, 'coverImage']) ||
-                        form.getFieldValue(['editions', name, 'coverImage'])
-                          .length === 0) && (
-                        <div className={classes.uploadPlaceholder}>
-                          <ImagePlus size={20} />
-                          <span>Загрузить</span>
-                        </div>
-                      )}
-                    </Upload>
+                    {() => {
+                      const fileList =
+                        form.getFieldValue(['editions', name, 'coverImage']) ||
+                        []
+                      const isUploadVisible = fileList.length === 0
+
+                      return (
+                        <Form.Item
+                          {...restField}
+                          name={[name, 'coverImage']}
+                          label="Обложка издания (3:4)"
+                          valuePropName="fileList"
+                          getValueFromEvent={normFile}
+                          style={{ marginBottom: 0, marginTop: '12px' }}
+                        >
+                          <Upload
+                            listType="picture-card"
+                            maxCount={1}
+                            beforeUpload={() => false}
+                            className={classes.customUpload}
+                          >
+                            {isUploadVisible && (
+                              <div className={classes.uploadPlaceholder}>
+                                <ImagePlus size={20} />
+                                <span>Загрузить</span>
+                              </div>
+                            )}
+                          </Upload>
+                        </Form.Item>
+                      )
+                    }}
                   </Form.Item>
                 </Card>
               ))}
