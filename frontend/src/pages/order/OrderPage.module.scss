@@ -51,13 +51,22 @@
   }
 }
 
+.statusContent {
+  position: relative;
+  overflow: hidden; // Защищает от горизонтального скролла при анимациях смещения (y, x)
+}
+
 .pickupSection {
   text-align: center;
   padding: 40px 20px;
+
+  @include mobile {
+    padding: 20px 0;
+  }
 }
 
 .pickupCode {
-  display: block;
+  display: inline-block;
   font-size: clamp(32px, 7vw, 42px);
   font-weight: var(--font-weight-display);
   letter-spacing: 8px;
@@ -72,6 +81,29 @@
     letter-spacing: 4px;
   }
 }
+
+.returnVariant {
+  color: #722ed1 !important;
+  text-shadow: 0 0 20px rgba(114, 46, 209, 0.15);
+  background: var(--glass-bg);
+  padding: 10px 20px;
+  border-radius: 12px;
+  border: 1px dashed var(--glass-border);
+  display: inline-block;
+}
+
+.instructionText {
+  margin-bottom: 8px;
+  display: block;
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.successIcon {
+  font-size: 72px;
+  color: #52c41a;
+}
+
 .infoGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -92,6 +124,7 @@
   gap: 6px;
   padding: 0 24px;
   position: relative;
+
   &:not(:last-child)::after {
     content: '';
     position: absolute;
@@ -112,6 +145,11 @@
   }
   &:last-child {
     padding-right: 0;
+
+    // Выравниваем анимируемый тег внутри flex-контейнера
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   @include mobile {
@@ -138,6 +176,33 @@
   }
 }
 
+// Переименовано из .mainStatusTag в .statusTag для соответствия вашему TSX коду
+.statusTag {
+  display: inline-flex !important;
+  align-items: center;
+  border: none !important;
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-bold) !important;
+  font-size: var(--font-size-xs) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 6px 14px !important;
+  border-radius: 8px !important;
+  margin: 0 !important;
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease !important;
+
+  // Цвет по умолчанию (применится, если антдизайновский color не перебьет его)
+  background: rgba(var(--text-secondary), 0.1) !important;
+  color: var(--text-secondary) !important;
+
+  &:hover {
+    transform: translateY(-1px);
+  }
+}
+
+// Старые неиспользуемые стили .statusRow и .statusLabel сохранены ниже, если они нужны в других местах
 .statusRow {
   display: flex;
   justify-content: space-between;
@@ -159,69 +224,4 @@
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
   color: var(--text-secondary);
-}
-
-.mainStatusTag {
-  border: none !important;
-  font-family: var(--font-family-base);
-  font-weight: var(--font-weight-bold) !important;
-  font-size: var(--font-size-xs) !important;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  padding: 6px 14px !important;
-  border-radius: 8px !important;
-  margin: 0 !important;
-
-  --status-color: #faad14;
-
-  background: color-mix(
-    in srgb,
-    var(--status-color) 15%,
-    transparent
-  ) !important;
-  color: var(--status-color) !important;
-  box-shadow: 0 0 15px color-mix(in srgb, var(--status-color) 10%, transparent);
-
-  &[data-status='active'] {
-    --status-color: #0071e3;
-  }
-  &[data-status='completed'] {
-    --status-color: #34c759;
-  }
-  &[data-status='pending'] {
-    --status-color: #ff9500;
-  }
-  &[data-status='danger'] {
-    --status-color: #ff3b30;
-  }
-
-  &:hover {
-    background: color-mix(
-      in srgb,
-      var(--status-color) 25%,
-      transparent
-    ) !important;
-    transform: translateY(-1px);
-  }
-}
-.returnVariant {
-  color: #722ed1 !important;
-  text-shadow: 0 0 20px rgba(114, 46, 209, 0.15);
-  background: var(--glass-bg);
-  padding: 10px 20px;
-  border-radius: 12px;
-  border: 1px dashed var(--glass-border);
-  display: inline-block;
-}
-
-.instructionText {
-  margin-bottom: 8px;
-  display: block;
-  font-size: var(--font-size-sm);
-  color: var(--text-secondary);
-}
-
-.successIcon {
-  font-size: 72px;
-  color: #52c41a;
 }
