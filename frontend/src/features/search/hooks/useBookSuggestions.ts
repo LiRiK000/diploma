@@ -6,7 +6,6 @@ export const useBookSuggestions = (query: string) => {
     queryKey: ['book-suggestions', query],
     queryFn: async () => {
       const data = await bookService.getSuggestions(query)
-      console.log('Suggestions from service:', data)
       return data
     },
     enabled: query.trim().length >= 2,

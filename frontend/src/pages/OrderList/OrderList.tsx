@@ -15,7 +15,6 @@ const { Title, Text } = Typography
 export const OrderList = () => {
   const navigate = useNavigate()
   const { orders, isLoading, isEmpty } = useOrders()
-  console.log('orders', orders)
   if (isLoading) return <Loader />
 
   if (isEmpty) {

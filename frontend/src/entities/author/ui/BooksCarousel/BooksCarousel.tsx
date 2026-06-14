@@ -18,7 +18,6 @@ interface BooksCarouselProps {
 export const BooksCarousel = ({ title }: BooksCarouselProps) => {
   const { author } = useAuthor()
   const book: BookCardView[] = author.topBooks
-  console.log(book, 'the bookl')
 
   const carouselRef = useRef<CarouselRef | null>(null)
   const slides = chunkArray(book, SLIDES_PER_PAGE)

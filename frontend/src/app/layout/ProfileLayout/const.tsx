@@ -16,9 +16,4 @@ export const tabs = [
     label: 'Достижения',
     icon: <Trophy size={18} strokeWidth={2} />,
   },
-  {
-    key: 'secure',
-    label: 'Безопасность',
-    icon: <ShieldCheck size={18} strokeWidth={2} />,
-  },
 ]

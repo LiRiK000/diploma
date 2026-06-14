@@ -104,11 +104,7 @@ export class AuthService {
     if (!user) return null;
 
     const now = new Date();
-    if (
-      user.isSuspended &&
-      user.suspendedUntil &&
-      user.suspendedUntil <= now
-    ) {
+    if (user.isSuspended && user.suspendedUntil && user.suspendedUntil <= now) {
       return this.prisma.user.update({
         where: { id: userId },
         data: {
@@ -268,7 +264,7 @@ export class AuthService {
 
     res.cookie('accessToken', accessToken, {
       ...cookieOptions,
-      maxAge: 15 * 60 * 1000,
+      maxAge: 15 * 60 * 1000, //
     });
 
     res.cookie('refreshToken', refreshToken, {

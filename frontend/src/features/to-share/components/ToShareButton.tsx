@@ -7,9 +7,7 @@ export const ToShareButton = ({ title }: ShareButtonProps) => {
   const handleClick = async () => {
     try {
       await navigator.clipboard.writeText(title)
-    } catch {
-      console.log(title)
-    }
+    } catch {}
   }
 
   return (

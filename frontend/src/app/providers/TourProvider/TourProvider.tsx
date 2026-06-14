@@ -103,11 +103,6 @@ export const TourProvider = ({ children }: TourProviderProps) => {
         const targetSelector = activeSteps[0].target as string
         const element = document.querySelector(targetSelector)
 
-        console.log(
-          `[Роут: ${location.pathname}] Проверка элемента ${targetSelector}:`,
-          element ? 'НАЙДЕН! 🎉' : 'Ожидание... 🔍',
-        )
-
         if (element) {
           setRunTour(true)
           clearInterval(checkElement)

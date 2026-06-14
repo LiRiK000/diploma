@@ -7,7 +7,6 @@ import { Loader } from '@shared/components/Loader'
 export const AuthorPage = () => {
   const { author, isLoading, isError } = useAuthor()
 
-  console.log(author, 'the author')
   if (isLoading) return <Loader />
   if (isError) return <div>Ошибка загрузки</div>
 

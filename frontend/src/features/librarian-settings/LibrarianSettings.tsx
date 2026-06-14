@@ -16,15 +16,6 @@ export const LibrarianSettings = () => {
 
   const items = [
     {
-      key: 'edit-mode',
-      label: isEditing ? 'Выключить конструктор' : 'Режим редактирования',
-      icon: <LayoutGrid size={16} strokeWidth={2} />,
-      onClick: toggleEditing,
-    },
-    {
-      type: 'divider' as const,
-    },
-    {
       key: 'logout',
       label: 'Выйти из системы',
       icon: <LogOut size={16} strokeWidth={2} />,

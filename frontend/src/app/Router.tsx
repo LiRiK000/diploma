@@ -191,10 +191,6 @@ export const Router = () => {
                             path={routes.achievements}
                             element={<AchievementsPage />}
                           />
-                          <Route
-                            path={routes.secure}
-                            element={<SecurePage />}
-                          />
                         </Route>
                       </Route>
 

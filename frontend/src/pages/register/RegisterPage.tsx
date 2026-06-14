@@ -153,9 +153,7 @@ export const RegisterPage = () => {
       const fields = stepFields[currentStep]
       await form.validateFields(fields)
       setCurrentStep(prev => prev + 1)
-    } catch (err) {
-      console.log('Валидация шага не пройдена:', err)
-    }
+    } catch (err) {}
   }
 
   const prev = () => setCurrentStep(prev => prev - 1)
@@ -187,9 +185,7 @@ export const RegisterPage = () => {
       register(dataToSend)
     } catch (err) {
       if (err instanceof z.ZodError) {
-        console.log('Ошибка Zod:', err.flatten().fieldErrors)
       } else {
-        console.log('Ошибка формы:', err)
       }
     }
   }
