@@ -13,7 +13,6 @@ export const StickyHeader = ({
   coverUrl,
   isVisible,
 }: StickyHeaderProps) => {
-  console.log(coverUrl, 'scscscs')
   return (
     <header
       className={`${styles.header} ${isVisible ? styles.visible : ''}`}
