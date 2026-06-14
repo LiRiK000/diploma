@@ -1,11 +1,11 @@
 import React from 'react'
 
-export const CookiePage = () => {
+export const PrivacyPage = () => {
   return (
     <div style={styles.container}>
       <header style={styles.header}>
         <div style={styles.icon}>🍪</div>
-        <h1 style={styles.title}>Политика использования файлов Cookie</h1>
+        <h1 style={styles.title}>Политика конфиденциальности</h1>
         <p style={styles.subtitle}>
           Последнее обновление: {new Date().toLocaleDateString('ru-RU')}
         </p>
