@@ -53,7 +53,7 @@
 
 .statusContent {
   position: relative;
-  overflow: hidden; // Защищает от горизонтального скролла при анимациях смещения (y, x)
+  overflow: hidden;
 }
 
 .pickupSection {
@@ -146,7 +146,6 @@
   &:last-child {
     padding-right: 0;
 
-    // Выравниваем анимируемый тег внутри flex-контейнера
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -176,7 +175,6 @@
   }
 }
 
-// Переименовано из .mainStatusTag в .statusTag для соответствия вашему TSX коду
 .statusTag {
   display: inline-flex !important;
   align-items: center;
@@ -193,7 +191,6 @@
     transform 0.2s ease,
     background-color 0.2s ease !important;
 
-  // Цвет по умолчанию (применится, если антдизайновский color не перебьет его)
   background: rgba(var(--text-secondary), 0.1) !important;
   color: var(--text-secondary) !important;
 
@@ -202,7 +199,6 @@
   }
 }
 
-// Старые неиспользуемые стили .statusRow и .statusLabel сохранены ниже, если они нужны в других местах
 .statusRow {
   display: flex;
   justify-content: space-between;

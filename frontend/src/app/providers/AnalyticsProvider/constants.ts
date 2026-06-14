@@ -1,1 +1,1 @@
-export const YANDEX_COUNTER_ID = '104834035' as const
+export const YANDEX_COUNTER_ID = '109843116' as const

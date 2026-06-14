@@ -33,7 +33,7 @@ export const loadYandexMetrika = () => {
   a.parentNode?.insertBefore(k, a)
 
   win.ym(YANDEX_COUNTER_ID, 'init', {
-    ssr: true,
+    // ssr: true,
     webvisor: true,
     clickmap: true,
     ecommerce: 'dataLayer',
